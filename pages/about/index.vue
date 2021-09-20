@@ -69,17 +69,17 @@
     </div>
     <div class="pt-8 pb-8 prose dark:prose-dark max-w-none xl:col-span-2 text-gray-600 dark:text-gray-300">
       <div>
-        <p>This is my profile. I will update later :)))</p>
+        <p>This is my profile. I will update later.</p>
       </div>
-      <div class="pt-10 w-full">
+<!--      <div class="pt-10 w-full">
         <div class="relative antialiased text-sm font-semibold
               text-gray-700 dark:text-gray-300">
 
-          <!-- Vertical bar running through middle -->
+          &lt;!&ndash; Vertical bar running through middle &ndash;&gt;
           <div
             class="hidden sm:block w-1 bg-blue-500 dark:bg-blue-400 absolute h-full left-1/2 transform -translate-x-1/2"></div>
 
-          <!-- Left section, set by justify-start and sm:pr-8 -->
+          &lt;!&ndash; Left section, set by justify-start and sm:pr-8 &ndash;&gt;
           <div class="mt-6 sm:mt-0 sm:mb-12">
             <div class="flex flex-col sm:flex-row items-center">
               <div class="flex justify-start w-full mx-auto items-center">
@@ -106,7 +106,7 @@
             </div>
           </div>
 
-          <!-- Right section, set by justify-end and sm:pl-8 -->
+          &lt;!&ndash; Right section, set by justify-end and sm:pl-8 &ndash;&gt;
           <div class="mt-6 sm:mt-0 sm:mb-12">
             <div class="flex flex-col sm:flex-row items-center">
               <div class="flex justify-end w-full mx-auto items-center">
@@ -132,7 +132,7 @@
             </div>
           </div>
 
-          <!-- Left section, set by justify-start and sm:pr-8 -->
+          &lt;!&ndash; Left section, set by justify-start and sm:pr-8 &ndash;&gt;
           <div class="mt-6 sm:mt-0 sm:mb-12">
             <div class="flex flex-col sm:flex-row items-center">
               <div class="flex justify-start w-full mx-auto items-center">
@@ -158,7 +158,7 @@
             </div>
           </div>
 
-          <!-- Right section, set by justify-end and sm:pl-8 -->
+          &lt;!&ndash; Right section, set by justify-end and sm:pl-8 &ndash;&gt;
           <div class="mt-6 sm:mt-0 sm:mb-12">
             <div class="flex flex-col sm:flex-row items-center">
               <div class="flex justify-end w-full mx-auto items-center">
@@ -185,7 +185,7 @@
             </div>
           </div>
 
-          <!-- Left section, set by justify-start and sm:pr-8 -->
+          &lt;!&ndash; Left section, set by justify-start and sm:pr-8 &ndash;&gt;
           <div class="mt-6 sm:mt-0 sm:mb-12">
             <div class="flex flex-col sm:flex-row items-center">
               <div class="flex justify-start w-full mx-auto items-center">
@@ -212,7 +212,7 @@
             </div>
           </div>
 
-          <!-- Right section, set by justify-end and sm:pl-8 -->
+          &lt;!&ndash; Right section, set by justify-end and sm:pl-8 &ndash;&gt;
           <div class="mt-6 sm:mt-0 sm:mb-12">
             <div class="flex flex-col sm:flex-row items-center">
               <div class="flex justify-end w-full mx-auto items-center">
@@ -245,7 +245,7 @@
             </div>
           </div>
 
-          <!-- Left section, set by justify-start and sm:pr-8 -->
+          &lt;!&ndash; Left section, set by justify-start and sm:pr-8 &ndash;&gt;
           <div class="mt-6 sm:mt-0 sm:mb-12">
             <div class="flex flex-col sm:flex-row items-center">
               <div class="flex justify-start w-full mx-auto items-center">
@@ -280,7 +280,7 @@
           </div>
 
         </div>
-      </div>
+      </div>-->
     </div>
   </div>
 </template>
