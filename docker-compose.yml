@@ -1,0 +1,13 @@
+version: '3'
+services:
+  basic_nuxt:
+    build:
+      context: .
+      dockerfile: ./docker/nuxt/Dockerfile
+    working_dir: /var/www/html/basic-nuxt
+    expose:
+      - 3000
+    container_name: basic_nuxt
+    volumes:
+      - .:/var/www/html/basic-nuxt
+    network_mode: "host"
