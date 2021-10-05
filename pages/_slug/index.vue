@@ -10,7 +10,7 @@ import PostDetail from "~/components/post/Detail";
 import HeaderContent from "~/components/HeaderContent";
 
 export default {
-  name: "PostDetailPage",
+  name: "PostDetailPageBySLug",
   components: {HeaderContent, PostDetail},
   data() {
     return {
@@ -18,8 +18,7 @@ export default {
     }
   },
   validate({params}) {
-    // Must be a number
-    return /^\d+$/.test(params.id)
+    return /^[a-z0-9-]+$/.test(params.slug)
   },
   head() {
     return {
@@ -27,7 +26,7 @@ export default {
     }
   },
   async asyncData(ctx) {
-    await ctx.store.dispatch("posts/setPost", {param: ctx.params.id})
+    await ctx.store.dispatch("posts/setPost", {param: ctx.params.slug})
     const post = await ctx.store.state.posts.post
     if (!post)
       return ctx.error({a: "a"})

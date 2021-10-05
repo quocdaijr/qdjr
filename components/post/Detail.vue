@@ -5,10 +5,12 @@
 
       <!--Title-->
       <div class="font-sans">
-        <p class="mb-8 text-sm text-right font-bold text-gray-600 dark:text-gray-300">Published <span>{{ $dayjs(post.published_at).fromNow() }}</span></p>
-        <h1 class="pb-6 font-semibold break-normal text-gray-700 text-lg md:text-xl dark:text-gray-200">{{ post.description }}</h1>
+        <p class="mb-8 text-sm text-right font-bold text-gray-600 dark:text-gray-300">Published
+          <span>{{ $dayjs(post.published_at).fromNow() }}</span></p>
+        <h1 class="pb-6 font-semibold break-normal text-gray-700 text-lg md:text-xl dark:text-gray-200">
+          {{ post.description }}</h1>
       </div>
-      <article class="text-gray-700 dark:text-gray-100" v-html="post.content">{{ post.content || "No content" }}</article>
+      <article class="text-gray-700 dark:text-gray-200" v-html="this.content"></article>
     </div>
 
     <!--Tags -->
@@ -29,64 +31,33 @@
 
     </div>
 
-    <!--      &lt;!&ndash;Divider&ndash;&gt;-->
-    <!--      <hr class="border-b-2 border-gray-400 mb-8 mx-4">-->
-
-
-    <!--      &lt;!&ndash;Subscribe&ndash;&gt;-->
-    <!--      <div class="container px-4">-->
-    <!--        <div class="font-sans bg-gradient-to-b from-green-100 to-gray-100 rounded-lg shadow-xl p-4 text-center">-->
-    <!--          <h2 class="font-bold break-normal text-xl md:text-3xl">Subscribe to my Newsletter</h2>-->
-    <!--          <h3 class="font-bold break-normal text-gray-600 text-sm md:text-base">Get the latest posts delivered right to your inbox</h3>-->
-    <!--          <div class="w-full text-center pt-4">-->
-    <!--            <form action="#">-->
-    <!--              <div class="max-w-xl mx-auto p-1 pr-0 flex flex-wrap items-center">-->
-    <!--                <input type="email" placeholder="youremail@example.com" class="flex-1 mt-4 appearance-none border border-gray-400 rounded shadow-md p-3 text-gray-600 mr-2 focus:outline-none">-->
-    <!--                <button type="submit" class="flex-1 mt-4 block md:inline-block appearance-none bg-green-500 text-white text-base font-semibold tracking-wider uppercase py-4 rounded shadow hover:bg-green-400">Subscribe</button>-->
-    <!--              </div>-->
-    <!--            </form>-->
-    <!--          </div>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--      &lt;!&ndash; /Subscribe&ndash;&gt;-->
-
-
-    <!--      &lt;!&ndash;Author&ndash;&gt;-->
-    <!--      <div class="flex w-full items-center font-sans px-4 py-12">-->
-    <!--        <img class="w-10 h-10 rounded-full mr-4" src="http://i.pravatar.cc/300" alt="Avatar of Author">-->
-    <!--        <div class="flex-1 px-2">-->
-    <!--          <p class="text-base font-bold text-base md:text-xl leading-none mb-2">Jo Bloggerson</p>-->
-    <!--          <p class="text-gray-600 text-xs md:text-base">Minimal Blog Tailwind CSS template by <a class="text-green-500 no-underline hover:underline" href="https://www.tailwindtoolbox.com">TailwindToolbox.com</a></p>-->
-    <!--        </div>-->
-    <!--        <div class="justify-end">-->
-    <!--          <button class="bg-transparent border border-gray-500 hover:border-green-500 text-xs text-gray-500 hover:text-green-500 font-bold py-2 px-4 rounded-full">Read More</button>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--      &lt;!&ndash;/Author&ndash;&gt;-->
-
-    <!--      &lt;!&ndash;Divider&ndash;&gt;-->
-    <!--      <hr class="border-b-2 border-gray-400 mb-8 mx-4">-->
-
-    <!--      &lt;!&ndash;Next & Prev Links&ndash;&gt;-->
-    <!--      <div class="font-sans flex justify-between content-center px-4 pb-12">-->
-    <!--        <div class="text-left">-->
-    <!--          <span class="text-xs md:text-sm font-normal text-gray-600">&lt; Previous Post</span><br>-->
-    <!--          <p><a href="#" class="break-normal text-base md:text-sm text-green-500 font-bold no-underline hover:underline">Blog title</a></p>-->
-    <!--        </div>-->
-    <!--        <div class="text-right">-->
-    <!--          <span class="text-xs md:text-sm font-normal text-gray-600">Next Post &gt;</span><br>-->
-    <!--          <p><a href="#" class="break-normal text-base md:text-sm text-green-500 font-bold no-underline hover:underline">Blog title</a></p>-->
-    <!--        </div>-->
-    <!--      </div>-->
-
-
-    <!--      &lt;!&ndash;/Next & Prev Links&ndash;&gt;-->
+    <!--Author-->
+    <div class="flex flex-row-reverse w-full items-center font-sans px-4 py-8 text-gray-700 dark:text-gray-200">
+      <div
+        class="m-1 w-12 h-12 relative flex justify-center items-center uppercase rounded-full text-xl text-white bg-yellow-500 dark:bg-yellow-600"
+      >
+        <b v-text="post.author ? post.author.toUpperCase().charAt(0) : '?'"></b>
+      </div>
+      <div class="flex-1 text-right">
+        <p class="text-base font-bold text-base md:text-xl leading-none mb-2" v-text="post.author || 'Unknown'"></p>
+        <p class="text-xs md:text-base">Hi!</p>
+      </div>
+      <div class="justify-end">
+        <p class="text-base md:text-md leading-none mb-2 mt-1">
+          <span class="font-bold underline">Nguồn:</span> <span v-text="post.source || 'Unknown'"></span>
+        </p>
+        <p class="text-base md:text-md leading-none mb-2 mt-1">
+          <span class="font-bold underline">Địa điểm:</span> <span v-text="post.location || 'Unknown'"></span>
+        </p>
+      </div>
+    </div>
   </div>
   <div v-else>Page Not Found</div>
 </template>
 
 <script>
-// import {mapState} from "vuex"
+import Prism from '~/plugins/prism'
+
 export default {
   name: "PostDetail",
   props: {
@@ -94,6 +65,20 @@ export default {
       type: Object,
       required: true,
     }
+  },
+  data() {
+    return {
+      content: ''
+    }
+  },
+  created() {
+    if (this.post.content) {
+      const imgTagRegex = /<img(.*?)src="((http|https)+:\/\/(.*?)\/)(.*?)(\/.*?[^"])"(.*?)\/>/gm;
+      this.content = this.post.content.replace(imgTagRegex, `<img $1 src="$2i/720p$6"$7/>`);
+    }
+  },
+  mounted() {
+    Prism.highlightAll()
   }
 }
 </script>

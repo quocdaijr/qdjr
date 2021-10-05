@@ -47,13 +47,13 @@ export const actions = {
 
     })
   },
-  async setPost({commit}, {id}) {
-    await this.$axios.$get("/post/" + id)
+  async setPost({commit}, {param}) {
+    await this.$axios.$get("/post/" + param)
       .then((res) => {
         commit("setPost", res)
       })
       .catch(err => {
         commit("setErrors", err.data || {'message': 'Unknown Error', 'statusCode': 500})
       })
-  }
+  },
 }
