@@ -1,7 +1,7 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'IfDev',
+    title: 'If Dev',
     meta: [
       {charset: 'utf-8'},
       {name: 'viewport', content: 'width=device-width, initial-scale=1'},
@@ -47,7 +47,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: process.env["API_URL"] || 'http://api.basic.laravel.local/v1'
+    baseURL: process.env["API_URL"] || 'http://13.213.37.129/api/v1'
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
@@ -62,7 +62,7 @@ export default {
 
   publicRuntimeConfig: {
     axios: {
-      baseURL: process.env["API_URL"] || 'http://api.basic.laravel.local/v1'
+      baseURL: process.env["API_URL"] || 'http://13.213.37.129/api/v1'
     }
   },
   config: {
