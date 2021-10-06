@@ -73,8 +73,8 @@ export default {
   },
   created() {
     if (this.post.content) {
-      const imgTagRegex = /<img(.*?)src="((http|https)+:\/\/(.*?)\/)(.*?)(\/.*?[^"])"(.*?)\/>/gm;
-      this.content = this.post.content.replace(imgTagRegex, `<img $1 src="$2i/720p$6"$7/>`);
+      const imgTagRegex = /<img(.*?)src="((http|https)+:\/\/(.*?))(\/r\/)(.*?[^"])"(.*?)\/>/gm;
+      this.content = this.post.content.replace(imgTagRegex, `<img $1 src="$2/i/720p/$6"$7/>`);
     }
   },
   mounted() {
