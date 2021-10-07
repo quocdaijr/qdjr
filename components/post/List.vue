@@ -42,11 +42,11 @@
       </div>
       <div class="pb-8 mb-12 border-b md:col-span-3">
         <div class="prose md:prose-lg">
-          <img :src="post.thumbnail" alt="Placeholder image" class="rounded-lg">
+          <img :src="getResize(post.thumbnail || '')" alt="Placeholder image" class="rounded-lg">
           <h2 class="text-xl font-semibold py-4">{{ post.title }}</h2>
           <i class="text-sm font-normal">{{ post.description }}</i>
           <div class="mt-4">
-            <NuxtLink :to="`/post/${post.id}`"
+            <NuxtLink :to="`/${post.slug}`"
                       class="flex items-center text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
             >Read more&nbsp;
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -79,7 +79,7 @@
       </div>
       <div class="pb-8 mb-12 border-b md:col-span-3">
         <div class="prose md:prose-lg">
-          <img :src="postMore.thumbnail" alt="Placeholder image" class="rounded-lg">
+          <img :src="getResize(postMore.thumbnail || '')" alt="Placeholder image" class="rounded-lg">
           <h2 class="text-lx">{{ postMore.title }}</h2>
           <p>{{ postMore.description }}</p>
           <div class="mt-4">
@@ -177,6 +177,9 @@ export default {
       console.log(this.$store.state.posts.postsMore)
       return this.$store.state.posts.postsMore
     },
+    getResize() {
+      return (url, size = '480p') =>  url.replace('/r/', '/i/' + size + '/')
+    }
   },
   methods: {
     loadMore() {
