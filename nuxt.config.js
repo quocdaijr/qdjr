@@ -47,7 +47,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: process.env["API_URL"] || 'http://13.213.37.129/api/v1'
+    baseURL: process.env["API_URL"] || 'https://api.qdjr/me/v1'
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
@@ -62,7 +62,7 @@ export default {
 
   publicRuntimeConfig: {
     axios: {
-      baseURL: process.env["API_URL"] || 'http://13.213.37.129/api/v1'
+      baseURL: process.env["API_URL"] || 'https://api.qdjr/me/v1'
     }
   },
   config: {
