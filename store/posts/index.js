@@ -51,7 +51,7 @@ export const actions = {
     })
   },
   async setPost({commit}, {param}) {
-    await this.$axios.$get("/post/a/" + param)
+    await this.$axios.$get("/post/" + param)
       .then((res) => {
         commit("setPost", res)
       })
