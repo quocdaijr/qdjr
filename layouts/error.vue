@@ -1,8 +1,9 @@
 <template>
-  <div class="h-full">
+  <div class="h-full text-gray-600 dark:text-gray-300">
     <div class="mt-24 m-auto text-center">
       <svg class="emoji-error mx-auto" height="249.135" id="Layer_1" overflow="visible" viewBox="0 0 226 249.135"
-           width="226" xml:space="preserve"><circle cx="113" cy="113" fill="#FFE585" r="109"/>
+           width="226" xml:space="preserve">
+        <circle cx="113" cy="113" fill="#FFE585" r="109"/>
         <line fill="none" opacity="0.29" stroke="#6E6E96" stroke-linecap="round"
               stroke-linejoin="round" stroke-width="8" x1="88.866" x2="136.866" y1="245.135" y2="245.135"/>
         <line fill="none" opacity="0.17" stroke="#6E6E96" stroke-linecap="round"
@@ -24,12 +25,12 @@
         <circle cx="113" cy="113" fill="none" r="109" stroke="#6E6E96" stroke-width="8"/>
       </svg>
       <div class=" tracking-widest mt-6">
-        <span class="text-gray-500 text-6xl block tracking-widest"><span>{{ statusCode }}</span></span>
-        <span class="text-gray-500 text-xl">{{ message }}</span>
+        <span class="text-6xl block tracking-widest">{{ statusText }}</span>
+        <span class="text-xl">{{ message }}</span>
       </div>
     </div>
-    <div class="mt-6" style="text-align: center;">
-      <NuxtLink to="/" class="text-gray-500 font-mono text-xl bg-gray-200 p-3 rounded-md hover:shadow-md">Back to home
+    <div class="mt-6 text-center">
+      <NuxtLink to="/" class="bg-gray-200 dark:bg-gray-600 text-lg p-3 rounded-md hover:shadow-md">Back to home
       </NuxtLink>
     </div>
   </div>
@@ -43,17 +44,14 @@ export default {
   data() {
     return {
       message: "Something went wrong!",
+      statusText: this.statusCode,
       statusCode: this.error.statusCode || 500
     }
   },
   mounted() {
-    console.log(this.error)
     switch (this.statusCode) {
       case 400:
         this.message = "Bad request!"
-        break;
-      case 404:
-        this.message = "Sorry, We couldn't find what you are looking for!"
         break;
       case 401:
         this.message = "Access is not allowed!"
@@ -61,11 +59,16 @@ export default {
       case 403:
         this.message = "You aren't permitted to see this!"
         break
+      case 404:
+        this.message = "Sorry, We couldn't find what you are looking for!"
+        break;
       case 500:
       default:
         this.message = "Something went wrong!"
         break
     }
+    const rawStatusText = this.statusCode.toString()
+    this.statusText = rawStatusText.charAt(0) + "  " + rawStatusText.charAt(1) + "  " + rawStatusText.charAt(2)
   }
 }
 </script>
