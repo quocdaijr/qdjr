@@ -83,7 +83,7 @@
           <h2 class="text-lx">{{ postMore.title }}</h2>
           <p>{{ postMore.description }}</p>
           <div class="mt-4">
-            <NuxtLink :to="`/post/${postMore.id}`"
+            <NuxtLink :to="`/${postsMore.slug}`"
                       class="flex items-center text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
             >Read more&nbsp;
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -160,7 +160,6 @@ export default {
     }
     await this.$store.dispatch("posts/getPosts", params)
     this.posts = this.$store.state.posts.posts || []
-    console.log(this.posts)
   },
   computed: {
     getPosts() {
@@ -170,11 +169,9 @@ export default {
       return this.$store.state.posts.count
     },
     getError() {
-      console.log(this.$store.state.posts.errors)
-      return this.$store.state.posts.errors
+      return this.$store.state.posts.error
     },
     getPostsMore() {
-      console.log(this.$store.state.posts.postsMore)
       return this.$store.state.posts.postsMore
     },
     getResize() {
@@ -201,7 +198,6 @@ export default {
         default:
           break;
       }
-      console.log('acsacsacssacvjasv')
       this.$store.dispatch("posts/getPosts", params)
       this.page++
     }

@@ -3,27 +3,27 @@ export const state = () => ({
   posts: [],
   postsMore: [],
   post: null,
-  errors: null
+  error: null
 })
 
 export const mutations = {
   setPosts(state, payload) {
     state.posts = payload.data || []
-    state.count = (payload.total || 0) - state.posts.length
+    state.count = (payload.total || 0) - state.posts.length || 0
     state.postsMore = []
-    state.errors = null
+    state.error = null
   },
   setPostsFromLoadMore(state, payload) {
     state.postsMore = [...state.postsMore, ...(payload.data || [])]
-    state.count -= (payload.data || []).length
-    state.errors = null
+    state.count -= (payload.data || []).length || 0
+    state.error = null
   },
   setPost(state, payload) {
-    state.post = payload
-    state.errors = null
+    state.post = payload || null
+    state.error = null
   },
-  setErrors(state, payload) {
-    state.errors = payload
+  setError(state, payload) {
+    state.error = payload
   }
 }
 
@@ -43,17 +43,24 @@ export const actions = {
       else
         commit("setPosts", res)
     }).catch((err) => {
-      commit("setErrors", err.data || {'message': 'Unknown Error', 'statusCode': 500})
-
+      commit("setPosts", null)
+      commit("setError", {
+        message: err.response.data.message || 'Unknown Error',
+        statusCode: err.response.status || 500
+      })
     })
   },
   async setPost({commit}, {param}) {
-    await this.$axios.$get("/post/" + param)
+    await this.$axios.$get("/post/a/" + param)
       .then((res) => {
         commit("setPost", res)
       })
       .catch(err => {
-        commit("setErrors", err.data || {'message': 'Unknown Error', 'statusCode': 500})
+        commit("setPost", null)
+        commit("setError", {
+          message: err.response.data.message || 'Unknown Error',
+          statusCode: err.response.status || 500
+        })
       })
   },
 }

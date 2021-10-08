@@ -35,9 +35,7 @@ export default {
     },
     methodToggleNav: {
       type: Function,
-      default: () => {
-        console.log("Not found func")
-      }
+      default: () => {}
     }
   },
   mounted() {

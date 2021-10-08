@@ -29,7 +29,7 @@ export default {
     await ctx.store.dispatch("posts/setPost", {param: ctx.params.slug})
     const post = await ctx.store.state.posts.post
     if (!post)
-      return ctx.error({a: "a"})
+      return ctx.error({statusCode: 404, message: "Page Not Found"})
     return {post}
   }
 }

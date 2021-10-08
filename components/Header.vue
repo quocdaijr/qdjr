@@ -148,11 +148,9 @@ export default {
           }
         }
         el.__vueClickOutside__ = handler
-
         // add Event Listeners
         document.addEventListener('click', handler)
       },
-
       unbind: (el, binding) => {
         // Remove Event Listeners
         document.removeEventListener('click', el.__vueClickOutside__)
