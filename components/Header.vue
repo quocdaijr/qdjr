@@ -27,7 +27,7 @@
     </div>
     <div class="sm:hidden flex items-center max-w-screen-lg mx-auto">
       <div v-click-outside="closeNav" class="w-2/12 flex justify-center">
-        <button @click="toggleNav" type="button" class="w-10 h-10 ml-1 mr-1 rounded">
+        <button type="button" class="w-10 h-10 ml-1 mr-1 rounded" @click="toggleNav" >
           <svg v-if="isOpenMenu" xmlns="http://www.w3.org/2000/svg" class="text-gray-900 dark:text-gray-100"
                viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd"
@@ -79,15 +79,52 @@ import PostSearch from "~/components/post/Search";
 export default {
   name: "Header",
   components: {PostSearch, NavBar},
+  directives: {
+    'click-outside': {
+      bind: (el, binding, vNode) => {
+        // Provided expression must evaluate to a function.
+        if (typeof binding.value !== 'function') {
+          const compName = vNode.context.name
+          let warn = `[Vue-click-outside:] provided expression '${binding.expression}' is not a function, but has to be`
+          if (compName) {
+            warn += `Found in component '${compName}'`
+          }
+          console.warn(warn)
+        }
+        // Define Handler and cache it on the element
+        const bubble = binding.modifiers.bubble
+        const handler = (e) => {
+          if (bubble || (!el.contains(e.target) && el !== e.target)) {
+            binding.value(e)
+          }
+        }
+        el.__vueClickOutside__ = handler
+        // add Event Listeners
+        document.addEventListener('click', handler)
+      },
+      unbind: (el, binding) => {
+        // Remove Event Listeners
+        document.removeEventListener('click', el.__vueClickOutside__)
+        el.__vueClickOutside__ = null
+
+      }
+    }
+  },
   data() {
     return {
       isDarkMode: false,
       isOpenMenu: false,
     }
   },
+  computed: {
+    checkDarkMode() {
+      return this.isDarkMode
+    }
+  },
   mounted() {
     this.$nextTick(() => {
-      this.isDarkMode = (localStorage.getItem('isDarkMode').toLowerCase() === 'true')
+      const isDarkMode = localStorage.getItem('isDarkMode')
+      this.isDarkMode = (isDarkMode || 'false').toString().toLowerCase() === 'true'
       if (this.isDarkMode) {
         document.documentElement.classList.add('dark')
       }
@@ -125,43 +162,6 @@ export default {
         navMobile.classList.add('-translate-x-full')
         document.documentElement.style.overflow = 'auto'
       }
-    }
-  },
-  directives: {
-    'click-outside': {
-      bind: (el, binding, vNode) => {
-        // Provided expression must evaluate to a function.
-        if (typeof binding.value !== 'function') {
-          const compName = vNode.context.name
-          let warn = `[Vue-click-outside:] provided expression '${binding.expression}' is not a function, but has to be`
-          if (compName) {
-            warn += `Found in component '${compName}'`
-          }
-
-          console.warn(warn)
-        }
-        // Define Handler and cache it on the element
-        const bubble = binding.modifiers.bubble
-        const handler = (e) => {
-          if (bubble || (!el.contains(e.target) && el !== e.target)) {
-            binding.value(e)
-          }
-        }
-        el.__vueClickOutside__ = handler
-        // add Event Listeners
-        document.addEventListener('click', handler)
-      },
-      unbind: (el, binding) => {
-        // Remove Event Listeners
-        document.removeEventListener('click', el.__vueClickOutside__)
-        el.__vueClickOutside__ = null
-
-      }
-    }
-  },
-  computed: {
-    checkDarkMode() {
-      return this.isDarkMode
     }
   }
 }
