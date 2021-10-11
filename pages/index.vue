@@ -14,8 +14,3 @@ export default {
   components: {Clock, ContentHeader}
 }
 </script>
-<style>
-body {
-  background-color: white;
-}
-</style>

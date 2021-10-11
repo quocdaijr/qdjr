@@ -12,18 +12,8 @@ import HeaderContent from "~/components/HeaderContent";
 export default {
   name: "PostDetailPageBySLug",
   components: {HeaderContent, PostDetail},
-  data() {
-    return {
-      post: null
-    }
-  },
   validate({params}) {
     return /^[a-z0-9-]+$/.test(params.slug)
-  },
-  head() {
-    return {
-      title: this.post.title || ''
-    }
   },
   async asyncData(ctx) {
     await ctx.store.dispatch("posts/setPost", {param: ctx.params.slug})
@@ -31,6 +21,16 @@ export default {
     if (!post)
       return ctx.error({statusCode: 404, message: "Page Not Found"})
     return {post}
+  },
+  data() {
+    return {
+      post: null
+    }
+  },
+  head() {
+    return {
+      title: this.post.title || ''
+    }
   }
 }
 </script>

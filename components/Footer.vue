@@ -74,10 +74,11 @@
           <span>&nbsp;by NguyenQuocDai</span>
         </div>
       </div>
-      <div class="mb-8 text-sm text-gray-500 dark:text-gray-300">
-        Design inherited from
-        <a class="text-blue-500 dark:text-blue-400" target="_blank" rel="noopener noreferrer" href="https://github.com/tailwindlabs/blog.tailwindcss.com">
-          Tailwind Blog</a></div>
+<!--      <div class="mb-8 text-sm text-gray-500 dark:text-gray-300">-->
+<!--        Design inherited from-->
+<!--        <a class="text-blue-500 dark:text-blue-400" target="_blank" rel="noopener noreferrer"-->
+<!--           href="https://github.com/tailwindlabs/blog.tailwindcss.com">Tailwind Blog</a>-->
+<!--      </div>-->
     </div>
   </footer>
   <!--/ footer -->

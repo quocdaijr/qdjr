@@ -14,9 +14,4 @@ export default {
   components: { HeaderContent, PostList}
 }
 </script>
-<style>
-body {
-  background-color: white;
-}
-</style>
 
