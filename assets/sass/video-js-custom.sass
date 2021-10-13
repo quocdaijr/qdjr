@@ -1,0 +1,49 @@
+$primary-foreground-color: #fff
+$primary-background-color: #000
+$center-big-play-button: true
+
+.vjs-default-skin
+  .vjs-big-play-button
+    font-size: 3em
+    $big-play-width: 2em
+    $big-play-height: 2em
+    $half-big-play-width: 1em
+    $half-big-play-height: 1em
+
+    line-height: $big-play-height
+    height: $big-play-height
+    width: $big-play-width
+    border: 0.07em solid $primary-foreground-color
+    border-radius: 100%
+    @if $center-big-play-button
+      left: 50%
+      top: 50%
+      margin-left: -$half-big-play-width
+      margin-top: -$half-big-play-height
+    @else
+      left: 0.5em
+      top: 0.5em
+
+.video-js .vjs-control-bar,
+.video-js .vjs-big-play-button,
+.video-js .vjs-menu-button .vjs-menu-content
+  background-color: $primary-background-color
+
+$slider-bg-color: lighten($primary-background-color, 90%)
+.video-js .vjs-slider
+  background-color: $slider-bg-color
+.video-js .vjs-volume-level,
+.video-js .vjs-play-progress,
+.video-js .vjs-slider-bar
+  background: $primary-foreground-color
+.video-js
+  font-size: 10px
+  color: $primary-foreground-color
+  .vjs-load-progress
+    background: ligthen($slider-bg-color, 80%)
+    div
+      background: ligthen($slider-bg-color, 80%)
+  &:hover
+    .vjs-big-play-button
+      background-color: #f00
+      border-color: #f00

@@ -4,7 +4,6 @@
     <PostDetail :post="post"/>
   </div>
 </template>
-
 <script>
 import PostDetail from "~/components/post/Detail";
 import HeaderContent from "~/components/HeaderContent";

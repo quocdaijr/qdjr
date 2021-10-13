@@ -1,8 +1,6 @@
 <template>
   <div v-if="post" class="pb-8 px-2 my-12 border-b md:col-span-3 border-gray-200 dark:border-gray-600">
-
-    <div class="w-full px-4 md:px-6 text-xl text-gray-800 leading-normal" style="font-family:Georgia,serif;">
-
+    <div class="w-full px-4 md:px-6 text-xl text-gray-800 leading-normal">
       <!--Title-->
       <div class="font-sans">
         <p class="mb-8 text-sm text-right font-bold text-gray-600 dark:text-gray-300">Published
@@ -10,7 +8,7 @@
         <h1 class="pb-6 font-semibold break-normal text-gray-700 text-lg md:text-xl dark:text-gray-200">
           {{ post.description }}</h1>
       </div>
-      <article class="text-gray-700 dark:text-gray-200" v-html="this.content"></article>
+      <article class="text-gray-700 dark:text-gray-200" v-html="content"/>
     </div>
 
     <!--Tags -->
@@ -56,7 +54,9 @@
 </template>
 
 <script>
+// import sanitizeHtml from 'sanitize-html';
 import Prism from '~/plugins/prism'
+import videojs from '~/plugins/videojs'
 
 export default {
   name: "PostDetail",
@@ -79,6 +79,21 @@ export default {
   },
   mounted() {
     Prism.highlightAll()
+    const videoElements = document.querySelectorAll('.video-import')
+    if (videoElements) {
+      videoElements.forEach(videoElement => {
+        videoElement.classList.add('video-js')
+        videoElement.classList.add('vjs-default-skin')
+        videoElement.classList.add('mx-auto')
+        videoElement.removeAttribute('width')
+        videoElement.removeAttribute('height')
+        videojs(videoElement, {
+          preload: "auto",
+          playbackRates: [0.5, 1, 1.5, 2]
+        })
+      })
+
+    }
   }
 }
 </script>

@@ -42,7 +42,7 @@
           </svg>
         </button>
         <div
-          class="nav-mobile fixed w-11/12 h-full rounded-r-lg top-12 left-0 bg-gray-200 dark:bg-gray-800 z-50 opacity-95 transform ease-in-out duration-300 -translate-x-full">
+          class="nav-mobile fixed w-11/12 h-full rounded-r-lg top-14 left-0 bg-gray-200 dark:bg-gray-800 z-50 opacity-95 transform ease-in-out duration-300 -translate-x-full">
           <NavBar device="mobile" :method-toggle-nav="toggleNav"/>
         </div>
       </div>
