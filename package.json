@@ -11,7 +11,8 @@
     "lint:style": "stylelint \"**/*.{vue,css}\" --ignore-path .gitignore",
     "prepare": "husky install",
     "lint": "npm run lint:js && npm run lint:style",
-    "copy:env": "cp .env.example .env"
+    "copy:env": "cp .env.example .env",
+    "copy:pm2.config": "cp pm2.config.js.example pm2.config.js"
   },
   "lint-staged": {
     "*.{js,vue}": "eslint",

@@ -1,0 +1,2 @@
+#!/bin/bash
+cd /var/www/html/qdjr && git pull && npm install && npm run build && sudo pm2 reload all
