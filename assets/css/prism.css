@@ -1,0 +1,34 @@
+.code-toolbar > pre[class*="language-"] {
+  border-radius: .5em;
+}
+
+div.code-toolbar > .toolbar .toolbar-item > button.copy-to-clipboard-button {
+  color: #e6db5c;
+  font-size: 1rem;
+  padding: 0.5rem;
+  background: hsl(0, 0%, 25%);
+  border-radius: .5em;
+  margin-right: 0.2em;
+  outline: transparent;
+  cursor: pointer;
+}
+
+div.code-toolbar > .toolbar .toolbar-item > button.copy-to-clipboard-button:hover {
+  color: #f8c555;
+}
+
+div.code-toolbar > .toolbar .toolbar-item > span {
+  font-size: 1rem;
+  padding: 0.5rem;
+  background: none;
+  background: hsl(0, 0%, 25%);
+  border-radius: .5em;
+  box-shadow: none;
+  outline: transparent;
+  cursor: pointer;
+  color: #a6d527;
+}
+
+div.code-toolbar > .toolbar .toolbar-item > span:hover {
+  color: #7ec699;
+}
