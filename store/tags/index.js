@@ -1,25 +1,25 @@
 export const state = () => ({
   count: 0,
-  posts: [],
-  postsMore: [],
-  post: null,
+  tags: [],
+  tagsMore: [],
+  tag: null,
   error: null
 })
 
 export const mutations = {
-  setPosts(state, payload) {
-    state.posts = payload.data || []
-    state.count = (payload.total || 0) - state.posts.length || 0
-    state.postsMore = []
+  setTags(state, payload) {
+    state.tags = payload.data || []
+    state.count = (payload.total || 0) - state.tags.length || 0
+    state.tagsMore = []
     state.error = null
   },
-  setPostsFromLoadMore(state, payload) {
-    state.postsMore = [...state.postsMore, ...(payload.data || [])]
+  setTagsFromLoadMore(state, payload) {
+    state.tagsMore = [...state.tagsMore, ...(payload.data || [])]
     state.count -= (payload.data || []).length || 0
     state.error = null
   },
-  setPost(state, payload) {
-    state.post = payload || null
+  setTag(state, payload) {
+    state.tag = payload || null
     state.error = null
   },
   setError(state, payload) {
@@ -28,35 +28,32 @@ export const mutations = {
 }
 
 export const actions = {
-  async getPosts({commit}, params = {}) {
-    await this.$axios.$get("/posts", {
+  async getTags({commit}, params = {}) {
+    await this.$axios.$get("/tags", {
       params: {
-        txt: params.txt || "",
         page: params.page || 1,
         perPage: params.perPage || 2,
-        tag: params.tag || "",
-        category: params.category || "",
       }
     }).then((res) => {
       if (params.isLoadMore)
-        commit("setPostsFromLoadMore", res)
+        commit("setTagsFromLoadMore", res)
       else
-        commit("setPosts", res)
+        commit("setTags", res)
     }).catch((err) => {
-      commit("setPosts", {})
+      commit("setTags", {})
       commit("setError", {
         message: err.response.data.message || 'Unknown Error',
         statusCode: err.response.status || 500
       })
     })
   },
-  async getPost({commit}, {param}) {
-    await this.$axios.$get("/post/" + param)
+  async getTag({commit}, {param}) {
+    await this.$axios.$get("/tag/" + param)
       .then((res) => {
-        commit("setPost", res)
+        commit("setTag", res)
       })
       .catch(err => {
-        commit("setPost", null)
+        commit("setTag", null)
         commit("setError", {
           message: err.response.data.message || 'Unknown Error',
           statusCode: err.response.status || 500

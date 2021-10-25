@@ -2,13 +2,30 @@
   <div v-if="post" class="pb-8 px-2 my-12 border-b md:col-span-3 border-gray-200 dark:border-gray-600">
     <div class="w-full px-4 md:px-6 text-xl text-gray-800 leading-normal">
       <!--Title-->
-      <div class="font-sans">
-        <p class="mb-8 text-sm text-right font-bold text-gray-600 dark:text-gray-300">Published
-          <span>{{ $dayjs(post.published_at).fromNow() }}</span></p>
-        <h1 class="pb-6 font-semibold break-normal text-gray-700 text-lg md:text-xl dark:text-gray-200">
-          {{ post.description }}</h1>
+      <div class="md:flex md:justify-between items-center mb-8 font-bold">
+        <span class="flex items-center text-right text-gray-700 dark:text-gray-200">
+          <NuxtLink :to="`/category/${post.categories[0].slug || 0}`" class="flex items-center">
+            <svg v-if="!post.categories[0].thumbnail" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-1"
+                 fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+            </svg>
+            <img v-if="post.categories[0].thumbnail" class="h-6 w-6 mr-1" :src="post.categories[0].thumbnail || ''" :alt="post.categories[0].name">
+            {{ post.categories[0].name || 'Unknown' }}
+          </NuxtLink>
+        </span>
+        <span class="text-sm text-gray-600 dark:text-gray-300">
+          Published <span>{{ $dayjs(post.published_at).fromNow() }}</span>
+        </span>
       </div>
-      <article class="text-gray-700 dark:text-gray-200" v-html="content"/>
+      <div class="my-4">
+        <h1 class="pb-6 font-semibold break-normal text-gray-700 text-lg md:text-xl dark:text-gray-200">
+          {{ post.description }}
+        </h1>
+      </div>
+      <article class="text-gray-700 dark:text-gray-200 pb-8" v-html="content"/>
+      <hr class="w-60 mx-auto text-gray-200 dark:text-gray-600">
     </div>
 
     <!--Tags -->
@@ -18,7 +35,7 @@
            px-3 py-1 mr-1 rounded-full bg-green-200 text-green-700 border-green-600
            dark:bg-green-800 dark:text-green-300 dark:border-green-500"
       >
-        <NuxtLink :to="`/tag/${tag.id}`" class="flex items-center">
+        <NuxtLink :to="`/tag/${tag.slug}`" class="flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
@@ -54,7 +71,6 @@
 </template>
 
 <script>
-// import sanitizeHtml from 'sanitize-html';
 import Prism from '~/plugins/prism'
 import videojs from '~/plugins/videojs'
 

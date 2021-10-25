@@ -74,19 +74,51 @@
           <span>&nbsp;by NguyenQuocDai</span>
         </div>
       </div>
-<!--      <div class="mb-8 text-sm text-gray-500 dark:text-gray-300">-->
-<!--        Design inherited from-->
-<!--        <a class="text-blue-500 dark:text-blue-400" target="_blank" rel="noopener noreferrer"-->
-<!--           href="https://github.com/tailwindlabs/blog.tailwindcss.com">Tailwind Blog</a>-->
-<!--      </div>-->
+      <!--      <div class="mb-8 text-sm text-gray-500 dark:text-gray-300">-->
+      <!--        Design inherited from-->
+      <!--        <a class="text-blue-500 dark:text-blue-400" target="_blank" rel="noopener noreferrer"-->
+      <!--           href="https://github.com/tailwindlabs/blog.tailwindcss.com">Tailwind Blog</a>-->
+      <!--      </div>-->
     </div>
+    <a
+      class="animate-bounce fixed right-8 bottom-10 text-gray-100 bg-gray-700 p-1 opacity-80 dark:bg-gray-300 dark:text-gray-600 cursor-pointer hidden"
+      ref="scrollToTop"
+      @click="scrollTop"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd"
+              d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
+              clip-rule="evenodd"/>
+      </svg>
+    </a>
   </footer>
   <!--/ footer -->
 </template>
 
 <script>
 export default {
-  name: "Footer"
+  name: "Footer",
+  mounted() {
+    this.$nextTick(function () {
+      const scrollToTop = this.$refs.scrollToTop
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > 150)
+          scrollToTop.classList.remove('hidden')
+        else
+          scrollToTop.classList.add('hidden')
+      })
+    })
+  },
+  methods: {
+    scrollTop() {
+      this.intervalId = setInterval(() => {
+        if (window.pageYOffset === 0) {
+          clearInterval(this.intervalId)
+        }
+        window.scroll(0, window.pageYOffset - 50)
+      }, 20)
+    }
+  }
 }
 </script>
 

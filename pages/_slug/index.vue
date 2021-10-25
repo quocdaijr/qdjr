@@ -15,7 +15,7 @@ export default {
     return /^[a-z0-9-]+$/.test(params.slug)
   },
   async asyncData(ctx) {
-    await ctx.store.dispatch("posts/setPost", {param: ctx.params.slug})
+    await ctx.store.dispatch("posts/getPost", {param: ctx.params.slug})
     const post = await ctx.store.state.posts.post
     if (!post)
       return ctx.error({statusCode: 404, message: "Page Not Found"})

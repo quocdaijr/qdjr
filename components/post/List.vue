@@ -83,7 +83,7 @@
           <h2 class="text-lx">{{ postMore.title }}</h2>
           <p>{{ postMore.description }}</p>
           <div class="mt-4">
-            <NuxtLink :to="`/${postsMore.slug}`"
+            <NuxtLink :to="`/${postMore.slug}`"
                       class="flex items-center text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
             >Read more&nbsp;
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -132,13 +132,17 @@ export default {
     listType: {
       type: String,
       default: 'normal'
+    },
+    extraValue: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
-      posts: this.$store.state.posts.posts,
-      postsMore: this.$store.state.posts.postsMore,
-      count: this.$store.state.posts.count,
+      posts: [],
+      postsMore: [],
+      count: 0,
       page: 2,
       perPage: 2
     }
@@ -147,13 +151,13 @@ export default {
     const params = {}
     switch (this.listType) {
       case 'byTag':
-        params.tag = this.$route.params.id
+        params.tag = this.extraValue
         break;
       case 'byCategory':
-        params.catergory = this.$route.params.id
+        params.category = this.extraValue
         break;
       case 'bySearch':
-        params.txt = this.$route.query.txt
+        params.txt = this.extraValue
         break;
       default:
         break;
