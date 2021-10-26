@@ -28,7 +28,39 @@ export default {
   },
   head() {
     return {
-      title: this.category.name || ''
+      title: this.category.name || '',
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: this.category.description || ''
+        },
+        {
+          hid: 'keywords',
+          name: 'keywords',
+          content: this.category.name
+        },
+        {
+          hid: 'og:url',
+          property: 'og:url',
+          content: (process.env.APP_URL || 'https://qdjr.me') + '/category/' + this.category.slug
+        },
+        {
+          hid: 'og:title',
+          name: 'og:title',
+          content: this.category.name + ' | QDJr Blog'
+        },
+        {
+          hid: 'og:description',
+          name: 'og:description',
+          content: this.category.description || ''
+        },
+        {
+          hid: 'og:image',
+          name: 'og:image',
+          content: this.category.cover || ''
+        }
+      ]
     }
   }
 }

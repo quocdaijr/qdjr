@@ -8,33 +8,42 @@ export default {
       {
         hid: 'description',
         name: 'description',
-        content: 'This is a small blog of Nguyen Quoc Dai'},
+        content: 'This is a small blog of Nguyen Quoc Dai'
+      },
       {
         hid: 'keywords',
         name: 'keywords',
         content: 'development, software, qdjr, quocdaijr, nguyen quoc dai, blog'
       },
       {
+        hid: 'og:url',
+        property: 'og:url',
+        content: process.env.APP_URL || 'https://qdjr.me'
+      },
+      {
         hid: 'og:type',
         property: 'og:type',
-        content: 'article'
+        content: 'website'
       },
       {
         hid: 'og:site_name',
         name: 'og:site_name',
-        content: 'QDJr'},
+        content: 'QDJr'
+      },
       {
         hid: 'og:title',
         name: 'og:title',
-        content: 'QDJr Blog'},
+        content: 'QDJr Blog'
+      },
       {
         hid: 'og:description',
         name: 'og:description',
-        content: 'This is a small blog of Nguyen Quoc Dai'},
+        content: 'This is a small blog of Nguyen Quoc Dai'
+      },
       {
         hid: 'og:image',
         name: 'og:image',
-        content: (process.env.APP_URL || 'https://qdjr.me') + '/logo.svg',
+        content: (process.env.APP_URL || 'https://qdjr.me') + '/profile.jpg',
 
       },
       {hid: 'apple-mobile-web-app-title', name: 'apple-mobile-web-app-title', content: 'QDJr Blog'},
