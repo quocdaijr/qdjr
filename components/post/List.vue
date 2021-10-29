@@ -42,7 +42,7 @@
       </div>
       <div class="pb-8 mb-12 border-b md:col-span-3">
         <div class="prose md:prose-lg">
-          <img :src="$urlResize(post.thumbnail || '')" alt="Placeholder image" class="rounded-lg">
+          <img :src="$urlResize(post.thumbnail || '', '480p')" :alt="post.title" class="rounded-lg">
           <h2 class="text-xl font-semibold py-4">{{ post.title }}</h2>
           <i class="text-sm font-normal">{{ post.description }}</i>
           <div class="mt-4">
@@ -79,7 +79,7 @@
       </div>
       <div class="pb-8 mb-12 border-b md:col-span-3">
         <div class="prose md:prose-lg">
-          <img :src="$urlResize(postMore.thumbnail || '')" alt="Placeholder image" class="rounded-lg">
+          <img :src="$urlResize(postMore.thumbnail || '', '480p')" :alt="postsMore.title" class="rounded-lg">
           <h2 class="text-lx">{{ postMore.title }}</h2>
           <p>{{ postMore.description }}</p>
           <div class="mt-4">
