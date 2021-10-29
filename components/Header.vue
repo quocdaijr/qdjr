@@ -27,7 +27,7 @@
     </div>
     <div class="sm:hidden flex items-center max-w-screen-lg mx-auto">
       <div v-click-outside="closeNav" class="w-2/12 flex justify-center">
-        <button type="button" class="w-10 h-10 ml-1 mr-1 rounded" @click="toggleNav()">
+        <button type="button" class="w-10 h-10 ml-1 mr-1 rounded" @click="toggleNav">
           <svg v-if="isOpenMenu" xmlns="http://www.w3.org/2000/svg" class="text-gray-900 dark:text-gray-100"
                viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd"
