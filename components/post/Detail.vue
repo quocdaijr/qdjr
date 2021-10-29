@@ -11,7 +11,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
             </svg>
-            <img v-if="post.categories[0].thumbnail" class="h-6 w-6 mr-1" :src="post.categories[0].thumbnail || ''" :alt="post.categories[0].name">
+            <img v-if="post.categories[0].thumbnail" class="h-6 w-6 mr-1" :src="$urlResize(post.categories[0].thumbnail, '240p')"
+                 :alt="post.categories[0].name">
             {{ post.categories[0].name || 'Unknown' }}
           </NuxtLink>
         </span>
@@ -107,7 +108,6 @@ export default {
           playbackRates: [0.5, 1, 1.5, 2]
         })
       })
-
     }
   }
 }
