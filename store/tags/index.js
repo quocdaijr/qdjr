@@ -32,7 +32,7 @@ export const actions = {
     await this.$axios.$get("/tags", {
       params: {
         page: params.page || 1,
-        perPage: params.perPage || 2,
+        perPage: params.perPage || 10,
       }
     }).then((res) => {
       if (params.isLoadMore)

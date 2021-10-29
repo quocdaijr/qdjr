@@ -31,9 +31,8 @@
     <!--Tags -->
     <div v-if="post.tags" class="md:text-sm text-gray-500 mt-6">
       <div v-for="tag in post.tags" :key="tag.id"
-           class="text-xs inline-flex items-center border font-bold leading-sm
-           px-3 py-1 mr-1 rounded-full bg-green-200 text-green-700 border-green-600
-           dark:bg-green-800 dark:text-green-300 dark:border-green-500"
+           class="text-xs inline-flex items-center border font-bold leading-sm px-3 py-1 mr-1 rounded-full bg-green-200
+            text-green-700 dark:bg-green-800 dark:text-green-300"
       >
         <NuxtLink :to="`/tag/${tag.slug}`" class="flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

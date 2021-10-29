@@ -29,6 +29,22 @@ export default {
 
 /* exact link will show the primary color for only the exact matching link */
 .nuxt-link-exact-active {
-  @apply text-blue-600 dark:text-blue-300;
+  @apply text-blue-600 dark:text-blue-400;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: #6d6d6d;
 }
 </style>

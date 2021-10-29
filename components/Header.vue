@@ -3,12 +3,12 @@
     <div class="hidden sm:flex items-center justify-between max-w-screen-lg mx-auto">
       <div class="w-1/12 flex justify-start">
         <NuxtLink to="/" class="inline-block mb-1 hover:scale-125">
-          <span class="sr-only">ifDev</span>
-          <img class="w-10 pt-2" :src="isDarkMode ? '/logo-dark.svg' : '/logo.svg'" alt="ifDev">
+          <span class="sr-only">QDJr</span>
+          <img class="w-10 pt-2" :src="isDarkMode ? '/logo-dark.svg' : '/logo.svg'" alt="QDJr">
         </NuxtLink>
       </div>
       <PostSearch class="w-7/12"/>
-      <NavBar class="w-3/12" device="pc"/>
+      <NavBar class="w-3/12" device="pc" :categories="categories"/>
       <div class="w-1/12 flex justify-end">
         <button
           :class="'w-8 h-8 rounded-full text-white flex items-center transition duration-300 shadow-xl hover:scale-125 ' + (isDarkMode ? 'bg-gray-500': 'bg-yellow-500')"
@@ -27,7 +27,7 @@
     </div>
     <div class="sm:hidden flex items-center max-w-screen-lg mx-auto">
       <div v-click-outside="closeNav" class="w-2/12 flex justify-center">
-        <button type="button" class="w-10 h-10 ml-1 mr-1 rounded" @click="toggleNav" >
+        <button type="button" class="w-10 h-10 ml-1 mr-1 rounded" @click="toggleNav()">
           <svg v-if="isOpenMenu" xmlns="http://www.w3.org/2000/svg" class="text-gray-900 dark:text-gray-100"
                viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd"
@@ -42,8 +42,9 @@
           </svg>
         </button>
         <div
+          ref="navMobile"
           class="nav-mobile fixed w-11/12 h-full rounded-r-lg top-14 left-0 bg-gray-200 dark:bg-gray-800 z-50 opacity-95 transform ease-in-out duration-300 -translate-x-full">
-          <NavBar device="mobile" :method-toggle-nav="toggleNav"/>
+          <NavBar device="mobile" :method-toggle-nav="toggleNav" :categories="categories"/>
         </div>
       </div>
       <PostSearch class="w-6/12 h-10"/>
@@ -64,8 +65,8 @@
       </div>
       <div class="w-2/12 flex justify-end">
         <NuxtLink to="/" class="inline-block hover:scale-125">
-          <span class="sr-only">ifDev</span>
-          <img class="w-10" :src="isDarkMode ? '/logo-dark.svg' : '/logo.svg'" alt="ifDev">
+          <span class="sr-only">QDJr</span>
+          <img class="w-10" :src="isDarkMode ? '/logo-dark.svg' : '/logo.svg'" alt="QDJr">
         </NuxtLink>
       </div>
     </div>
@@ -75,46 +76,22 @@
 <script>
 import NavBar from "~/components/NavBar";
 import PostSearch from "~/components/post/Search";
+import ClickOutside from "~/plugins/click-outside"
 
 export default {
   name: "Header",
   components: {PostSearch, NavBar},
-  directives: {
-    'click-outside': {
-      bind: (el, binding, vNode) => {
-        // Provided expression must evaluate to a function.
-        if (typeof binding.value !== 'function') {
-          const compName = vNode.context.name
-          let warn = `[Vue-click-outside:] provided expression '${binding.expression}' is not a function, but has to be`
-          if (compName) {
-            warn += `Found in component '${compName}'`
-          }
-          console.warn(warn)
-        }
-        // Define Handler and cache it on the element
-        const bubble = binding.modifiers.bubble
-        const handler = (e) => {
-          if (bubble || (!el.contains(e.target) && el !== e.target)) {
-            binding.value(e)
-          }
-        }
-        el.__vueClickOutside__ = handler
-        // add Event Listeners
-        document.addEventListener('click', handler)
-      },
-      unbind: (el, binding) => {
-        // Remove Event Listeners
-        document.removeEventListener('click', el.__vueClickOutside__)
-        el.__vueClickOutside__ = null
-
-      }
-    }
-  },
+  directives: {ClickOutside},
   data() {
     return {
       isDarkMode: false,
       isOpenMenu: false,
+      categories: null
     }
+  },
+  async fetch() {
+    await this.$store.dispatch("categories/getCategories")
+    this.categories = this.$store.state.categories.categories || []
   },
   mounted() {
     this.$nextTick(() => {
@@ -128,35 +105,32 @@ export default {
   },
   methods: {
     toggleTheme() {
-      if (process.client) {
-        this.isDarkMode = !this.isDarkMode
-        localStorage.setItem('isDarkMode', this.isDarkMode)
-        document.documentElement.classList.toggle('dark')
-      }
+      this.isDarkMode = !this.isDarkMode
+      localStorage.setItem('isDarkMode', this.isDarkMode)
+      document.documentElement.classList.toggle('dark')
     },
     toggleNav() {
-      if (process.client) {
-        const navMobile = document.querySelector('.nav-mobile');
-        this.isOpenMenu = !this.isOpenMenu
-        if (this.isOpenMenu) {
-          navMobile.classList.remove('-translate-x-full')
-          navMobile.classList.add('translate-x-0')
-          document.documentElement.style.overflow = 'hidden'
-        } else {
-          navMobile.classList.remove('translate-x-0')
-          navMobile.classList.add('-translate-x-full')
-          document.documentElement.style.overflow = 'auto'
-        }
+      const navMobile = this.$refs.navMobile
+      this.isOpenMenu = !this.isOpenMenu
+      if (this.isOpenMenu) {
+        navMobile.classList.remove('-translate-x-full')
+        navMobile.classList.add('translate-x-0')
+        document.body.classList.remove('overflow-auto')
+        document.body.classList.add('overflow-hidden')
+      } else {
+        navMobile.classList.remove('translate-x-0')
+        navMobile.classList.add('-translate-x-full')
+        document.body.classList.remove('overflow-hidden')
+        document.body.classList.add('overflow-auto')
       }
     },
     closeNav() {
-      if (process.client) {
-        this.isOpenMenu = false
-        const navMobile = document.querySelector('.nav-mobile');
-        navMobile.classList.remove('translate-x-0')
-        navMobile.classList.add('-translate-x-full')
-        document.documentElement.style.overflow = 'auto'
-      }
+      this.isOpenMenu = false
+      const navMobile = document.querySelector('.nav-mobile');
+      navMobile.classList.remove('translate-x-0')
+      navMobile.classList.add('-translate-x-full')
+      document.body.classList.remove('overflow-hidden')
+      document.body.classList.add('overflow-auto')
     }
   }
 }
