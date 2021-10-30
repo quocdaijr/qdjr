@@ -1,4 +1,8 @@
 export default {
+  env: {
+    baseUrl: process.env.APP_URL || 'https://qdjr.me'
+  },
+
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'QDJr Blog',

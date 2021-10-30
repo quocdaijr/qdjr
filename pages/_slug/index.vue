@@ -1,6 +1,6 @@
 <template>
   <div class="h-full">
-    <HeaderContent :title="post.title"/>
+    <HeaderContent :title="post.title" :background="post.cover || ''"/>
     <PostDetail :post="post"/>
   </div>
 </template>
