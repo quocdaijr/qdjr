@@ -1,6 +1,6 @@
 <template>
   <div v-if="post" class="flex pb-8 px-2 my-12 border-b md:col-span-3 border-gray-200 dark:border-gray-600 w-full">
-    <div class="relative hidden sm:block">
+    <div class="block z-10 fixed right-2 sm:relative sm:right-0">
       <social/>
     </div>
     <div class="w-11/12 flex-grow">

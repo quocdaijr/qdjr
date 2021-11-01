@@ -1,22 +1,28 @@
 <template>
-  <div class="content-social sticky top-2">
-    <button
-      class="btn-share relative flex z-10 rounded-full p-2 shadow-lg bg-gray-50 dark:bg-gray-800 hover:scale-105">
-      <svg xmlns="http://www.w3.org/2000/svg" class="icon-open-share h-8 w-8 text-blue-500 dark:text-blue-100"
-           viewBox="0 0 20 20"
-           fill="currentColor">
+  <div class="content-social sticky top-2 px-1" @mouseleave="closeDropdownShare">
+    <button class="btn-share relative flex z-10 rounded-full p-2 shadow-lg bg-gray-50 dark:bg-gray-800 hover:scale-105"
+            title="Click to share"
+            @click="toggleDropdownShare"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg"
+           class="icon-open-share h-8 w-8 text-blue-500 dark:text-blue-100"
+           viewBox="0 0 20 20" fill="currentColor"
+           :class="isDropdownShareOpen ? 'hidden' : ''"
+      >
         <path
           d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/>
       </svg>
-      <svg xmlns="http://www.w3.org/2000/svg" class="icon-close-share h-8 w-8 text-blue-500 dark:text-blue-100 hidden"
-           viewBox="0 0 20 20" fill="currentColor">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           class="icon-close-share h-8 w-8 text-blue-500 dark:text-blue-100"
+           viewBox="0 0 20 20" fill="currentColor"
+           :class="isDropdownShareOpen ? '' : 'hidden'"
+      >
         <path fill-rule="evenodd"
               d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
               clip-rule="evenodd"/>
       </svg>
     </button>
-    <div
-      class="dropdown-share absolute right-0 z-20 hidden pt-3">
+    <div class="dropdown-share absolute right-0 z-20 pt-3 px-1" :class="isDropdownShareOpen ? '' : 'hidden'">
       <a :href="'https://www.facebook.com/sharer/sharer.php?u=' + url" title="Share on Facebook" target="_blank"
          class="block rounded-full p-2 mb-1 shadow-lg bg-gray-50 dark:bg-gray-800 hover:scale-105">
         <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="facebook-messenger"
@@ -51,24 +57,23 @@
 <script>
 export default {
   name: "Social",
+  data() {
+    return {
+      isDropdownShareOpen: false
+    }
+  },
   computed: {
     url() {
       return process.env.baseUrl + this.$route.path
     }
   },
+  methods: {
+    toggleDropdownShare() {
+      this.isDropdownShareOpen = !this.isDropdownShareOpen
+    },
+    closeDropdownShare() {
+      this.isDropdownShareOpen = false
+    }
+  }
 }
 </script>
-
-<style scoped>
-.btn-share:hover .dropdown-share,
-.btn-share:hover .icon-close-share,
-.content-social:hover .icon-close-share,
-.content-social:hover .dropdown-share {
-  display: block;
-}
-
-.btn-share:hover .icon-open-share,
-.content-social:hover .icon-open-share {
-  display: none;
-}
-</style>
