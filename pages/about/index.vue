@@ -319,7 +319,5 @@
 </template>
 
 <script>
-export default {
-  layout: "error"
-}
+export default {}
 </script>

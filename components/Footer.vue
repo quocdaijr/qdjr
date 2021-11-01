@@ -83,8 +83,8 @@
       <!--      </div>-->
     </div>
     <a
-      class="animate-bounce fixed right-8 bottom-10 text-gray-100 bg-gray-700 p-1 opacity-80 dark:bg-gray-300 dark:text-gray-600 cursor-pointer hidden"
       ref="scrollToTop"
+      class="animate-bounce fixed right-8 bottom-10 text-gray-100 bg-gray-700 p-1 opacity-80 dark:bg-gray-300 dark:text-gray-600 cursor-pointer hidden"
       @click="scrollTop"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
