@@ -1,28 +1,30 @@
 <template>
   <nav v-if="device === 'mobile'" class="divide-y divide-dotted">
     <NuxtLink to="/blog"
-              class="flex items-center px-5 py-3 space-x-1 font-semibold text-gray-600 dark:text-gray-300">
+              class="flex items-center px-5 py-3 font-semibold text-gray-600 dark:text-gray-300">
       <span class="w-full" @click="methodToggleNav">Blog</span>
     </NuxtLink>
     <NuxtLink to="/about"
-              class="flex items-center px-5 py-3 space-x-1 font-semibold text-gray-600 dark:text-gray-300">
+              class="flex items-center px-5 py-3 font-semibold text-gray-600 dark:text-gray-300">
       <span class="w-full" @click="methodToggleNav">About</span>
     </NuxtLink>
     <div v-if="categories" v-click-outside="closeCatMenu"
-         class="relative flex items-center px-5 py-3 space-x-1 font-semibold text-gray-600 dark:text-gray-300 cursor-pointer">
-      <span class="w-full" @click="toggleCatMenu">Categories</span>
-      <svg ref="iconCloseCatMenu" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20"
-           fill="currentColor">
-        <path fill-rule="evenodd"
-              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-              clip-rule="evenodd"/>
-      </svg>
-      <svg ref="iconOpenCatMenu" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 hidden" viewBox="0 0 20 20"
-           fill="currentColor">
-        <path fill-rule="evenodd"
-              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-              clip-rule="evenodd"/>
-      </svg>
+         class="relative flex items-center px-5 py-3 font-semibold text-gray-600 dark:text-gray-300 cursor-pointer">
+      <div class="w-full flex justify-between items-center" @click="toggleCatMenu">
+        <span>Categories</span>
+        <svg ref="iconCloseCatMenu" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20"
+             fill="currentColor">
+          <path fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"/>
+        </svg>
+        <svg ref="iconOpenCatMenu" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 hidden" viewBox="0 0 20 20"
+             fill="currentColor">
+          <path fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd"/>
+        </svg>
+      </div>
       <ul ref="catMenu"
           class="absolute top-4 mt-10 p-2 rounded-md shadow-lg z-10 w-11/12 hidden bg-gray-300 dark:bg-gray-700">
         <li v-for="category in categories" :key="category.id"
@@ -36,19 +38,19 @@
       </ul>
     </div>
   </nav>
-  <nav v-else class="flex justify-end space-x-2 md:space-x-4">
+  <nav v-else class="flex justify-end">
     <NuxtLink to="/blog"
-              class="flex items-center px-5 py-3 space-x-1 font-semibold text-gray-600 dark:text-gray-300
+              class="flex items-center px-5 py-3 font-semibold text-gray-600 dark:text-gray-300
                hover:scale-125 hover:text-blue-600 dark:hover:text-blue-400">
       <span>Blog</span>
     </NuxtLink>
     <NuxtLink to="/about"
-              class="flex items-center px-5 py-3 space-x-1 font-semibold text-gray-600 dark:text-gray-300
+              class="flex items-center px-5 py-3 font-semibold text-gray-600 dark:text-gray-300
                hover:scale-125 hover:text-blue-600 dark:hover:text-blue-400">
       <span>About</span>
     </NuxtLink>
     <div v-if="categories" v-click-outside="closeCatMenu"
-         class="relative flex items-center py-3 space-x-1 font-semibold text-gray-600 dark:text-gray-300 cursor-pointer">
+         class="relative flex items-center py-3 font-semibold text-gray-600 dark:text-gray-300 cursor-pointer">
       <svg ref="iconCloseCatMenu" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hover:scale-125" viewBox="0 0 20 20"
            fill="currentColor"
            @click="toggleCatMenu">

@@ -1,14 +1,14 @@
 <template>
   <header class="sm:px-4 py-4 lg:px-8 lg:py-6">
-    <div class="hidden sm:flex items-center justify-between max-w-screen-lg mx-auto">
+    <div class="hidden md:flex items-center justify-between max-w-screen-lg mx-auto">
       <div class="w-1/12 flex justify-start">
         <NuxtLink to="/" class="inline-block mb-1 hover:scale-125">
           <span class="sr-only">QDJr</span>
           <img class="w-10 pt-2" :src="isDarkMode ? '/logo-dark.svg' : '/logo.svg'" alt="QDJr">
         </NuxtLink>
       </div>
-      <PostSearch class="w-7/12"/>
-      <NavBar class="w-3/12" device="pc" :categories="categories"/>
+      <PostSearch class="w-6/12 md:w-7/12"/>
+      <NavBar class="w-4/12 md:w-3/12" device="pc" :categories="categories"/>
       <div class="w-1/12 flex justify-end">
         <button
           :class="'w-8 h-8 rounded-full text-white flex items-center transition duration-300 shadow-xl hover:scale-125 ' + (isDarkMode ? 'bg-gray-500': 'bg-yellow-500')"
@@ -25,7 +25,7 @@
         </button>
       </div>
     </div>
-    <div class="sm:hidden flex items-center max-w-screen-lg mx-auto">
+    <div class="md:hidden flex items-center max-w-screen-lg mx-auto">
       <div v-click-outside="closeNav" class="w-2/12 flex justify-center">
         <button type="button" class="w-10 h-10 ml-1 mr-1 rounded" @click="toggleNav">
           <svg v-if="isOpenMenu" xmlns="http://www.w3.org/2000/svg" class="text-gray-900 dark:text-gray-100"

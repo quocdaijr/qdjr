@@ -90,5 +90,26 @@ export default {
     top: 0
   }
 }
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: #6d6d6d;
+}
+
+/* Disable background color when press link, button,... */
+* {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
 </style>
 

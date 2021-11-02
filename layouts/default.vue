@@ -47,4 +47,9 @@ export default {
   border-radius: 5px;
   background: #6d6d6d;
 }
+
+/* Disable background color when press link, button,... */
+* {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-end">
-<!--    <label class="text-md font-bold text-gray-500 mr-2">Search: </label>-->
+    <!--    <label class="text-md font-bold text-gray-500 mr-2">Search: </label>-->
     <form action="/search" class="w-3/4 shadow p-1 rounded-lg flex mx-auto bg-gray-50 text-gray-600 border border-gray-300 hover:border-gray-400
      dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:hover:border-gray-500">
       <input class="w-full rounded p-1 focus:outline-none bg-gray-50 dark:bg-gray-700"

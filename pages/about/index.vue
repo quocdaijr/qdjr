@@ -1,6 +1,6 @@
 <template>
-  <div class="items-start space-y-2 xl:grid xl:grid-cols-3 xl:gap-x-8 xl:space-y-0">
-    <div class="flex flex-col items-center text-center pt-8 space-x-2 text-gray-600 dark:text-gray-300">
+  <div class="pt-8 items-start space-y-2 xl:grid xl:grid-cols-3 xl:gap-x-8 xl:space-y-0">
+    <div class="flex flex-col items-center text-center text-gray-600 dark:text-gray-300">
       <div>
         <img alt="avatar" class="w-48 h-48 rounded-full hover:scale-105" src="/profile.jpg">
       </div>
@@ -86,73 +86,12 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                  stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
-            </svg>
-          </span>
-          <span class="tracking-wide">Technical Skills</span>
-        </div>
-        <ul
-          class="divide-y text-sm pl-2">
-          <li class="py-3">
-            <b>Programming languages</b>
-            <p>PHP, Python, Javascript</p>
-          </li>
-          <li class="py-3">
-            <b>Web Frameworks</b>
-            <p>PHP: Yii2, Laravel</p>
-            <p>Python: Django Rest Framework</p>
-            <p>Javascript: VueJS, NuxtJS</p>
-          </li>
-          <li class="py-3">
-            <b>Databases</b>
-            <p>Mysql, Redis, Elasticsearch</p>
-          </li>
-          <li class="py-3">
-            <b>Other technical skills</b>
-            <p>Linux, Nginx, Git, AWS, Sentry, Docker, RabbitMQ, Supervisor</p>
-          </li>
-        </ul>
-      </div>
-      <div class="w-full text-left p-2 mt-3 rounded hover:shadow-sm bg-gray-100 dark:bg-gray-800">
-        <div class="flex items-center space-x-2 font-semibold leading-8">
-          <span>
-           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"/>
-          </svg>
-          </span>
-          <span class="tracking-wide">Other Skills</span>
-        </div>
-        <ul class="divide-y text-sm pl-2">
-          <li class="py-3">
-            <p>Positive, proactive and responsible at work</p>
-          </li>
-          <li class="py-3">
-            <p>Ability to work well in a team as well as independently</p>
-          </li>
-          <li class="py-3">
-            <p>Good problem solving ability</p>
-          </li>
-          <li class="py-3">
-            <p>Ready to receive, learn and apply new technologies</p>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div class="pt-8 pb-8 prose dark:prose-dark max-w-none xl:col-span-2 text-gray-600 dark:text-gray-300">
-      <div class="p-3 rounded-sm hover:shadow-sm bg-gray-100 dark:bg-gray-800">
-        <div class="flex items-center space-x-2 font-semibold leading-8">
-          <span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
             </svg>
           </span>
           <span class="tracking-wide">About me</span>
         </div>
-        <div class="grid md:grid-cols-2 text-sm">
+        <div class="text-sm">
           <div class="grid grid-cols-3">
             <div class="px-4 py-2 font-semibold">Name</div>
             <div class="col-span-2 px-4 py-2">Nguyen Quoc Dai</div>
@@ -181,7 +120,68 @@
           </div>
         </div>
       </div>
-      <div class="mt-3 p-3 rounded-sm hover:shadow-sm bg-gray-100 dark:bg-gray-800">
+    </div>
+    <div class="pb-8 prose dark:prose-dark max-w-none xl:col-span-2 text-gray-600 dark:text-gray-300">
+      <div class="mt-3 p-2 rounded hover:shadow-sm bg-gray-100 dark:bg-gray-800">
+        <div class="flex items-center space-x-2 font-semibold leading-8">
+          <span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+            </svg>
+          </span>
+          <span class="tracking-wide">Technical Skills</span>
+        </div>
+        <ul
+          class="divide-y text-sm pl-2">
+          <li class="py-3">
+            <b>Programming languages</b>
+            <p>PHP, Python, Javascript</p>
+          </li>
+          <li class="py-3">
+            <b>Web Frameworks</b>
+            <p>PHP: Yii2, Laravel</p>
+            <p>Python: Django Rest Framework</p>
+            <p>Javascript: VueJS, NuxtJS</p>
+          </li>
+          <li class="py-3">
+            <b>Databases</b>
+            <p>Mysql, Redis, Elasticsearch</p>
+          </li>
+          <li class="py-3">
+            <b>Other technical skills</b>
+            <p>Linux, Nginx, Git, AWS, Sentry, Docker, RabbitMQ, Supervisor</p>
+          </li>
+        </ul>
+      </div>
+      <div class="mt-3 p-2 rounded hover:shadow-sm bg-gray-100 dark:bg-gray-800">
+        <div class="flex items-center space-x-2 font-semibold leading-8">
+          <span>
+           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"/>
+          </svg>
+          </span>
+          <span class="tracking-wide">Other Skills</span>
+        </div>
+        <ul class="divide-y text-sm pl-2">
+          <li class="py-3">
+            <p>Positive, proactive and responsible at work</p>
+          </li>
+          <li class="py-3">
+            <p>Ability to work well in a team as well as independently</p>
+          </li>
+          <li class="py-3">
+            <p>Good problem solving ability</p>
+          </li>
+          <li class="py-3">
+            <p>Ready to receive, learn and apply new technologies</p>
+          </li>
+        </ul>
+      </div>
+      <div class="mt-3 p-2 rounded hover:shadow-sm bg-gray-100 dark:bg-gray-800">
         <div class="flex items-center space-x-2 font-semibold leading-8">
           <span>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"

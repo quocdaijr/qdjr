@@ -8,6 +8,7 @@
 <script>
 import HeaderContent from "~/components/HeaderContent";
 import PostList from "~/components/post/List";
+
 export default {
   name: "CategoryDetailPage",
   components: {PostList, HeaderContent},
