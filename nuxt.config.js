@@ -3,7 +3,8 @@ import {getCategories, getTags, getPosts} from "./plugins/api";
 export default {
   env: {
     baseUrl: process.env.APP_URL || 'https://qdjr.me',
-    apiUrl: process.env.API_URL || 'https://api.qdjr.me/v1'
+    apiUrl: process.env.API_URL || 'https://api.qdjr.me/v1',
+    gaId: process.env.GOOGLE_ANALYTICS_ID || 'G-KBZQ6KNY8T'
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -66,7 +67,8 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    '~/plugins/resize'
+    '~/plugins/resize',
+    '~/plugins/gtag'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -132,6 +134,9 @@ export default {
     locales: ['en'],
     defaultLocale: 'en',
     plugins: ['relativeTime', 'advancedFormat'],
+  },
+  googleAnalytics: {
+    id: process.env.GOOGLE_ANALYTICS_ID || 'G-KBZQ6KNY8T'
   },
   robots: {
     UserAgent: '*',

@@ -319,5 +319,43 @@
 </template>
 
 <script>
-export default {}
+export default {
+  head() {
+    return {
+      title: 'Nguyen Quoc Dai - Profile',
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: 'This is profile of Nguyen Quoc Dai'
+        },
+        {
+          hid: 'keywords',
+          name: 'keywords',
+          content: 'QDJr, Nguyen Quoc Dai, profile, cv'
+        },
+        {
+          hid: 'og:url',
+          property: 'og:url',
+          content: process.env.baseUrl + '/about'
+        },
+        {
+          hid: 'og:title',
+          name: 'og:title',
+          content: 'Nguyen Quoc Dai - Profile'
+        },
+        {
+          hid: 'og:description',
+          name: 'og:description',
+          content: 'This is profile of Nguyen Quoc Dai'
+        },
+        {
+          hid: 'og:image',
+          name: 'og:image',
+          content: process.env.baseUrl + '/profile.jpg'
+        }
+      ]
+    }
+  }
+}
 </script>
