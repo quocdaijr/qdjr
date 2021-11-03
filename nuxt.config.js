@@ -1,8 +1,9 @@
-import axios from 'axios'
+import {getCategories, getTags, getPosts} from "./plugins/api";
 
 export default {
   env: {
-    baseUrl: process.env.APP_URL || 'https://qdjr.me'
+    baseUrl: process.env.APP_URL || 'https://qdjr.me',
+    apiUrl: process.env.API_URL || 'https://api.qdjr.me/v1'
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -141,10 +142,6 @@ export default {
     hostname: process.env.APP_URL || 'https://qdjr.me',
     lastmod: (new Date().toISOString()),
     path: '/sitemap.xml',
-    defaults: {
-      priority: 1,
-      lastmod: new Date().toISOString()
-    },
     sitemaps: [
       {
         path: '/sitemap-base.xml',
@@ -171,63 +168,69 @@ export default {
         path: '/sitemap-categories.xml',
         exclude: ['**'],
         routes: async () => {
-          const data = await axios.get((process.env.API_URL || 'https://api.qdjr.me/v1') + '/categories', {
-            params: {
-              perPage: 1000
-            }
-          })
-          return data.data.data.map(category => {
-            return {
-              url: '/category/' + category.slug,
-              priority: 0.9,
-              lastmod: new Date(category.updated_at).toISOString()
-            }
-          })
+          return await getCategories({perPage: 1000}).then(res => {
+            if (res.status < 300 && res.data.data)
+              return res.data.data.map(category => {
+                return {
+                  url: '/category/' + category.slug,
+                  priority: 0.9,
+                  lastmod: new Date(category.updated_at).toISOString()
+                }
+              })
+            return []
+          }).catch(err => {
+            console.log(err)
+            return []
+          });
         }
       }, {
         path: '/sitemap-tags.xml',
         exclude: ['**'],
         routes: async () => {
-          const data = await axios.get((process.env.API_URL || 'https://api.qdjr.me/v1') + '/tags', {
-            params: {
-              perPage: 1000
-            }
-          })
-          return data.data.data.map(tag => {
-            return {
-              url: '/tag/' + tag.slug,
-              priority: 0.8,
-              lastmod: new Date(tag.updated_at).toISOString()
-            }
-          })
+          return await getTags({perPage: 1000}).then(res => {
+            if (res.status < 300 && res.data.data)
+              return res.data.data.map(tag => {
+                return {
+                  url: '/tag/' + tag.slug,
+                  priority: 0.8,
+                  lastmod: new Date(tag.updated_at).toISOString()
+                }
+              })
+            return []
+          }).catch(err => {
+            console.log(err)
+            return []
+          });
         }
       },
       {
         path: '/sitemap-posts.xml',
         exclude: ['**'],
         routes: async () => {
-          const data = await axios.get((process.env.API_URL || 'https://api.qdjr.me/v1') + '/posts', {
-            params: {
-              perPage: 1000
-            }
-          })
-          return data.data.data.map(post => {
-            return {
-              url: '/' + post.slug,
-              changefreq: 'daily',
-              priority: 0.7,
-              lastmod: new Date(post.published_at).toISOString(),
-              img: [
-                {
-                  url: post.thumbnail,
-                  caption: post.title,
-                  title: post.title,
-                  geoLocation: post.location || '',
-                  license: process.env.APP_URL || 'https://qdjr.me',
+          return await getPosts({perPage: 1000}).then(res => {
+            if (res.status < 300 && res.data.data)
+              return res.data.data.map(post => {
+                return {
+                  url: '/' + post.slug,
+                  changefreq: 'daily',
+                  priority: 0.7,
+                  lastmod: new Date(post.published_at).toISOString(),
+                  img: [
+                    {
+                      url: post.thumbnail,
+                      caption: post.title,
+                      title: post.title,
+                      geoLocation: post.location || '',
+                      license: process.env.APP_URL || 'https://qdjr.me',
+                    }
+                  ]
                 }
-              ],
-            }
-          })
+              })
+            return []
+          }).catch(err => {
+            console.log(err)
+            return []
+          });
         }
       }
     ]

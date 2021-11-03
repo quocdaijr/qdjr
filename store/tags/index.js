@@ -1,3 +1,5 @@
+import {getTags, getTag} from "~/plugins/api"
+
 export const state = () => ({
   count: 0,
   tags: [],
@@ -29,16 +31,11 @@ export const mutations = {
 
 export const actions = {
   async getTags({commit}, params = {}) {
-    await this.$axios.$get("/tags", {
-      params: {
-        page: params.page || 1,
-        perPage: params.perPage || 10,
-      }
-    }).then((res) => {
+    await getTags(params).then(({data}) => {
       if (params.isLoadMore)
-        commit("setTagsFromLoadMore", res)
+        commit("setTagsFromLoadMore", data)
       else
-        commit("setTags", res)
+        commit("setTags", data)
     }).catch((err) => {
       commit("setTags", {})
       commit("setError", {
@@ -48,16 +45,14 @@ export const actions = {
     })
   },
   async getTag({commit}, {param}) {
-    await this.$axios.$get("/tag/" + param)
-      .then((res) => {
-        commit("setTag", res)
+    await getTag(param).then(({data}) => {
+      commit("setTag", data)
+    }).catch(err => {
+      commit("setTag", null)
+      commit("setError", {
+        message: err.response.data.message || 'Unknown Error',
+        statusCode: err.response.status || 500
       })
-      .catch(err => {
-        commit("setTag", null)
-        commit("setError", {
-          message: err.response.data.message || 'Unknown Error',
-          statusCode: err.response.status || 500
-        })
-      })
+    })
   },
 }

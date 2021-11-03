@@ -1,3 +1,5 @@
+import {getCategories, getCategory} from "~/plugins/api"
+
 export const state = () => ({
   count: 0,
   categories: [],
@@ -29,16 +31,11 @@ export const mutations = {
 
 export const actions = {
   async getCategories({commit}, params = {}) {
-    await this.$axios.$get("/categories", {
-      params: {
-        page: params.page || 1,
-        perPage: params.perPage || 2
-      }
-    }).then((res) => {
+    await getCategories(params).then(({data}) => {
       if (params.isLoadMore)
-        commit("setCategoriesFromLoadMore", res)
+        commit("setCategoriesFromLoadMore", data)
       else
-        commit("setCategories", res)
+        commit("setCategories", data)
     }).catch((err) => {
       commit("setCategories", {})
       commit("setError", {
@@ -48,16 +45,14 @@ export const actions = {
     })
   },
   async getCategory({commit}, {param}) {
-    await this.$axios.$get("/category/" + param)
-      .then((res) => {
-        commit("setCategory", res)
+    await getCategory(param).then(({data}) => {
+      commit("setCategory", data)
+    }).catch(err => {
+      commit("setCategory", null)
+      commit("setError", {
+        message: err.response.data.message || 'Unknown Error',
+        statusCode: err.response.status || 500
       })
-      .catch(err => {
-        commit("setCategory", null)
-        commit("setError", {
-          message: err.response.data.message || 'Unknown Error',
-          statusCode: err.response.status || 500
-        })
-      })
+    })
   },
 }

@@ -1,3 +1,5 @@
+import {getPosts, getPost} from "~/plugins/api"
+
 export const state = () => ({
   count: 0,
   posts: [],
@@ -29,7 +31,7 @@ export const mutations = {
 
 export const actions = {
   async getPosts({commit}, params = {}) {
-    await this.$axios.$get("/posts", {
+    await getPosts({
       params: {
         txt: params.txt || "",
         page: params.page || 1,
@@ -37,12 +39,12 @@ export const actions = {
         tag: params.tag || "",
         category: params.category || "",
       }
-    }).then((res) => {
+    }).then(({data}) => {
       if (params.isLoadMore)
-        commit("setPostsFromLoadMore", res)
+        commit("setPostsFromLoadMore", data)
       else
-        commit("setPosts", res)
-    }).catch((err) => {
+        commit("setPosts", data)
+    }).catch(err => {
       commit("setPosts", {})
       commit("setError", {
         message: err.response.data.message || 'Unknown Error',
@@ -51,11 +53,10 @@ export const actions = {
     })
   },
   async getPost({commit}, {param}) {
-    await this.$axios.$get("/post/" + param)
-      .then((res) => {
-        commit("setPost", res)
-      })
-      .catch(err => {
+    await getPost(param)
+      .then(({data}) => {
+        commit("setPost", data)
+      }).catch(err => {
         commit("setPost", null)
         commit("setError", {
           message: err.response.data.message || 'Unknown Error',
