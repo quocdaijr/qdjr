@@ -31,7 +31,7 @@
             {{ post.description }}
           </h1>
         </div>
-        <article class="text-gray-700 dark:text-gray-200 pb-8" v-html="content"/>
+        <article class="text-gray-700 dark:text-gray-200 pb-8 mce-content-body" v-html="content"/>
         <hr class="w-60 mx-auto text-gray-200 dark:text-gray-600">
       </div>
       <!--Tags -->
@@ -118,3 +118,5 @@ export default {
   }
 }
 </script>
+<style src="~/assets/css/content.css">
+</style>
