@@ -31,15 +31,7 @@ export const mutations = {
 
 export const actions = {
   async getPosts({commit}, params = {}) {
-    await getPosts({
-      params: {
-        txt: params.txt || "",
-        page: params.page || 1,
-        perPage: params.perPage || 2,
-        tag: params.tag || "",
-        category: params.category || "",
-      }
-    }).then(({data}) => {
+    await getPosts(params).then(({data}) => {
       if (params.isLoadMore)
         commit("setPostsFromLoadMore", data)
       else

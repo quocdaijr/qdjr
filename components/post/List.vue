@@ -143,12 +143,15 @@ export default {
       posts: [],
       postsMore: [],
       count: 0,
-      page: 2,
-      perPage: 2
+      page: 1,
+      perPage: 5
     }
   },
   async fetch() {
-    const params = {}
+    const params = {
+      page: this.page,
+      perPage: this.perPage,
+    }
     switch (this.listType) {
       case 'byTag':
         params.tag = this.extraValue
@@ -182,7 +185,7 @@ export default {
   methods: {
     loadMore() {
       const params = {
-        page: this.page,
+        page: this.page++,
         perPage: this.perPage,
         isLoadMore: true
       }
@@ -200,7 +203,6 @@ export default {
           break;
       }
       this.$store.dispatch("posts/getPosts", params)
-      this.page++
     }
   }
 }

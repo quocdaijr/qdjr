@@ -37,13 +37,11 @@ export const getTag = async (param) => {
 export const getPosts = async (params = {}) => {
   return await axios.get(API_URL + '/posts', {
     params: {
-      params: {
         txt: params.txt || "",
         page: params.page || 1,
-        perPage: params.perPage || 10,
+        perPage: params.perPage || 5,
         tag: params.tag || "",
         category: params.category || "",
-      }
     }
   })
 }
