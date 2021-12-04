@@ -70,7 +70,7 @@ export default {
     '~/plugins/resize',
     '~/plugins/gtag',
     {
-      src: '@/plugins/vue-particles',
+      src: '~/plugins/vue-particles',
       ssr: false
     }
   ],
