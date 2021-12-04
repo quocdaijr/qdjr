@@ -592,8 +592,7 @@ table[style*="border-width: 0px"] caption,
   background-position-x: right;
   margin-right: 3px;
 }
-.mce-nbsp,
-.mce-shy {
+.mce-nbsp, .mce-shy {
   background: #aaa;
 }
 .mce-shy::after {
@@ -603,7 +602,7 @@ table {
   border-collapse: collapse;
 }
 
-.mce-content-body ol,ul {
+.mce-content-body ol, .mce-content-body ul {
   list-style-type: revert;
   margin: revert;
   padding: revert;
