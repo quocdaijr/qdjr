@@ -246,6 +246,7 @@
                         <p>- Participate in the maintenance and updating new features for existing websites</p>
                         <p>- Participated in building and developing website project of the company that ensured high
                           traffic, page views and user experience</p>
+                        <p>- Worked well with Linux, Docker, Git to support development</p>
                       </div>
                     </div>
                   </div>
@@ -288,7 +289,10 @@
                         <p>- Participated in discussions, proposed solutions for new features of the website when there
                           were new requirements</p>
                         <p>- Developed related packages and microservices for the existing main projects</p>
+                        <p>- Developed scripts for different tasks running in the background (convert, sync and aggregate data,...)</p>
                         <p>- Deployed release code and configured the services for the production environment</p>
+                        <p>- Worked with tools like Ansible AWX, Sentry, logging,... to manage and track automated
+                          deployments and site and user activities.</p>
                       </div>
                     </div>
                   </div>

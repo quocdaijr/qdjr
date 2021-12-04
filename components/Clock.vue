@@ -1,8 +1,10 @@
 <template>
-  <section class="px-6 py-12 lg:px-8 text-center text-gray-600 dark:text-gray-300">
+  <section class="text-center text-gray-600 dark:text-gray-300">
     <div class="my-auto">
-      <p class="text-2xl tracking-widest sm:text-4xl">{{ date }}</p>
-      <p class="text-4xl tracking-wider	py-5 sm:text-8xl">{{ time }}</p>
+<!--      <p class="text-2xl tracking-widest sm:text-4xl">{{ date }}</p>-->
+<!--      <p class="text-4xl tracking-wider	sm:text-8xl py-5">{{ time }}</p>-->
+      <p class="tracking-widest">{{ date }}</p>
+      <p class="tracking-wider pt-2">{{ time }}</p>
     </div>
   </section>
 </template>

@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <HeaderContent title="Blog" description="Just like the homepage, I don't know what to write here :)))"/>
+    <HeaderContent title="My Blog" description=""/>
     <TagListNewest class="justify-end mb-4"/>
     <PostList/>
     <!--    <PostMore/>-->

@@ -60,6 +60,7 @@
           </svg>
         </a>
       </div>
+      <Clock />
       <div class="flex mb-2 space-x-2">
         <div class="flex items-center">
           <span>Made with&nbsp;</span>
@@ -98,8 +99,11 @@
 </template>
 
 <script>
+import Clock from "~/components/Clock"
+
 export default {
   name: "Footer",
+  components: {Clock},
   mounted() {
     this.$nextTick(function () {
       const scrollToTop = this.$refs.scrollToTop
