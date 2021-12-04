@@ -80,8 +80,8 @@
       <div class="pb-8 mb-12 border-b md:col-span-3">
         <div class="prose md:prose-lg">
           <img :src="$urlResize(postMore.thumbnail || '', '480p')" :alt="postsMore.title" class="rounded-lg">
-          <h2 class="text-lx">{{ postMore.title }}</h2>
-          <p>{{ postMore.description }}</p>
+          <h2 class="text-xl font-semibold py-4">{{ postMore.title }}</h2>
+          <i class="text-sm font-normal">{{ postMore.description }}</i>
           <div class="mt-4">
             <NuxtLink :to="`/${postMore.slug}`"
                       class="flex items-center text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
@@ -185,7 +185,7 @@ export default {
   methods: {
     loadMore() {
       const params = {
-        page: this.page++,
+        page: ++this.page,
         perPage: this.perPage,
         isLoadMore: true
       }
