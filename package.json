@@ -32,8 +32,7 @@
     "socket.io-client": "^4.3.2",
     "video.js": "^7.15.4",
     "vue-gtag": "^1.16.1",
-    "vue-spinner": "^1.0.4",
-    "vue-particles": "^1.0.9"
+    "vue-spinner": "^1.0.4"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.15.8",
@@ -56,6 +55,7 @@
     "sass-loader": "^10.2.0",
     "stylelint": "^13.13.1",
     "stylelint-config-prettier": "^8.0.2",
-    "stylelint-config-standard": "^22.0.0"
+    "stylelint-config-standard": "^22.0.0",
+    "vue-particles": "^1.0.9"
   }
 }
