@@ -29,7 +29,9 @@
         </div>
       </div>
     </div>
-    <vue-particles color="#dedede" class="absolute left-0 top-0 h-full w-full" style="z-index: -1"/>
+    <client-only>
+      <vue-particles color="#dedede" class="absolute left-0 top-0 h-full w-full" style="z-index: -1"/>
+    </client-only>
   </div>
 </template>
 
