@@ -90,8 +90,8 @@ export default {
     }
   },
   async fetch() {
-    await this.$store.dispatch("categories/getCategories")
-    this.categories = this.$store.state.categories.categories || []
+    // await this.$store.dispatch("categories/getCategories")
+    // this.categories = this.$store.state.categories.categories || []
   },
   mounted() {
     this.$nextTick(() => {

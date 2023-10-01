@@ -153,6 +153,10 @@
             <b>Other technical skills</b>
             <p>Linux, Nginx, Git, AWS, Sentry, Docker, RabbitMQ, Supervisor</p>
           </li>
+          <li class="py-3">
+            <b>Worked with 3rd parties</b>
+            <p>Shopify, Google, Paypal, Jira, Segment, CustomerIO, Pusher, Postman</p>
+          </li>
         </ul>
       </div>
       <div class="mt-3 p-2 rounded hover:shadow-sm bg-gray-100 dark:bg-gray-800">
@@ -275,7 +279,7 @@
                 <div class="flex justify-start w-full mx-auto items-center">
                   <div class="w-full sm:w-1/2 sm:pr-8">
                     <div class="p-4 rounded shadow bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
-                      <i class="text-base">01/07/2019 - Present</i>
+                      <i class="text-base">01/07/2019 - 08/08/2022</i>
                       <p class="text-sm font-normal pt-4">I am working at Tuoi Tre Newspaper</p>
                       <p class="text-sm font-normal pt-4"><b>Position:</b> Web Developer</p>
                       <p class="text-sm font-normal pt-4"><b>Technologies:</b> PHP, Python, Yii2 Framework, Django Rest
@@ -291,6 +295,7 @@
                         <p>- Developed related packages and microservices for the existing main projects</p>
                         <p>- Developed scripts for different tasks running in the background (convert, sync and aggregate data,...)</p>
                         <p>- Deployed release code and configured the services for the production environment</p>
+                        <p>- Research and build SSO Authentication system</p>
                         <p>- Worked with tools like Ansible AWX, Sentry, logging,... to manage and track automated
                           deployments and site and user activities.</p>
                       </div>
@@ -310,6 +315,51 @@
                           clip-rule="evenodd"/>
                     <path
                       d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right section, set by justify-end and sm:pl-8 -->
+            <div class="mt-6 sm:mt-0 sm:mb-12">
+              <div class="flex flex-col sm:flex-row items-center">
+                <div class="flex justify-end w-full mx-auto items-center">
+                  <div class="w-full sm:w-1/2 sm:pl-8">
+                    <div
+                        class="p-4 bg-white rounded shadow bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                      <i class="text-base">08/08/2022 - Present</i>
+                      <p class="text-sm font-normal pt-4">I worked at FireGroup Technology</p>
+                      <p class="text-sm font-normal pt-4"><b>Position:</b> Backend Software Engineer</p>
+                      <p class="text-sm font-normal pt-4"><b>Technologies:</b> PHP, Python, Laravel Framework, MySql, Redis,
+                        RabbitMQ, Gitlab, Linux, Docker, Supervisor, Sentry, Rancher</p>
+                      <p class="text-sm font-normal pt-4"><b>3rd parties:</b> Shopify, Jira, Segment, CustomerIO, Crisp Chat</p>
+                      <div class="text-sm font-normal pt-4">
+                        <b>Responsibilities:</b>
+                        <p>- Build tools to handle background tasks</p>
+                        <p>- Design data and develop backend for new project</p>
+                        <p>- Receive and maintain the backend for old projects (App on Shopify)</p>
+                        <p>- Participate in discussions and propose solutions for new features of the application</p>
+                        <p>- Integrate with 3rd parties (internal and external) for application development</p>
+                        <p>- Worked with tools like Rancher, Sentry, Grafana, logging,... to manage and track automated
+                          deployments and site and user activities.</p>
+                        <p>- Updating...</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                    class="rounded-full border-4 w-8 h-8 absolute left-1/2 -translate-y-4
+                sm:translate-y-0 transform -translate-x-1/2 flex items-center justify-center
+                bg-blue-500 dark:bg-blue-400
+                text-gray-200 dark:text-gray-100
+                border-gray-200 dark:border-gray-100
+                ">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                          d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z"
+                          clip-rule="evenodd"/>
+                    <path
+                        d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
                   </svg>
                 </div>
               </div>
