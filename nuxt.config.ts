@@ -74,8 +74,16 @@ export default defineNuxtConfig({
   // Global CSS
   css: [],
 
-  // Plugins (will be added in next phase)
-  plugins: [],
+  // Plugins (converted to TypeScript and Nuxt 3 format)
+  plugins: [
+    '~/plugins/api.ts',
+    '~/plugins/resize.client.ts',
+    '~/plugins/gtag.client.ts',
+    '~/plugins/prism.client.ts',
+    '~/plugins/videojs.client.ts',
+    '~/plugins/vue-particles.client.ts',
+    '~/plugins/click-outside.client.ts'
+  ],
 
   // Auto import components
   components: true,
