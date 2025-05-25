@@ -1,81 +1,114 @@
-# basic-nuxt
+# QDJr Blog - Nuxt 3 + TypeScript
 
-## Build Setup
+A modern blog application built with **Nuxt 3**, **TypeScript**, **Pinia**, and **Tailwind CSS**.
+
+## 🚀 Features
+
+- ⚡ **Nuxt 3** - The latest Vue.js framework
+- 🔷 **TypeScript** - Full type safety
+- 🍍 **Pinia** - Modern state management
+- 🎨 **Tailwind CSS** - Utility-first CSS framework
+- 🔍 **Prism.js** - Syntax highlighting
+- 📱 **PWA** - Progressive Web App support
+- 🎬 **Video.js** - Video player integration
+- ✨ **Particles** - Interactive background effects
+
+## 📋 Requirements
+
+- **Node.js** 18+
+- **npm** 8+
+
+## 🛠️ Development Setup
 
 ```bash
-# install dependencies
-$ npm install
+# Install dependencies
+npm install --legacy-peer-deps
 
-# serve with hot reload at localhost:3000
-$ npm run dev
+# Prepare Nuxt
+npm run postinstall
 
-# build for production and launch server
-$ npm run build
-$ npm run start
-
-# generate static project
-$ npm run generate
+# Start development server
+npm run dev
 ```
 
-For detailed explanation on how things work, check out the [documentation](https://nuxtjs.org).
+Visit [http://localhost:3000](http://localhost:3000)
 
-## Special Directories
+## 🏗️ Build Commands
 
-You can create the following extra directories, some of which have special behaviors. Only `pages` is required; you can
-delete them if you don't want to use their functionality.
+```bash
+# Type checking
+npm run typecheck
 
-### `assets`
+# Production build
+npm run build
 
-The assets directory contains your uncompiled assets such as Stylus or Sass files, images, or fonts.
+# Static site generation
+npm run generate
 
-More information about the usage of this directory
-in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/assets).
+# Preview production build
+npm run preview
+```
 
-### `components`
+## 📚 Documentation
 
-The components directory contains your Vue.js components. Components make up the different parts of your page and can be
-reused and imported into your pages, layouts and even other components.
+- **Migration Guide**: See [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md) for complete migration details
+- **Nuxt 3 Docs**: [https://nuxt.com/](https://nuxt.com/)
+- **TypeScript**: [https://www.typescriptlang.org/](https://www.typescriptlang.org/)
 
-More information about the usage of this directory
-in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/components).
+## 📁 Project Structure
 
-### `layouts`
+```text
+├── assets/                    # Uncompiled assets (SASS, CSS, images)
+├── components/                # Vue.js components (auto-imported)
+├── layouts/                   # Application layouts
+├── pages/                     # Application routes (file-based routing)
+├── plugins/                   # TypeScript plugins
+│   ├── api.ts                # API client with $fetch
+│   ├── click-outside.client.ts # Vue 3 directive
+│   ├── gtag.client.ts        # Google Analytics
+│   ├── prism.client.ts       # Syntax highlighting
+│   ├── resize.client.ts      # URL resize utility
+│   ├── videojs.client.ts     # Video player
+│   └── vue-particles.client.ts # Particle effects
+├── public/                    # Static files (served at root)
+├── stores/                    # Pinia stores (TypeScript)
+│   ├── categories.ts         # Categories management
+│   ├── posts.ts             # Posts management
+│   └── tags.ts              # Tags management
+├── nuxt.config.ts            # Nuxt configuration
+└── tailwind.config.ts        # Tailwind CSS configuration
+```
 
-Layouts are a great help when you want to change the look and feel of your Nuxt app, whether you want to include a
-sidebar or have distinct layouts for mobile and desktop.
+## 🔧 Technology Stack
 
-More information about the usage of this directory
-in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/layouts).
+- **Framework**: Nuxt 3.17.4
+- **Language**: TypeScript
+- **Vue**: Vue 3.5
+- **State Management**: Pinia 3.0
+- **Styling**: Tailwind CSS 3.4
+- **Build Tool**: Vite 6.3
+- **Package Manager**: npm with legacy peer deps
 
-### `pages`
+## 🚀 Deployment
 
-This directory contains your application views and routes. Nuxt will read all the `*.vue` files inside this directory
-and setup Vue Router automatically.
+### Static Hosting (Recommended)
 
-More information about the usage of this directory
-in [the documentation](https://nuxtjs.org/docs/2.x/get-started/routing).
+```bash
+npm run generate
+# Deploy .output/public to Netlify, Vercel, etc.
+```
 
-### `plugins`
+### Server-Side Rendering
 
-The plugins directory contains JavaScript plugins that you want to run before instantiating the root Vue.js Application.
-This is the place to add Vue plugins and to inject functions or constants. Every time you need to use `Vue.use()`, you
-should create a file in `plugins/` and add its path to plugins in `nuxt.config.js`.
+```bash
+npm run build
+# Deploy .output/server for Node.js hosting
+```
 
-More information about the usage of this directory
-in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/plugins).
+## 📝 License
 
-### `static`
+This project is licensed under the MIT License.
 
-This directory contains your static files. Each file inside this directory is mapped to `/`.
+---
 
-Example: `/static/robots.txt` is mapped as `/robots.txt`.
-
-More information about the usage of this directory
-in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/static).
-
-### `store`
-
-This directory contains your Vuex store files. Creating a file in this directory automatically activates Vuex.
-
-More information about the usage of this directory
-in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/store).
+**Migrated from Nuxt 2 to Nuxt 3 + TypeScript** ✨
