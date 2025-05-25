@@ -147,62 +147,72 @@ export default {
       perPage: 5
     }
   },
-  async fetch() {
-    const params = {
-      page: this.page,
-      perPage: this.perPage,
-    }
-    switch (this.listType) {
-      case 'byTag':
-        params.tag = this.extraValue
-        break;
-      case 'byCategory':
-        params.category = this.extraValue
-        break;
-      case 'bySearch':
-        params.txt = this.extraValue
-        break;
-      default:
-        break;
-    }
-    await this.$store.dispatch("posts/getPosts", params)
-    this.posts = this.$store.state.posts.posts || []
-  },
-  computed: {
-    getPosts() {
-      return this.$store.state.posts.posts
-    },
-    getCount() {
-      return this.$store.state.posts.count
-    },
-    getError() {
-      return this.$store.state.posts.error
-    },
-    getPostsMore() {
-      return this.$store.state.posts.postsMore
-    }
-  },
+  // TODO: Implement with Pinia store
+  // async fetch() {
+  //   const params = {
+  //     page: this.page,
+  //     perPage: this.perPage,
+  //   }
+  //   switch (this.listType) {
+  //     case 'byTag':
+  //       params.tag = this.extraValue
+  //       break;
+  //     case 'byCategory':
+  //       params.category = this.extraValue
+  //       break;
+  //     case 'bySearch':
+  //       params.txt = this.extraValue
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  //   const postsStore = usePostsStore()
+  //   await postsStore.getPosts(params)
+  //   this.posts = postsStore.posts || []
+  // },
+  // TODO: Implement with Pinia store
+  // computed: {
+  //   getPosts() {
+  //     const postsStore = usePostsStore()
+  //     return postsStore.posts
+  //   },
+  //   getCount() {
+  //     const postsStore = usePostsStore()
+  //     return postsStore.count
+  //   },
+  //   getError() {
+  //     const postsStore = usePostsStore()
+  //     return postsStore.error
+  //   },
+  //   getPostsMore() {
+  //     const postsStore = usePostsStore()
+  //     return postsStore.postsMore
+  //   }
+  // },
   methods: {
     loadMore() {
-      const params = {
-        page: ++this.page,
-        perPage: this.perPage,
-        isLoadMore: true
-      }
-      switch (this.listType) {
-        case 'byTag':
-          params.tag = this.$route.params.id
-          break;
-        case 'byCategory':
-          params.catergory = this.$route.params.id
-          break;
-        case 'bySearch':
-          params.txt = this.$route.query.txt
-          break;
-        default:
-          break;
-      }
-      this.$store.dispatch("posts/getPosts", params)
+      // TODO: Implement with Pinia store
+      console.log('Load more functionality temporarily disabled during migration')
+      // const params = {
+      //   page: ++this.page,
+      //   perPage: this.perPage,
+      //   isLoadMore: true
+      // }
+      // switch (this.listType) {
+      //   case 'byTag':
+      //     params.tag = this.$route.params.id
+      //     break;
+      //   case 'byCategory':
+      //     params.catergory = this.$route.params.id
+      //     break;
+      //   case 'bySearch':
+      //     params.txt = this.$route.query.txt
+      //     break;
+      //   default:
+      //     break;
+      // }
+      // const postsStore = usePostsStore()
+      // postsStore.getPosts(params)
     }
   }
 }

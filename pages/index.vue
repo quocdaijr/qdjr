@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full flex flex-col justify-center flex items-center text-gray-600 dark:text-gray-300">
+  <div class="h-full flex flex-col justify-center items-center text-gray-600 dark:text-gray-300">
     <div class="container mx-auto px-6 flex flex-col justify-between items-center py-4">
       <div class="flex flex-col">
         <img src="/profile.jpg" class="rounded-full w-28 mx-auto z-10"/>
@@ -29,9 +29,9 @@
         </div>
       </div>
     </div>
-    <client-only>
+    <ClientOnly>
       <vue-particles color="#dedede" class="absolute left-0 top-0 h-full w-full" style="z-index: -1"/>
-    </client-only>
+    </ClientOnly>
   </div>
 </template>
 

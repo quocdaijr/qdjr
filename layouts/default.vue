@@ -4,7 +4,7 @@
       <div class="flex flex-col justify-between h-screen">
         <Header/>
         <main class="flex-grow font-medium text-gray-700">
-          <Nuxt/>
+          <NuxtPage/>
         </main>
         <Footer/>
       </div>
@@ -12,14 +12,13 @@
   </div>
 </template>
 
-<script>
-export default {
-  head: {
-    bodyAttrs: {
-      class: 'bg-gray-50 dark:bg-gray-900'
-    }
+<script setup>
+// Set body attributes for theme styling
+useHead({
+  bodyAttrs: {
+    class: 'bg-gray-50 dark:bg-gray-900'
   }
-}
+})
 </script>
 <style>
 /* home route and active route will show in bold as it matches / and /about */

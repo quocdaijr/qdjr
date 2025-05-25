@@ -82,7 +82,8 @@ export default defineNuxtConfig({
     '~/plugins/prism.client.ts',
     '~/plugins/videojs.client.ts',
     '~/plugins/vue-particles.client.ts',
-    '~/plugins/click-outside.client.ts'
+    '~/plugins/click-outside.client.ts',
+    '~/plugins/theme.client.ts'
   ],
 
   // Auto import components

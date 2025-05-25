@@ -1,3 +1,5 @@
+@use "sass:color"
+
 $primary-foreground-color: #fff
 $primary-background-color: #000
 $center-big-play-button: true
@@ -29,7 +31,7 @@ $center-big-play-button: true
 .video-js .vjs-menu-button .vjs-menu-content
   background-color: $primary-background-color
 
-$slider-bg-color: lighten($primary-background-color, 90%)
+$slider-bg-color: color.scale($primary-background-color, $lightness: 90%)
 .video-js .vjs-slider
   background-color: $slider-bg-color
 
@@ -43,10 +45,10 @@ $slider-bg-color: lighten($primary-background-color, 90%)
   color: $primary-foreground-color
 
   .vjs-load-progress
-    background: ligthen($slider-bg-color, 80%)
+    background: color.scale($slider-bg-color, $lightness: 80%)
 
     div
-      background: ligthen($slider-bg-color, 80%)
+      background: color.scale($slider-bg-color, $lightness: 80%)
 
   &:hover
     .vjs-big-play-button
