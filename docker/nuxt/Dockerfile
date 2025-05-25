@@ -1,8 +1,10 @@
-FROM node:14
+FROM node:18
 
-COPY ./ ./
+WORKDIR /var/www/html/qdjr
 
-RUN npm install -g nuxt create-nuxt-app
+COPY . .
+
+RUN npm install -g nuxt #create-nuxt-app
 
 RUN npm install
 
