@@ -1,13 +1,13 @@
 version: '3'
 services:
-  basic_nuxt:
+  qdjr:
     build:
       context: .
       dockerfile: ./docker/nuxt/Dockerfile
-    working_dir: /var/www/html/basic-nuxt
+    working_dir: /var/www/html/qdjr
     expose:
       - 3000
-    container_name: basic_nuxt
+    container_name: qdjr
     volumes:
-      - .:/var/www/html/basic-nuxt
+      - .:/var/www/html/qdjr
     network_mode: "host"

@@ -76,8 +76,6 @@
 
 <script>
 import Social from "~/components/Social"
-import Prism from '~/plugins/prism'
-import videojs from '~/plugins/videojs'
 
 export default {
   name: "PostDetail",
@@ -100,16 +98,20 @@ export default {
     }
   },
   mounted() {
-    Prism.highlightAll()
+    // Use the provided Prism plugin
+    if (this.$prism) {
+      this.$prism.highlightAll()
+    }
+
     const videoElements = document.querySelectorAll('.video-import')
-    if (videoElements) {
+    if (videoElements && this.$videojs) {
       videoElements.forEach(videoElement => {
         videoElement.classList.add('video-js')
         videoElement.classList.add('vjs-default-skin')
         videoElement.classList.add('mx-auto')
         videoElement.removeAttribute('width')
         videoElement.removeAttribute('height')
-        videojs(videoElement, {
+        this.$videojs(videoElement, {
           preload: "auto",
           playbackRates: [0.5, 1, 1.5, 2]
         })

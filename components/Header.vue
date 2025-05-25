@@ -4,7 +4,7 @@
       <div class="w-1/12 flex justify-start">
         <NuxtLink to="/" class="inline-block mb-1 hover:scale-125">
           <span class="sr-only">QDJr</span>
-          <img class="w-10 pt-2" :src="isDarkMode ? '/logo-dark.svg' : '/logo.svg'" alt="QDJr">
+          <img class="w-10 pt-2" :src="logoSrc" alt="QDJr">
         </NuxtLink>
       </div>
       <PostSearch class="w-6/12 md:w-7/12"/>
@@ -66,7 +66,7 @@
       <div class="w-2/12 flex justify-end">
         <NuxtLink to="/" class="inline-block hover:scale-125">
           <span class="sr-only">QDJr</span>
-          <img class="w-10" :src="isDarkMode ? '/logo-dark.svg' : '/logo.svg'" alt="QDJr">
+          <img class="w-10" :src="logoSrc" alt="QDJr">
         </NuxtLink>
       </div>
     </div>
@@ -76,38 +76,42 @@
 <script>
 import NavBar from "~/components/NavBar";
 import PostSearch from "~/components/post/Search";
-import ClickOutside from "~/plugins/click-outside"
 
 export default {
   name: "Header",
   components: {PostSearch, NavBar},
-  directives: {ClickOutside},
   data() {
     return {
-      isDarkMode: false,
       isOpenMenu: false,
       categories: null
     }
   },
-  async fetch() {
-    // await this.$store.dispatch("categories/getCategories")
-    // this.categories = this.$store.state.categories.categories || []
+  computed: {
+    themeStore() {
+      return useThemeStore()
+    },
+    isDarkMode() {
+      return this.themeStore.isDarkMode
+    },
+    logoSrc() {
+      // Fallback to light logo if theme store isn't initialized
+      return this.themeStore?.logoSrc || '/logo.svg'
+    }
   },
+  // TODO: Implement categories fetching with Pinia store
+  // async fetch() {
+  //   const categoriesStore = useCategoriesStore()
+  //   await categoriesStore.getCategories()
+  //   this.categories = categoriesStore.categories || []
+  // },
   mounted() {
     this.$nextTick(() => {
-      const isDarkMode = localStorage.getItem('isDarkMode')
-      this.isDarkMode = (isDarkMode || 'false').toString().toLowerCase() === 'true'
-      if (this.isDarkMode) {
-        document.documentElement.classList.add('dark')
-      }
       this.isOpenMenu = false
     })
   },
   methods: {
     toggleTheme() {
-      this.isDarkMode = !this.isDarkMode
-      localStorage.setItem('isDarkMode', this.isDarkMode)
-      document.documentElement.classList.toggle('dark')
+      this.themeStore.toggleTheme()
     },
     toggleNav() {
       const navMobile = this.$refs.navMobile

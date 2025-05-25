@@ -82,11 +82,8 @@
 </template>
 
 <script>
-import ClickOutside from "~/plugins/click-outside"
-
 export default {
   name: "NavBar",
-  directives: {ClickOutside},
   props: {
     device: {
       type: String,

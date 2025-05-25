@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.nuxt/
+.output/
+dist/
+.next/
+
+# Generated files
+.eslintrc.test.js
+
+# Cache
+.eslintcache
+
+# Logs
+*.log
+
+# Environment files
+.env*
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Package manager
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# PM2
+pm2.config.js

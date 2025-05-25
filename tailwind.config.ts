@@ -1,14 +1,15 @@
-const defaultTheme = require('tailwindcss/defaultTheme');
+import type { Config } from 'tailwindcss'
+import defaultTheme from 'tailwindcss/defaultTheme'
 
-module.exports = {
-  mode: 'jit',
+export default <Config>{
   darkMode: 'class',
-  purge: [
-    './components/**/*.{vue,js}',
+  content: [
+    './components/**/*.{vue,js,ts}',
     './layouts/**/*.vue',
     './pages/**/*.vue',
     './plugins/**/*.{js,ts}',
     './nuxt.config.{js,ts}',
+    './app.vue'
   ],
   theme: {
     extend: {
@@ -17,10 +18,5 @@ module.exports = {
       }
     }
   },
-  variants: {
-    extend: {
-      opacity: ['dark'],
-    },
-  },
   plugins: [],
-};
+}
