@@ -76,12 +76,10 @@
 <script>
 import NavBar from "~/components/NavBar";
 import PostSearch from "~/components/post/Search";
-import ClickOutside from "~/plugins/click-outside"
 
 export default {
   name: "Header",
   components: {PostSearch, NavBar},
-  directives: {ClickOutside},
   data() {
     return {
       isDarkMode: false,

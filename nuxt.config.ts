@@ -117,5 +117,17 @@ export default defineNuxtConfig({
     configPath: 'tailwind.config.ts'
   },
 
+  // SSR configuration - disable for now due to directive SSR issues
+  ssr: false,
+
+  // Nitro configuration
+  nitro: {
+    prerender: {
+      // Disable prerendering for now due to SSR directive issues
+      // This can be re-enabled after converting components to Composition API
+      routes: []
+    }
+  },
+
   // Note: Robots and sitemap configuration will be added back in next phase
 })

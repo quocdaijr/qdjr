@@ -35,6 +35,18 @@ export default defineNuxtPlugin((nuxtApp) => {
           document.removeEventListener('click', el.__vueClickOutside__)
           el.__vueClickOutside__ = undefined
         }
+      },
+
+      // SSR-safe: provide empty getSSRProps
+      getSSRProps() {
+        return {}
+      }
+    })
+  } else {
+    // Server-side: register a no-op directive
+    nuxtApp.vueApp.directive('click-outside', {
+      getSSRProps() {
+        return {}
       }
     })
   }
