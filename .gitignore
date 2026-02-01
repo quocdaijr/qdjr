@@ -83,7 +83,8 @@ dist
 .idea
 
 # Service worker
-sw.*
+/sw.*
+!/public/images/projects/sw.webp
 
 # macOS
 .DS_Store
