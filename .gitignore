@@ -99,3 +99,9 @@ dist
 pm2.config.js
 
 .output
+
+# @nuxt/content v3 SQLite cache
+.data
+
+# Playwright MCP debug artifacts
+.playwright-mcp

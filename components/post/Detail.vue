@@ -120,5 +120,10 @@ export default {
   }
 }
 </script>
-<style src="~/assets/css/content.css">
-</style>
+<style src="~/assets/css/content.css"></style>
+<style src="prismjs/themes/prism-tomorrow.css"></style>
+<style src="~/assets/css/prism.css"></style>
+<style src="prismjs/plugins/toolbar/prism-toolbar.css"></style>
+<style src="prismjs/plugins/line-numbers/prism-line-numbers.css"></style>
+<style src="prismjs/plugins/line-highlight/prism-line-highlight.css"></style>
+<style src="prismjs/plugins/previewers/prism-previewers.css"></style>
