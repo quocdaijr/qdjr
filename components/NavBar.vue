@@ -31,7 +31,7 @@
             class="p-1 mb-1 whitespace-no-wrap rounded-md hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:scale-105"
             @click="methodToggleNav"
         >
-          <NuxtLink class="block" :to="`/category/${category.slug}`">
+          <NuxtLink class="block" :to="`/blog/category/${category.slug}`">
             <span>{{ category.name }}</span>
           </NuxtLink>
         </li>
@@ -72,7 +72,7 @@
             class="p-1 mb-1 whitespace-no-wrap rounded-md hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:scale-105"
             @click="closeCatMenu"
         >
-          <NuxtLink class="block" :to="`/category/${category.slug}`">
+          <NuxtLink class="block" :to="`/blog/category/${category.slug}`">
             <span>{{ category.name }}</span>
           </NuxtLink>
         </li>
