@@ -114,10 +114,8 @@ export default defineNuxtConfig({
     }
   },
 
-  // Pinia configuration
-  pinia: {
-    storesDirs: ['./stores/**']
-  },
+  // No pinia.storesDirs override needed: <srcDir>/stores (app/stores) is the
+  // default now that the sources live under app/.
 
   // PWA configuration (updated for @vite-pwa/nuxt)
   pwa: {

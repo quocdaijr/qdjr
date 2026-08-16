@@ -57,27 +57,36 @@ npm run preview
 
 ## 📁 Project Structure
 
+Nuxt 4 sources live under `app/` (`srcDir`); everything else stays at the repo root.
+
 ```text
-├── assets/                    # Uncompiled assets (SASS, CSS, images)
-├── components/                # Vue.js components (auto-imported)
-├── layouts/                   # Application layouts
-├── pages/                     # Application routes (file-based routing)
-├── plugins/                   # TypeScript plugins
-│   ├── api.ts                # API client with $fetch
-│   ├── click-outside.client.ts # Vue 3 directive
-│   ├── gtag.client.ts        # Google Analytics
-│   ├── prism.client.ts       # Syntax highlighting
-│   ├── resize.client.ts      # URL resize utility
-│   ├── videojs.client.ts     # Video player
-│   └── vue-particles.client.ts # Particle effects
+├── app/                       # srcDir — all application source
+│   ├── app.vue               # Root component (NuxtLayout > NuxtPage)
+│   ├── error.vue             # Error page (root-level, not layouts/)
+│   ├── assets/               # Uncompiled assets (SASS, CSS, images)
+│   ├── components/           # Vue components (auto-imported)
+│   ├── layouts/              # Application layouts
+│   ├── pages/                # Application routes (file-based routing)
+│   ├── plugins/              # Plugins (auto-scanned, no config array)
+│   │   ├── api.ts            # API client with $fetch
+│   │   ├── click-outside.client.ts # Vue 3 directive
+│   │   ├── gtag.client.ts    # Google Analytics
+│   │   ├── prism.client.ts   # Syntax highlighting
+│   │   ├── resize.client.ts  # URL resize utility
+│   │   ├── theme.client.ts   # Dark/light mode bootstrap
+│   │   ├── videojs.client.ts # Video player
+│   │   └── vue-particles.client.ts # Particle effects
+│   └── stores/               # Pinia stores (TypeScript)
+├── content/                   # Markdown blog posts (@nuxt/content v3)
 ├── public/                    # Static files (served at root)
-├── stores/                    # Pinia stores (TypeScript)
-│   ├── categories.ts         # Categories management
-│   ├── posts.ts             # Posts management
-│   └── tags.ts              # Tags management
-├── nuxt.config.ts            # Nuxt configuration
-└── tailwind.config.ts        # Tailwind CSS configuration
+├── e2e/                       # Playwright specs
+├── content.config.ts          # Content collections + Zod schema
+├── nuxt.config.ts             # Nuxt configuration
+└── tailwind.config.ts         # Tailwind CSS configuration
 ```
+
+Note that `~` and `@` alias `srcDir`, so `~/components/...` resolves to
+`app/components/...` — imports did not need rewriting for the move.
 
 ## 🔧 Technology Stack
 
