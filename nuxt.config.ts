@@ -3,11 +3,20 @@ export default defineNuxtConfig({
   // Enable TypeScript (less strict for development)
   typescript: {
     strict: false,
-    typeCheck: false
+    typeCheck: false,
+    // Nuxt 4 enables noUncheckedIndexedAccess unconditionally — it is tied to the
+    // v4 compatibility version, NOT to `strict`. Pinning it false keeps the
+    // typecheck surface comparable to Nuxt 3 so any new error is genuinely a Nuxt
+    // 4 issue. Follow-up: flip this and `strict` together, deliberately.
+    tsConfig: {
+      compilerOptions: {
+        noUncheckedIndexedAccess: false
+      }
+    }
   },
 
   // Add compatibility date
-  compatibilityDate: '2025-05-25',
+  compatibilityDate: '2026-08-16',
 
   // Development tools
   devtools: { enabled: true },

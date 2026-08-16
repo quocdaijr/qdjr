@@ -30,7 +30,9 @@
       </div>
     </div>
     <ClientOnly>
-      <vue-particles color="#dedede" class="absolute left-0 top-0 h-full w-full" style="z-index: -1"/>
+      <!-- `id` is required by @tsparticles/vue3 (it throws without one). It was
+           missing, so the particle background has never actually rendered. -->
+      <vue-particles id="tsparticles" class="absolute left-0 top-0 h-full w-full" style="z-index: -1"/>
     </ClientOnly>
   </div>
 </template>
