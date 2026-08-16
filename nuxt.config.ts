@@ -1,13 +1,24 @@
+import tailwindcss from '@tailwindcss/vite'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   // Enable TypeScript (less strict for development)
   typescript: {
     strict: false,
-    typeCheck: false
+    typeCheck: false,
+    // Nuxt 4 enables noUncheckedIndexedAccess unconditionally — it is tied to the
+    // v4 compatibility version, NOT to `strict`. Pinning it false keeps the
+    // typecheck surface comparable to Nuxt 3 so any new error is genuinely a Nuxt
+    // 4 issue. Follow-up: flip this and `strict` together, deliberately.
+    tsConfig: {
+      compilerOptions: {
+        noUncheckedIndexedAccess: false
+      }
+    }
   },
 
   // Add compatibility date
-  compatibilityDate: '2025-05-25',
+  compatibilityDate: '2026-08-16',
 
   // Development tools
   devtools: { enabled: true },
@@ -18,7 +29,11 @@ export default defineNuxtConfig({
     // Public keys (exposed to client-side)
     public: {
       baseUrl: process.env.APP_URL || 'https://qdjr.me',
-      apiUrl: process.env.API_URL || 'https://api.qdjr.me/v1',
+      // Empty by default: api.qdjr.me no longer resolves (NXDOMAIN). An empty
+      // value makes every $api call short-circuit to an empty result with zero
+      // network traffic, instead of a multi-second DNS failure on each
+      // navigation. Set API_URL to re-enable the legacy blog surface.
+      apiUrl: process.env.API_URL || '',
       gaId: process.env.GOOGLE_ANALYTICS_ID || 'G-KBZQ6KNY8T'
     }
   },
@@ -71,28 +86,20 @@ export default defineNuxtConfig({
     }
   },
 
-  // Global CSS
-  css: [],
+  // Global CSS — Tailwind v4 entrypoint
+  css: ['~/assets/css/main.css'],
 
-  // Plugins (converted to TypeScript and Nuxt 3 format)
-  plugins: [
-    '~/plugins/api.ts',
-    '~/plugins/resize.client.ts',
-    '~/plugins/gtag.client.ts',
-    '~/plugins/prism.client.ts',
-    '~/plugins/videojs.client.ts',
-    '~/plugins/vue-particles.client.ts',
-    '~/plugins/click-outside.client.ts',
-    '~/plugins/theme.client.ts'
-  ],
+  // Plugins are auto-scanned from <srcDir>/plugins and deduped by resolved path,
+  // so listing them here was redundant. Dropping the array also removes eight
+  // hardcoded paths that would need maintaining.
 
   // Auto import components
   components: true,
 
   // Modules (buildModules merged into modules in Nuxt 3)
   modules: [
+    '@nuxt/eslint',
     '@pinia/nuxt',
-    '@nuxtjs/tailwindcss',
     '@vite-pwa/nuxt',
     '@nuxt/content'
     // Note: robots and sitemap will be added back in next phase with proper configuration
@@ -113,10 +120,8 @@ export default defineNuxtConfig({
     }
   },
 
-  // Pinia configuration
-  pinia: {
-    storesDirs: ['./stores/**']
-  },
+  // No pinia.storesDirs override needed: <srcDir>/stores (app/stores) is the
+  // default now that the sources live under app/.
 
   // PWA configuration (updated for @vite-pwa/nuxt)
   pwa: {
@@ -132,12 +137,6 @@ export default defineNuxtConfig({
       // handles offline shell; no precache is fine for a low-traffic portfolio.
       globPatterns: []
     }
-  },
-
-  // Tailwind CSS configuration
-  tailwindcss: {
-    cssPath: '~/assets/css/tailwind.css',
-    configPath: 'tailwind.config.ts'
   },
 
   // SSR configuration - disable for now due to directive SSR issues
@@ -162,6 +161,9 @@ export default defineNuxtConfig({
 
   // Build tuning
   vite: {
+    // Tailwind v4. Replaces @nuxtjs/tailwindcss, which is pinned to
+    // tailwindcss ~3.4 and has no v4 support.
+    plugins: [tailwindcss()],
     build: {
       // The main bundle is ~1MB because several legacy client plugins (prismjs
       // with many languages, video.js, tsparticles, vue-spinner) are registered
@@ -179,7 +181,9 @@ export default defineNuxtConfig({
   // and we can't edit vendor files.
   postcss: {
     plugins: {
-      './postcss-plugins/rewrite-color-adjust.cjs': {}
+      // Anchored with ~~ (rootDir) rather than a bare relative path so resolution
+      // stays unambiguous when srcDir moves to app/ and under Vite 8.
+      '~~/postcss-plugins/rewrite-color-adjust.cjs': {}
     }
   },
 

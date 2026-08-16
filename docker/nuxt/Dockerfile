@@ -1,10 +1,10 @@
-FROM node:18
+# bookworm (not -slim): better-sqlite3, required by @nuxt/content v3, falls back
+# to a source build when no prebuild matches and needs python3/make/g++.
+FROM node:24.19.0-bookworm
 
 WORKDIR /var/www/html/qdjr
 
 COPY . .
-
-RUN npm install -g nuxt #create-nuxt-app
 
 RUN npm install
 
