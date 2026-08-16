@@ -52,6 +52,10 @@ export const useTagsStore = defineStore('tags', {
     },
 
     async getTags(params: ApiParams & { isLoadMore?: boolean } = {}) {
+      // Clear any error from a previous route: the store is a session singleton
+      // in SPA mode, so a stale error would flash before this fetch resolves.
+      this.clearError()
+
       try {
         const { $api } = useNuxtApp()
         const response = await $api.getTags(params)
@@ -71,6 +75,10 @@ export const useTagsStore = defineStore('tags', {
     },
 
     async getTag(slug: string) {
+      // Clear any error from a previous route: the store is a session singleton
+      // in SPA mode, so a stale error would flash before this fetch resolves.
+      this.clearError()
+
       try {
         const { $api } = useNuxtApp()
         const response = await $api.getTag(slug)
