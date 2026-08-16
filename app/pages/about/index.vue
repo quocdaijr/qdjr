@@ -1071,55 +1071,41 @@
   </div>
 </template>
 
-<script>
-export default {
-  methods: {
-    handleProfileImageError(event) {
-      console.warn('Profile image failed to load:', event.target.src)
-      // Replace with a fallback placeholder
-      event.target.src = '/no-image.jpg'
-      event.target.alt = 'Profile image not available'
-    },
-  },
-  head() {
-    return {
-      title: 'Quoc Dai Nguyen - Senior Backend Software Engineer',
-      meta: [
-        {
-          hid: 'description',
-          name: 'description',
-          content:
-            'Quoc Dai Nguyen - Senior Backend Software Engineer with 6+ years of experience building and operating high-performance backend systems for media and e-commerce platforms',
-        },
-        {
-          hid: 'keywords',
-          name: 'keywords',
-          content:
-            'QDJr, Quoc Dai Nguyen, Nguyen Quoc Dai, Senior Backend Software Engineer, profile, cv, PHP, Laravel, Node.js, Kubernetes',
-        },
-        {
-          hid: 'og:url',
-          property: 'og:url',
-          content: process.env.baseUrl + '/about',
-        },
-        {
-          hid: 'og:title',
-          name: 'og:title',
-          content: 'Quoc Dai Nguyen - Senior Backend Software Engineer',
-        },
-        {
-          hid: 'og:description',
-          name: 'og:description',
-          content:
-            'Senior Backend Software Engineer with 6+ years of experience in system design, performance optimization, and building scalable solutions for production systems',
-        },
-        {
-          hid: 'og:image',
-          name: 'og:image',
-          content: process.env.baseUrl + '/profile.jpg',
-        },
-      ],
-    }
-  },
+<script setup>
+defineOptions({name: 'AboutPage'})
+
+const config = useRuntimeConfig()
+
+const TITLE = 'Quoc Dai Nguyen - Senior Backend Software Engineer'
+const DESCRIPTION =
+  'Quoc Dai Nguyen - Senior Backend Software Engineer with 6+ years of experience building and operating high-performance backend systems for media and e-commerce platforms'
+const OG_DESCRIPTION =
+  'Senior Backend Software Engineer with 6+ years of experience in system design, performance optimization, and building scalable solutions for production systems'
+
+function handleProfileImageError(event) {
+  console.warn('Profile image failed to load:', event.target.src)
+  // Replace with a fallback placeholder
+  event.target.src = '/no-image.jpg'
+  event.target.alt = 'Profile image not available'
 }
+
+// Was an Options API head() hook, which Nuxt 3/4 do not support at all — it was
+// silently ignored, so this page has been shipping with no title and no meta
+// tags whatsoever.
+//
+// `hid` keys are dropped (removed in Unhead v2; useSeoMeta dedupes by tag
+// identity). og:title/description/image were also declared with `name:` rather
+// than `property:`, another long-standing bug that useSeoMeta gets right.
+// process.env.baseUrl is undefined at runtime, hence useRuntimeConfig.
+useHead({title: TITLE})
+
+useSeoMeta({
+  description: DESCRIPTION,
+  keywords:
+    'QDJr, Quoc Dai Nguyen, Nguyen Quoc Dai, Senior Backend Software Engineer, profile, cv, PHP, Laravel, Node.js, Kubernetes',
+  ogUrl: () => `${config.public.baseUrl}/about`,
+  ogTitle: TITLE,
+  ogDescription: OG_DESCRIPTION,
+  ogImage: () => `${config.public.baseUrl}/profile.jpg`
+})
 </script>
