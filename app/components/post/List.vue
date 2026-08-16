@@ -116,6 +116,7 @@
 
 <script setup lang="ts">
 import DotLoader from 'vue-spinner/src/DotLoader.vue'
+import type {LegacyListParams} from '~/utils/legacyParams'
 
 defineOptions({name: 'PostList'})
 
@@ -130,16 +131,12 @@ const props = withDefaults(
 const {$api} = useNuxtApp()
 const postsStore = usePostsStore()
 
-const PER_PAGE = 5
 const page = ref(1)
 
-function buildParams(extra: Record<string, unknown> = {}) {
-  const params: Record<string, unknown> = {page: page.value, perPage: PER_PAGE, ...extra}
-  if (props.listType === 'byTag') params.tag = props.extraValue
-  if (props.listType === 'byCategory') params.category = props.extraValue
-  if (props.listType === 'bySearch') params.txt = props.extraValue
-  return params
-}
+// Query construction lives in ~/utils/legacyParams so the list-type mapping can
+// be unit-tested without mounting this component.
+const buildParams = (extra: Partial<LegacyListParams> = {}) =>
+  buildLegacyListParams(props.listType, props.extraValue, page.value, extra)
 
 // The template used Nuxt 2's $fetchState, which is undefined in Nuxt 3/4 — so
 // `$fetchState.pending` was always falsy while `$fetchState.error !== null` was
@@ -162,9 +159,7 @@ const count = computed(() => postsStore.count)
 
 // "Archive offline" rather than "no results": either no backend is configured,
 // or a configured one answered with something that is not a genuine 404.
-const unavailable = computed(
-  () => !$api.enabled || (!!postsStore.error && postsStore.error.statusCode !== 404)
-)
+const unavailable = computed(() => isBackendUnavailable($api.enabled, postsStore.error))
 
 // Was a console.log stub. The Nuxt 2 original read this.$route.params.id, which
 // is wrong for the current route shapes; the prop is both correct and simpler.

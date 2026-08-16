@@ -1,7 +1,5 @@
-interface StoreError {
-  message: string
-  statusCode: number
-}
+import {isBackendUnavailable, isResourceNotFound} from '~/utils/legacyState'
+import type {StoreError} from '~/utils/legacyState'
 
 /**
  * Shared fetch wrapper for the legacy blog surface.
@@ -35,12 +33,12 @@ export function useLegacyResource<T>(
   const data = computed(read)
   const error = computed(readError)
 
-  const unavailable = computed(
-    () => !$api.enabled || (!!error.value && error.value.statusCode !== 404)
-  )
+  // The predicates live in ~/utils/legacyState so they can be unit-tested
+  // directly; this composable is just the reactive wrapper around them.
+  const unavailable = computed(() => isBackendUnavailable($api.enabled, error.value))
 
-  const notFound = computed(
-    () => !unavailable.value && !pending.value && !data.value
+  const notFound = computed(() =>
+    isResourceNotFound($api.enabled, error.value, pending.value, data.value)
   )
 
   return {data, pending, status, unavailable, notFound}

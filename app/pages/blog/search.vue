@@ -51,24 +51,11 @@ const {data: posts} = await useAsyncData('blog-search-corpus', () =>
     .all()
 )
 
-// Accent-insensitive: the corpus includes Vietnamese titles, so a reader typing
-// "tro ly" must still match "Trợ lý".
-const fold = (value: unknown) =>
-  String(value ?? '')
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .toLowerCase()
-
+// Matching lives in ~/utils/search so the rules — including the diacritic
+// folding the Vietnamese titles depend on — can be unit-tested directly.
 const results = computed(() => {
   if (!q.value) return []
-  const needle = fold(q.value)
-  return (posts.value || []).filter(
-    (post) =>
-      fold(post.title).includes(needle) ||
-      fold(post.description).includes(needle) ||
-      (post.tags || []).some((tag: string) => fold(tag).includes(needle)) ||
-      fold(post.category).includes(needle)
-  )
+  return (posts.value || []).filter((post) => matchesQuery(post, q.value))
 })
 
 function formatDate(value: string | Date | undefined) {

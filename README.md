@@ -49,9 +49,28 @@ npm run generate
 npm run preview
 ```
 
-## 📚 Documentation
+## ✅ Tests
 
-- **Migration Guide**: See [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md) for complete migration details
+```bash
+npm test              # Vitest unit tests
+npm run test:watch    # Vitest in watch mode
+npm run test:coverage # unit tests + coverage (80% threshold)
+npm run test:e2e      # Playwright, mobile + desktop projects
+npm run lint          # eslint + stylelint
+npm run typecheck     # vue-tsc via nuxt typecheck
+```
+
+Two layers, split by what each can actually verify:
+
+- **`test/`** — Vitest, plain node/happy-dom. Pure logic (`app/utils/`) and the
+  Pinia stores. Deliberately not `@nuxt/test-utils`' `environment: 'nuxt'`,
+  which currently fails to boot under Vite 8; see the note in
+  `vitest.config.ts`.
+- **`e2e/`** — Playwright. Anything needing the real Nuxt runtime: rendering,
+  routing, data fetching, head management, and the Tailwind-dependent layout
+  assertions that only reproduce at desktop widths.
+
+## 📚 Documentation
 - **Nuxt 3 Docs**: [https://nuxt.com/](https://nuxt.com/)
 - **TypeScript**: [https://www.typescriptlang.org/](https://www.typescriptlang.org/)
 
