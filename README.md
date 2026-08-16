@@ -15,8 +15,8 @@ A modern blog application built with **Nuxt 3**, **TypeScript**, **Pinia**, and 
 
 ## 📋 Requirements
 
-- **Node.js** 18+
-- **npm** 8+
+- **Node.js** 24.19.0 (see [`.nvmrc`](./.nvmrc) — run `nvm use`)
+- **npm** 11+
 
 ## 🛠️ Development Setup
 

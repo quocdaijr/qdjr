@@ -2,6 +2,9 @@
   "name": "@quocdaijr/qdjr",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "^22.19.0 || ^24.11.0 || >=26.0.0"
+  },
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt build",
