@@ -20,22 +20,22 @@ export default defineNuxtPlugin(() => {
     ]
   })
 
-  // Initialize gtag
-  if (process.client) {
-    window.dataLayer = window.dataLayer || []
-    
-    function gtag(...args: any[]) {
-      window.dataLayer.push(args)
-    }
+  // Initialize gtag. The `process.client` guard that used to wrap this block was
+  // redundant — this file is already .client.ts — and it wrapped the `return`
+  // too, so `provide` must stay at the top level here or $gtag disappears.
+  window.dataLayer = window.dataLayer || []
 
-    gtag('js', new Date())
-    gtag('config', gaId)
+  function gtag(...args: any[]) {
+    window.dataLayer.push(args)
+  }
 
-    // Provide gtag function globally
-    return {
-      provide: {
-        gtag
-      }
+  gtag('js', new Date())
+  gtag('config', gaId)
+
+  // Provide gtag function globally
+  return {
+    provide: {
+      gtag
     }
   }
 })

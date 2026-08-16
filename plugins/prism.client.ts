@@ -45,12 +45,11 @@ import 'prismjs/components/prism-regex'
 import 'prismjs/components/prism-bash'
 
 export default defineNuxtPlugin(() => {
-  if (process.client) {
-    // Make Prism available globally
-    return {
-      provide: {
-        prism: Prism
-      }
+  // Make Prism available globally.
+  // No client guard needed — this file is already .client.ts.
+  return {
+    provide: {
+      prism: Prism
     }
   }
 })

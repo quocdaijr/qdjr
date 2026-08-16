@@ -6,11 +6,10 @@ import 'video.js/dist/video-js.min.css'
 import '@/assets/sass/video-js-custom.sass'
 
 export default defineNuxtPlugin(() => {
-  if (process.client) {
-    return {
-      provide: {
-        videojs
-      }
+  // No client guard needed — this file is already .client.ts.
+  return {
+    provide: {
+      videojs
     }
   }
 })

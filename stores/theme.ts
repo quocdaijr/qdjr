@@ -25,7 +25,7 @@ export const useThemeStore = defineStore('theme', {
   actions: {
     // Initialize theme from localStorage or system preference
     initializeTheme() {
-      if (process.client && !this.isInitialized) {
+      if (import.meta.client && !this.isInitialized) {
         // Check localStorage first
         const savedTheme = localStorage.getItem('isDarkMode')
         
@@ -58,7 +58,7 @@ export const useThemeStore = defineStore('theme', {
 
     // Apply theme to document
     applyTheme() {
-      if (process.client) {
+      if (import.meta.client) {
         const htmlElement = document.documentElement
         
         if (this.isDarkMode) {
@@ -71,14 +71,14 @@ export const useThemeStore = defineStore('theme', {
 
     // Save theme preference to localStorage
     saveTheme() {
-      if (process.client) {
+      if (import.meta.client) {
         localStorage.setItem('isDarkMode', this.isDarkMode.toString())
       }
     },
 
     // Listen for system theme changes
     watchSystemTheme() {
-      if (process.client) {
+      if (import.meta.client) {
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
         
         mediaQuery.addEventListener('change', (e) => {
