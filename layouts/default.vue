@@ -4,7 +4,7 @@
       <div class="flex flex-col justify-between h-screen">
         <Header/>
         <main class="flex-grow font-medium text-gray-700">
-          <NuxtPage/>
+          <slot />
         </main>
         <Footer/>
       </div>

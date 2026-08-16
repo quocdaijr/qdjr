@@ -30,47 +30,42 @@
       </div>
     </div>
     <div class="mt-6 text-center">
-      <NuxtLink to="/" class="bg-gray-200 dark:bg-gray-600 text-lg p-3 rounded-md hover:shadow-md">Back to home
-      </NuxtLink>
+      <button
+        type="button"
+        class="bg-gray-200 dark:bg-gray-600 text-lg p-3 rounded-md hover:shadow-md"
+        @click="clearError({ redirect: '/' })"
+      >
+        Back to home
+      </button>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  props: [
-    'error'
-  ],
-  data() {
-    return {
-      message: "Something went wrong!",
-      statusText: this.statusCode,
-      statusCode: this.error.statusCode || 500
-    }
-  },
-  mounted() {
-    switch (this.statusCode) {
-      case 400:
-        this.message = "Bad request!"
-        break;
-      case 401:
-        this.message = "Access is not allowed!"
-        break
-      case 403:
-        this.message = "You aren't permitted to see this!"
-        break
-      case 404:
-        this.message = "Sorry, We couldn't find what you are looking for!"
-        break;
-      case 500:
-      default:
-        this.message = "Something went wrong!"
-        break
-    }
-    const rawStatusText = this.statusCode.toString()
-    this.statusText = rawStatusText.charAt(0) + "  " + rawStatusText.charAt(1) + "  " + rawStatusText.charAt(2)
+<script setup lang="ts">
+import type { NuxtError } from '#app'
+
+// Was layouts/error.vue with an Options API data()/mounted() pair. Nuxt 3/4 look
+// for error.vue at the srcDir root, not in layouts/, so the old file was dead and
+// createError() rendered Nuxt's stock error page instead of this design.
+//
+// The old data() was also broken independently: `statusText: this.statusCode`
+// read a sibling property that was not defined yet, so it was always undefined
+// until mounted() overwrote it.
+const props = defineProps<{ error: NuxtError }>()
+
+const statusCode = computed(() => props.error?.statusCode ?? 500)
+
+const statusText = computed(() => String(statusCode.value).split('').join('  '))
+
+const message = computed(() => {
+  const messages: Record<number, string> = {
+    400: 'Bad request!',
+    401: 'Access is not allowed!',
+    403: "You aren't permitted to see this!",
+    404: "Sorry, We couldn't find what you are looking for!"
   }
-}
+  return messages[statusCode.value] ?? 'Something went wrong!'
+})
 </script>
 
 <style scoped>
@@ -89,27 +84,6 @@ export default {
   100% {
     top: 0
   }
-}
-
-/* Scrollbar Styling */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-
-::-webkit-scrollbar-track {
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb {
-  border-radius: 5px;
-  background: #6d6d6d;
-}
-
-/* Disable background color when press link, button,... */
-* {
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 </style>
 
