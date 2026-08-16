@@ -12,6 +12,14 @@ export default defineConfig({
     baseURL: BASE_URL,
     trace: 'on-first-retry'
   },
+  // Screenshot comparison budget. 0 while triaging a change; a small ratio keeps
+  // CI from tripping on font antialiasing.
+  expect: {
+    toHaveScreenshot: {
+      maxDiffPixelRatio: 0.01,
+      animations: 'disabled'
+    }
+  },
   projects: [
     {
       // Chromium-based mobile emulation: the drawer bug is a DOM-event-ordering
@@ -19,6 +27,16 @@ export default defineConfig({
       // separate WebKit download.
       name: 'mobile',
       use: {...devices['Pixel 7']}
+    },
+    {
+      // The layout is heavily md:-branched, and the Tailwind v4 utilities most
+      // likely to regress it (max-w-screen-*, flex-grow) only apply above the
+      // mobile breakpoint. A mobile-only suite cannot see those.
+      name: 'desktop',
+      use: {...devices['Desktop Chrome'], viewport: {width: 1280, height: 800}},
+      // The drawer only exists below the md breakpoint; its hamburger is hidden
+      // at this viewport, so that spec is mobile-only by construction.
+      testIgnore: /mobile-menu\.spec\.ts/
     }
   ],
   webServer: {

@@ -1,6 +1,6 @@
 <template>
   <header class="sm:px-4 py-4 lg:px-8 lg:py-6">
-    <div class="hidden md:flex items-center justify-between max-w-screen-lg mx-auto">
+    <div class="hidden md:flex items-center justify-between max-w-(--breakpoint-lg) mx-auto">
       <div class="w-1/12 flex justify-start">
         <NuxtLink to="/" class="inline-block mb-1 hover:scale-125">
           <span class="sr-only">QDJr</span>
@@ -25,7 +25,7 @@
         </button>
       </div>
     </div>
-    <div class="md:hidden flex items-center max-w-screen-lg mx-auto">
+    <div class="md:hidden flex items-center max-w-(--breakpoint-lg) mx-auto">
       <div v-click-outside="closeNav" class="w-2/12 flex justify-center">
         <button
           type="button"

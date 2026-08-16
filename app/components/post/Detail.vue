@@ -4,7 +4,7 @@
     <div class="block z-10 fixed right-2 sm:relative sm:right-0">
       <social/>
     </div>
-    <div class="w-11/12 flex-grow text-base">
+    <div class="w-11/12 grow text-base">
       <div class="w-full sm:px-3 text-gray-800 leading-normal">
         <!--Title-->
         <div class="md:flex md:justify-between items-center mb-8 font-bold">

@@ -18,7 +18,7 @@
     </section>
 
     <section v-else class="py-10 text-gray-500 dark:text-gray-300">
-      <article v-for="post in posts" :key="post.path" class="max-w-screen-lg mx-auto md:grid md:grid-cols-4">
+      <article v-for="post in posts" :key="post.path" class="max-w-(--breakpoint-lg) mx-auto md:grid md:grid-cols-4">
         <div class="md:col-span-1 md:pr-12 lg:pr-16">
           <div class="relative h-full pb-4 md:border-r md:pb-0 md:pt-2">
             <div class="md:text-right md:pr-10">

@@ -1,3 +1,5 @@
+import tailwindcss from '@tailwindcss/vite'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   // Enable TypeScript (less strict for development)
@@ -80,8 +82,8 @@ export default defineNuxtConfig({
     }
   },
 
-  // Global CSS
-  css: [],
+  // Global CSS — Tailwind v4 entrypoint
+  css: ['~/assets/css/main.css'],
 
   // Plugins are auto-scanned from <srcDir>/plugins and deduped by resolved path,
   // so listing them here was redundant. Dropping the array also removes eight
@@ -93,7 +95,6 @@ export default defineNuxtConfig({
   // Modules (buildModules merged into modules in Nuxt 3)
   modules: [
     '@pinia/nuxt',
-    '@nuxtjs/tailwindcss',
     '@vite-pwa/nuxt',
     '@nuxt/content'
     // Note: robots and sitemap will be added back in next phase with proper configuration
@@ -133,12 +134,6 @@ export default defineNuxtConfig({
     }
   },
 
-  // Tailwind CSS configuration
-  tailwindcss: {
-    cssPath: '~/assets/css/tailwind.css',
-    configPath: 'tailwind.config.ts'
-  },
-
   // SSR configuration - disable for now due to directive SSR issues
   ssr: false,
 
@@ -161,6 +156,9 @@ export default defineNuxtConfig({
 
   // Build tuning
   vite: {
+    // Tailwind v4. Replaces @nuxtjs/tailwindcss, which is pinned to
+    // tailwindcss ~3.4 and has no v4 support.
+    plugins: [tailwindcss()],
     build: {
       // The main bundle is ~1MB because several legacy client plugins (prismjs
       // with many languages, video.js, tsparticles, vue-spinner) are registered

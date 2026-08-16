@@ -28,7 +28,7 @@
       <ul ref="catMenu"
           class="absolute top-4 mt-10 p-2 rounded-md shadow-lg z-10 w-11/12 hidden bg-gray-300 dark:bg-gray-700">
         <li v-for="category in categories" :key="category.id"
-            class="p-1 mb-1 whitespace-no-wrap rounded-md hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:scale-105"
+            class="p-1 mb-1 rounded-md hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:scale-105"
             @click="methodToggleNav"
         >
           <NuxtLink class="block" :to="`/blog/category/${category.slug}`">
@@ -69,7 +69,7 @@
       <ul ref="catMenu"
           class="absolute origin-top-right left-[-7.8rem] -left-24 top-0 mt-10 p-2 rounded-md shadow-lg z-10 w-36 hidden bg-white dark:bg-gray-700">
         <li v-for="category in categories" :key="category.id"
-            class="p-1 mb-1 whitespace-no-wrap rounded-md hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:scale-105"
+            class="p-1 mb-1 rounded-md hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:scale-105"
             @click="closeCatMenu"
         >
           <NuxtLink class="block" :to="`/blog/category/${category.slug}`">

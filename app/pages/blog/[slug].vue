@@ -3,8 +3,8 @@
     <HeaderContent v-if="post" :title="post.title" :background="post.cover || ''"/>
 
     <div v-if="post"
-         class="flex pb-8 px-1 sm:px-2 my-12 border-b md:col-span-3 border-gray-200 dark:border-gray-600 w-full max-w-screen-lg mx-auto">
-      <div class="w-full flex-grow text-base">
+         class="flex pb-8 px-1 sm:px-2 my-12 border-b md:col-span-3 border-gray-200 dark:border-gray-600 w-full max-w-(--breakpoint-lg) mx-auto">
+      <div class="w-full grow text-base">
         <div class="w-full sm:px-3 text-gray-800 dark:text-gray-200 leading-normal">
 
           <div class="md:flex md:justify-between items-center mb-8 font-bold">

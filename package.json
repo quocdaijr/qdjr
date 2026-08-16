@@ -29,8 +29,8 @@
     "@nuxt/content": "^3.15.2",
     "@nuxtjs/robots": "^5.2.10",
     "@nuxtjs/sitemap": "^7.3.0",
-    "@nuxtjs/tailwindcss": "^6.14.0",
     "@pinia/nuxt": "^0.11.0",
+    "@tailwindcss/vite": "^4.3.3",
     "@tsparticles/slim": "^3.8.1",
     "@tsparticles/vue3": "^3.0.1",
     "@vite-pwa/nuxt": "^1.0.1",
@@ -42,7 +42,7 @@
     "sanitize-html": "^2.5.2",
     "socket.io": "^4.3.1",
     "socket.io-client": "^4.3.2",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.3.3",
     "video.js": "^7.15.4",
     "vue": "^3.5.40",
     "vue-spinner": "^1.0.4"

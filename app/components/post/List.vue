@@ -23,7 +23,7 @@
     <span class="text-gray-400 pt-2">Something went wrong with my API :)))</span>
   </section>
   <section v-else-if="getPosts.length" class="py-10 text-gray-500 dark:text-gray-300">
-    <div v-for="post in getPosts" :key="post.id" class="max-w-screen-lg mx-auto md:grid md:grid-cols-4">
+    <div v-for="post in getPosts" :key="post.id" class="max-w-(--breakpoint-lg) mx-auto md:grid md:grid-cols-4">
       <div class="md:col-span-1 md:pr-12 lg:pr-16">
         <div class="relative h-full pb-4 md:border-r md:pb-0 md:pt-2">
           <div class="md:text-right md:pr-10">
@@ -60,7 +60,7 @@
       </div>
     </div>
     <div v-for="postMore in (getPostsMore || [])" :key="postMore.id"
-         class="max-w-screen-lg mx-auto md:grid md:grid-cols-4">
+         class="max-w-(--breakpoint-lg) mx-auto md:grid md:grid-cols-4">
       <div class="md:col-span-1 md:pr-12 lg:pr-16">
         <div class="relative h-full pb-4 md:border-r md:pb-0 md:pt-2">
           <div class="md:text-right md:pr-10">

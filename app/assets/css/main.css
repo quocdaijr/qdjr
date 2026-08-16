@@ -1,0 +1,73 @@
+/* Tailwind CSS v4 — CSS-first config. Replaces the deleted tailwind.config.ts.
+   Content detection is automatic in v4; no `content` globs needed. */
+@import "tailwindcss";
+
+/* was: plugins: [typography] */
+@plugin "@tailwindcss/typography";
+
+/* was: darkMode: 'class'
+   The `dark` class is set on <html> by app/stores/theme.ts applyTheme(). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* was: theme.extend.fontFamily.sans = ['Nunito', ...defaultTheme.fontFamily.sans]
+   NOTE: Nunito is never actually loaded anywhere in this app — no <link>, no
+   @font-face, no font module — so this is currently inert. Kept verbatim to
+   preserve existing behaviour. */
+@theme {
+  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+/* v3 compatibility: v4 changed the default border and divide colour from
+   gray-200 to currentColor. This repo has ~10 uncoloured border-* / divide-*
+   usages that would otherwise render near-black. Restore the v3 default
+   globally rather than touching every call site. */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+/* Moved out of app/layouts/default.vue.
+   These targeted .nuxt-link-active / .nuxt-link-exact-active — Nuxt 2 class
+   names that Nuxt 3/4 never emit, so the rules have been dead. Retargeted at
+   the vue-router names and scoped to <nav> so the header logo link and the tag
+   pills (also NuxtLinks) are not restyled.
+
+   They also have to live here rather than in a component <style> block:
+   Tailwind v4 treats each component stylesheet as a separate module, so @apply
+   there needs an explicit @reference. */
+@layer components {
+  nav a.router-link-active {
+    @apply font-semibold;
+  }
+
+  nav a.router-link-exact-active {
+    @apply text-blue-600 dark:text-blue-400;
+  }
+}
+
+/* Global chrome, moved out of app/layouts/default.vue (and out of error.vue's
+   <style scoped>, where ::-webkit-scrollbar never applied anyway). */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: #6d6d6d;
+}
+
+/* Disable the grey flash when tapping links and buttons on touch devices. */
+* {
+  -webkit-tap-highlight-color: rgb(0 0 0 / 0%);
+}

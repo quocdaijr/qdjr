@@ -717,7 +717,7 @@
               <img
                 src="/images/projects/om.webp"
                 alt="OneMobile"
-                class="w-12 h-12 object-contain rounded flex-shrink-0"
+                class="w-12 h-12 object-contain rounded shrink-0"
               />
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
@@ -754,7 +754,7 @@
               <img
                 src="/images/projects/ol.webp"
                 alt="OneLoyalty"
-                class="w-12 h-12 object-contain rounded flex-shrink-0"
+                class="w-12 h-12 object-contain rounded shrink-0"
               />
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
@@ -791,7 +791,7 @@
               <img
                 src="/images/projects/tc.webp"
                 alt="Transcy"
-                class="w-12 h-12 object-contain rounded flex-shrink-0"
+                class="w-12 h-12 object-contain rounded shrink-0"
               />
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
@@ -828,7 +828,7 @@
               <img
                 src="/images/projects/sw.webp"
                 alt="Swift"
-                class="w-12 h-12 object-contain rounded flex-shrink-0"
+                class="w-12 h-12 object-contain rounded shrink-0"
               />
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
@@ -865,7 +865,7 @@
               <img
                 src="/images/projects/fg.webp"
                 alt="FireGroup Internal"
-                class="w-12 h-12 object-contain rounded flex-shrink-0"
+                class="w-12 h-12 object-contain rounded shrink-0"
               />
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
@@ -899,7 +899,7 @@
               <img
                 src="/images/projects/tt.webp"
                 alt="SSO Tuoitre"
-                class="w-12 h-12 object-contain rounded flex-shrink-0"
+                class="w-12 h-12 object-contain rounded shrink-0"
               />
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
@@ -937,7 +937,7 @@
               <img
                 src="/images/projects/ttrv.webp"
                 alt="Tuoi Tre Rao Vat"
-                class="w-12 h-12 object-contain rounded flex-shrink-0"
+                class="w-12 h-12 object-contain rounded shrink-0"
               />
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
@@ -971,7 +971,7 @@
               <img
                 src="/images/projects/ttc.webp"
                 alt="Tuoi Tre Cuoi"
-                class="w-12 h-12 object-contain rounded flex-shrink-0"
+                class="w-12 h-12 object-contain rounded shrink-0"
               />
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
@@ -1005,7 +1005,7 @@
               <img
                 src="/images/projects/ttn.webp"
                 alt="Tuoi Tre News"
-                class="w-12 h-12 object-contain rounded flex-shrink-0"
+                class="w-12 h-12 object-contain rounded shrink-0"
               />
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
@@ -1039,7 +1039,7 @@
               <img
                 src="/images/projects/tt.webp"
                 alt="Tuoi Tre Internal"
-                class="w-12 h-12 object-contain rounded flex-shrink-0"
+                class="w-12 h-12 object-contain rounded shrink-0"
               />
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
