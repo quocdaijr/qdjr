@@ -18,8 +18,13 @@ export default defineNuxtPlugin((nuxtApp) => {
         // Define Handler and cache it on the element
         const bubble = binding.modifiers.bubble
         const handler = (e: Event) => {
-          const target = e.target as Node
-          if (bubble || (!el.contains(target) && el !== target)) {
+          // Use composedPath() rather than el.contains(e.target). The path is captured when
+          // the event is dispatched, so it stays correct even if a re-render triggered by an
+          // earlier listener detaches e.target mid-propagation — as happens when a click
+          // toggles a v-if inside this element (an icon swap, for example). With `contains`,
+          // a detached target looks like a click outside and closes the thing that just opened.
+          const path = e.composedPath()
+          if (bubble || !path.includes(el)) {
             binding.value(e)
           }
         }

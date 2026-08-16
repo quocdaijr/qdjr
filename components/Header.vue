@@ -27,7 +27,14 @@
     </div>
     <div class="md:hidden flex items-center max-w-screen-lg mx-auto">
       <div v-click-outside="closeNav" class="w-2/12 flex justify-center">
-        <button type="button" class="w-10 h-10 ml-1 mr-1 rounded" @click="toggleNav">
+        <button
+          type="button"
+          class="w-10 h-10 ml-1 mr-1 rounded"
+          aria-label="Toggle navigation menu"
+          aria-controls="mobile-nav"
+          :aria-expanded="isOpenMenu"
+          @click="toggleNav"
+        >
           <svg v-if="isOpenMenu" xmlns="http://www.w3.org/2000/svg" class="text-gray-900 dark:text-gray-100"
                viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd"
@@ -42,9 +49,10 @@
           </svg>
         </button>
         <div
-          ref="navMobile"
-          class="nav-mobile fixed w-11/12 h-full rounded-r-lg top-14 left-0 bg-gray-200 dark:bg-gray-800 z-50 opacity-95 transform ease-in-out duration-300 -translate-x-full">
-          <NavBar device="mobile" :method-toggle-nav="toggleNav" :categories="categories"/>
+          id="mobile-nav"
+          class="nav-mobile fixed w-11/12 h-full rounded-r-lg top-14 left-0 bg-gray-200 dark:bg-gray-800 z-50 opacity-95 transform transition-transform ease-in-out duration-300"
+          :class="isOpenMenu ? 'translate-x-0' : '-translate-x-full invisible'">
+          <NavBar device="mobile" :method-toggle-nav="closeNav" :categories="categories"/>
         </div>
       </div>
       <PostSearch class="w-6/12 h-10"/>
@@ -104,37 +112,26 @@ export default {
   //   await categoriesStore.getCategories()
   //   this.categories = categoriesStore.categories || []
   // },
-  mounted() {
-    this.$nextTick(() => {
-      this.isOpenMenu = false
-    })
+  watch: {
+    isOpenMenu(isOpen) {
+      // Lock background scrolling while the drawer is open. Set the inline style rather than
+      // a body class: useHead({ bodyAttrs: { class } }) in layouts/default.vue rewrites the
+      // body class attribute and would drop it.
+      document.body.style.overflow = isOpen ? 'hidden' : ''
+    }
+  },
+  beforeUnmount() {
+    document.body.style.overflow = ''
   },
   methods: {
     toggleTheme() {
       this.themeStore.toggleTheme()
     },
     toggleNav() {
-      const navMobile = this.$refs.navMobile
       this.isOpenMenu = !this.isOpenMenu
-      if (this.isOpenMenu) {
-        navMobile.classList.remove('-translate-x-full')
-        navMobile.classList.add('translate-x-0')
-        document.body.classList.remove('overflow-auto')
-        document.body.classList.add('overflow-hidden')
-      } else {
-        navMobile.classList.remove('translate-x-0')
-        navMobile.classList.add('-translate-x-full')
-        document.body.classList.remove('overflow-hidden')
-        document.body.classList.add('overflow-auto')
-      }
     },
     closeNav() {
       this.isOpenMenu = false
-      const navMobile = document.querySelector('.nav-mobile');
-      navMobile.classList.remove('translate-x-0')
-      navMobile.classList.add('-translate-x-full')
-      document.body.classList.remove('overflow-hidden')
-      document.body.classList.add('overflow-auto')
     }
   }
 }
