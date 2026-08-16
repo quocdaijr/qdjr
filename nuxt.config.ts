@@ -74,17 +74,9 @@ export default defineNuxtConfig({
   // Global CSS
   css: [],
 
-  // Plugins (converted to TypeScript and Nuxt 3 format)
-  plugins: [
-    '~/plugins/api.ts',
-    '~/plugins/resize.client.ts',
-    '~/plugins/gtag.client.ts',
-    '~/plugins/prism.client.ts',
-    '~/plugins/videojs.client.ts',
-    '~/plugins/vue-particles.client.ts',
-    '~/plugins/click-outside.client.ts',
-    '~/plugins/theme.client.ts'
-  ],
+  // Plugins are auto-scanned from <srcDir>/plugins and deduped by resolved path,
+  // so listing them here was redundant. Dropping the array also removes eight
+  // hardcoded paths that would need maintaining.
 
   // Auto import components
   components: true,
@@ -179,7 +171,9 @@ export default defineNuxtConfig({
   // and we can't edit vendor files.
   postcss: {
     plugins: {
-      './postcss-plugins/rewrite-color-adjust.cjs': {}
+      // Anchored with ~~ (rootDir) rather than a bare relative path so resolution
+      // stays unambiguous when srcDir moves to app/ and under Vite 8.
+      '~~/postcss-plugins/rewrite-color-adjust.cjs': {}
     }
   },
 
