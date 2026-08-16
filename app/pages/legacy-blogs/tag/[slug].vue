@@ -1,68 +1,51 @@
 <template>
   <div class="w-full">
-    <HeaderContent :title="tag.name" :description="tag.description" :background="tag.cover || ''"/>
-    <PostList list-type="byTag" :extra-value="tag.id.toString()"/>
+    <LegacyUnavailable v-if="unavailable"/>
+    <template v-else-if="tag">
+      <HeaderContent :title="tag.name" :description="tag.description" :background="tag.cover || ''"/>
+      <PostList list-type="byTag" :extra-value="String(tag.id)"/>
+    </template>
+    <section v-else-if="pending"
+             class="flex flex-col items-center my-10 text-2xl text-gray-500 dark:text-gray-300">
+      <span class="text-gray-400 pt-2">Loading…</span>
+    </section>
   </div>
 </template>
 
-<script>
-import HeaderContent from "~/components/HeaderContent";
-import PostList from "~/components/post/List";
+<script setup lang="ts">
+defineOptions({name: 'LegacyTagDetail'})
 
-export default {
-  name: "TagDetailPage",
-  components: {PostList, HeaderContent},
-  validate({params}) {
-    return /^[a-z0-9-]+$/.test(params.slug)
-  },
-  async asyncData(ctx) {
-    await ctx.store.dispatch("tags/getTag", {param: ctx.params.slug})
-    const tag = await ctx.store.state.tags.tag
-    if (!tag)
-      return ctx.error({statusCode: 404, message: "Page Not Found"})
-    return {tag}
-  },
-  data() {
-    return {
-      tag: null
-    }
-  },
-  head() {
-    return {
-      title: this.tag.name || '',
-      meta: [
-        {
-          hid: 'description',
-          name: 'description',
-          content: this.tag.description || ''
-        },
-        {
-          hid: 'keywords',
-          name: 'keywords',
-          content: this.tag.name
-        },
-        {
-          hid: 'og:url',
-          property: 'og:url',
-          content: (process.env.APP_URL || 'https://qdjr.me') + '/tag/' + this.tag.slug
-        },
-        {
-          hid: 'og:title',
-          name: 'og:title',
-          content: this.tag.name + ' | QDJr Blog'
-        },
-        {
-          hid: 'og:description',
-          name: 'og:description',
-          content: this.tag.description || ''
-        },
-        {
-          hid: 'og:image',
-          name: 'og:image',
-          content: this.tag.cover || ''
-        }
-      ]
-    }
-  }
+definePageMeta({
+  validate: (route) => /^[a-z0-9-]+$/.test(String(route.params.slug))
+})
+
+const route = useRoute()
+const config = useRuntimeConfig()
+const tagsStore = useTagsStore()
+
+const slug = computed(() => String(route.params.slug))
+
+const {data: tag, pending, unavailable, notFound} = useLegacyResource(
+  `legacy-tag-${slug.value}`,
+  () => tagsStore.getTag(slug.value),
+  () => tagsStore.tag,
+  () => tagsStore.error
+)
+
+if (notFound.value) {
+  throw createError({statusCode: 404, statusMessage: 'Page Not Found', fatal: true})
 }
+
+// The template previously called tag.id.toString() on a value that starts as
+// null, which threw on first render before asyncData resolved.
+useHead(() => ({title: tag.value?.name || 'QDJr Blog'}))
+
+useSeoMeta({
+  description: () => tag.value?.description || '',
+  keywords: () => tag.value?.name || '',
+  ogUrl: () => `${config.public.baseUrl}/legacy-blogs/tag/${tag.value?.slug ?? ''}`,
+  ogTitle: () => (tag.value?.name ? `${tag.value.name} | QDJr Blog` : ''),
+  ogDescription: () => tag.value?.description || '',
+  ogImage: () => tag.value?.cover || ''
+})
 </script>

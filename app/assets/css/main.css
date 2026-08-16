@@ -51,6 +51,16 @@
   }
 }
 
+/* Used by tag/ListNewest.vue's horizontal strip but never actually defined
+   anywhere, so the scrollbar has always shown. */
+@utility hide-scroll-bar {
+  scrollbar-width: none;
+}
+
+.hide-scroll-bar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Global chrome, moved out of app/layouts/default.vue (and out of error.vue's
    <style scoped>, where ::-webkit-scrollbar never applied anyway). */
 ::-webkit-scrollbar {

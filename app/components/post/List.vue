@@ -1,29 +1,23 @@
 <template>
-  <section v-if="$fetchState.pending"
+  <section v-if="pending"
            class="flex flex-col items-center my-10 text-2xl text-gray-500 dark:text-gray-300">
     <DotLoader class="mx-auto" color="#9CA3AF"/>
-    <span class="text-gray-400 pt-2">Please waiting...</span>
+    <span class="text-gray-400 pt-2">Loading…</span>
   </section>
-  <section v-else-if="$fetchState.error !== null"
+  <section v-else-if="unavailable"
            class="flex flex-col items-center my-10 text-center text-2xl text-gray-500 dark:text-gray-300">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" viewBox="0 0 20 20" fill="currentColor">
       <path fill-rule="evenodd"
             d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
             clip-rule="evenodd"/>
     </svg>
-    <span class="text-gray-400 pt-2">Something went wrong during get data :)))</span>
+    <span class="text-gray-400 pt-2">The legacy blog archive is offline.</span>
+    <NuxtLink to="/blog" class="mt-4 text-base text-blue-500 hover:underline dark:text-blue-400">
+      Read the current blog instead
+    </NuxtLink>
   </section>
-  <section v-else-if="getError !== null"
-           class="flex flex-col items-center my-10 text-center text-2xl text-gray-500 dark:text-gray-300">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" viewBox="0 0 20 20" fill="currentColor">
-      <path fill-rule="evenodd"
-            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-            clip-rule="evenodd"/>
-    </svg>
-    <span class="text-gray-400 pt-2">Something went wrong with my API :)))</span>
-  </section>
-  <section v-else-if="getPosts.length" class="py-10 text-gray-500 dark:text-gray-300">
-    <div v-for="post in getPosts" :key="post.id" class="max-w-(--breakpoint-lg) mx-auto md:grid md:grid-cols-4">
+  <section v-else-if="posts.length" class="py-10 text-gray-500 dark:text-gray-300">
+    <div v-for="post in posts" :key="post.id" class="max-w-(--breakpoint-lg) mx-auto md:grid md:grid-cols-4">
       <div class="md:col-span-1 md:pr-12 lg:pr-16">
         <div class="relative h-full pb-4 md:border-r md:pb-0 md:pt-2">
           <div class="md:text-right md:pr-10">
@@ -46,7 +40,7 @@
           <h2 class="text-xl font-semibold py-4">{{ post.title }}</h2>
           <i class="text-sm font-normal">{{ post.description }}</i>
           <div class="mt-4">
-            <NuxtLink :to="`/${post.slug}`"
+            <NuxtLink :to="`/legacy-blogs/${post.slug}`"
                       class="flex items-center text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
             >Read more&nbsp;
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -59,7 +53,7 @@
         </div>
       </div>
     </div>
-    <div v-for="postMore in (getPostsMore || [])" :key="postMore.id"
+    <div v-for="postMore in (postsMore || [])" :key="postMore.id"
          class="max-w-(--breakpoint-lg) mx-auto md:grid md:grid-cols-4">
       <div class="md:col-span-1 md:pr-12 lg:pr-16">
         <div class="relative h-full pb-4 md:border-r md:pb-0 md:pt-2">
@@ -79,11 +73,11 @@
       </div>
       <div class="pb-8 mb-12 border-b md:col-span-3">
         <div class="prose md:prose-lg">
-          <img :src="$urlResize(postMore.thumbnail || '', '480p')" :alt="postsMore.title" class="rounded-lg">
+          <img :src="$urlResize(postMore.thumbnail || '', '480p')" :alt="postMore.title" class="rounded-lg">
           <h2 class="text-xl font-semibold py-4">{{ postMore.title }}</h2>
           <i class="text-sm font-normal">{{ postMore.description }}</i>
           <div class="mt-4">
-            <NuxtLink :to="`/${postMore.slug}`"
+            <NuxtLink :to="`/legacy-blogs/${postMore.slug}`"
                       class="flex items-center text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
             >Read more&nbsp;
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -96,7 +90,7 @@
         </div>
       </div>
     </div>
-    <div v-if="getCount > 0" class="w-full">
+    <div v-if="count > 0" class="w-full">
       <div class="w-16 h-16 mx-auto cursor-pointer"
            @click="loadMore">
         <svg xmlns="http://www.w3.org/2000/svg" class="animate-bounce h-16 w-16 pt-4 pl-4 text-gray-500"
@@ -120,100 +114,62 @@
   </section>
 </template>
 
-<script>
-import DotLoader from "vue-spinner/src/DotLoader.vue"
+<script setup lang="ts">
+import DotLoader from 'vue-spinner/src/DotLoader.vue'
 
-export default {
-  name: "PostList",
-  components: {
-    DotLoader
+defineOptions({name: 'PostList'})
+
+const props = withDefaults(
+  defineProps<{
+    listType?: 'normal' | 'byTag' | 'byCategory' | 'bySearch'
+    extraValue?: string
+  }>(),
+  {listType: 'normal', extraValue: ''}
+)
+
+const {$api} = useNuxtApp()
+const postsStore = usePostsStore()
+
+const PER_PAGE = 5
+const page = ref(1)
+
+function buildParams(extra: Record<string, unknown> = {}) {
+  const params: Record<string, unknown> = {page: page.value, perPage: PER_PAGE, ...extra}
+  if (props.listType === 'byTag') params.tag = props.extraValue
+  if (props.listType === 'byCategory') params.category = props.extraValue
+  if (props.listType === 'bySearch') params.txt = props.extraValue
+  return params
+}
+
+// The template used Nuxt 2's $fetchState, which is undefined in Nuxt 3/4 — so
+// `$fetchState.pending` was always falsy while `$fetchState.error !== null` was
+// always TRUE, meaning this component rendered its error branch unconditionally.
+const {status} = useAsyncData(
+  () => `legacy-posts-${props.listType}-${props.extraValue}`,
+  async () => {
+    page.value = 1
+    await postsStore.getPosts(buildParams())
+    return true
   },
-  props: {
-    listType: {
-      type: String,
-      default: 'normal'
-    },
-    extraValue: {
-      type: String,
-      default: ''
-    }
-  },
-  data() {
-    return {
-      posts: [],
-      postsMore: [],
-      count: 0,
-      page: 1,
-      perPage: 5
-    }
-  },
-  // TODO: Implement with Pinia store
-  // async fetch() {
-  //   const params = {
-  //     page: this.page,
-  //     perPage: this.perPage,
-  //   }
-  //   switch (this.listType) {
-  //     case 'byTag':
-  //       params.tag = this.extraValue
-  //       break;
-  //     case 'byCategory':
-  //       params.category = this.extraValue
-  //       break;
-  //     case 'bySearch':
-  //       params.txt = this.extraValue
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  //   const postsStore = usePostsStore()
-  //   await postsStore.getPosts(params)
-  //   this.posts = postsStore.posts || []
-  // },
-  // TODO: Implement with Pinia store
-  // computed: {
-  //   getPosts() {
-  //     const postsStore = usePostsStore()
-  //     return postsStore.posts
-  //   },
-  //   getCount() {
-  //     const postsStore = usePostsStore()
-  //     return postsStore.count
-  //   },
-  //   getError() {
-  //     const postsStore = usePostsStore()
-  //     return postsStore.error
-  //   },
-  //   getPostsMore() {
-  //     const postsStore = usePostsStore()
-  //     return postsStore.postsMore
-  //   }
-  // },
-  methods: {
-    loadMore() {
-      // TODO: Implement with Pinia store
-      console.log('Load more functionality temporarily disabled during migration')
-      // const params = {
-      //   page: ++this.page,
-      //   perPage: this.perPage,
-      //   isLoadMore: true
-      // }
-      // switch (this.listType) {
-      //   case 'byTag':
-      //     params.tag = this.$route.params.id
-      //     break;
-      //   case 'byCategory':
-      //     params.catergory = this.$route.params.id
-      //     break;
-      //   case 'bySearch':
-      //     params.txt = this.$route.query.txt
-      //     break;
-      //   default:
-      //     break;
-      // }
-      // const postsStore = usePostsStore()
-      // postsStore.getPosts(params)
-    }
-  }
+  // Refetch when the parent page swaps tag / category / search term.
+  {watch: [() => props.listType, () => props.extraValue]}
+)
+
+const pending = computed(() => status.value === 'pending')
+const posts = computed(() => postsStore.posts)
+const postsMore = computed(() => postsStore.postsMore)
+const count = computed(() => postsStore.count)
+
+// "Archive offline" rather than "no results": either no backend is configured,
+// or a configured one answered with something that is not a genuine 404.
+const unavailable = computed(
+  () => !$api.enabled || (!!postsStore.error && postsStore.error.statusCode !== 404)
+)
+
+// Was a console.log stub. The Nuxt 2 original read this.$route.params.id, which
+// is wrong for the current route shapes; the prop is both correct and simpler.
+async function loadMore() {
+  page.value += 1
+  await postsStore.getPosts(buildParams({isLoadMore: true}))
 }
 </script>

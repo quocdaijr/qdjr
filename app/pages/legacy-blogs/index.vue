@@ -1,21 +1,21 @@
 <template>
   <div class="w-full">
-    <HeaderContent title="My Blog" description=""/>
-    <p class="text-2xl my-32 text-center z-10">Will be back soon 🥲</p>
-    <!--    <TagListNewest class="justify-end mb-4"/>-->
-    <!--    <PostList/>-->
-    <!--    <PostMore/>-->
+    <HeaderContent title="Legacy Blog" description="Archived posts from the old API-backed blog."/>
+    <TagListNewest class="justify-end mb-4"/>
+    <PostList/>
   </div>
 </template>
 
-<script>
-// import PostList from "~/components/post/List";
-import HeaderContent from "~/components/HeaderContent";
-// import TagListNewest from "~/components/tag/ListNewest"
+<script setup lang="ts">
+defineOptions({name: 'LegacyBlogIndex'})
 
-export default {
-  // components: {HeaderContent, PostList, TagListNewest}
-  components: {HeaderContent}
-}
+// The "Will be back soon 🥲" placeholder is gone: PostList and TagListNewest
+// crashed on render because $dayjs was never provided and $fetchState is a Nuxt
+// 2 API. Both are fixed, and PostList now owns the offline state itself, so this
+// page degrades correctly whether or not API_URL is set.
+useHead({title: 'Legacy Blog | QDJr'})
+useSeoMeta({
+  description: 'Archived posts from the old API-backed blog.',
+  robots: 'noindex, follow'
+})
 </script>
-

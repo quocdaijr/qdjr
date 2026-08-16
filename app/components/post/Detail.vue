@@ -8,18 +8,18 @@
       <div class="w-full sm:px-3 text-gray-800 leading-normal">
         <!--Title-->
         <div class="md:flex md:justify-between items-center mb-8 font-bold">
-          <span class="flex items-center text-right text-gray-700 dark:text-gray-200">
-            <NuxtLink :to="`/category/${post.categories[0].slug || 0}`" class="flex items-center">
-              <svg v-if="!post.categories[0].thumbnail" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-1"
+          <span v-if="primaryCategory" class="flex items-center text-right text-gray-700 dark:text-gray-200">
+            <NuxtLink :to="`/legacy-blogs/category/${primaryCategory.slug || 0}`" class="flex items-center">
+              <svg v-if="!primaryCategory.thumbnail" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-1"
                    fill="none" viewBox="0 0 24 24"
                    stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
               </svg>
-              <img v-if="post.categories[0].thumbnail" class="h-6 w-6 mr-1"
-                   :src="$urlResize(post.categories[0].thumbnail, '240p')"
-                   :alt="post.categories[0].name">
-              <span>{{ post.categories[0].name || 'Unknown' }}</span>
+              <img v-if="primaryCategory.thumbnail" class="h-6 w-6 mr-1"
+                   :src="$urlResize(primaryCategory.thumbnail, '240p')"
+                   :alt="primaryCategory.name">
+              <span>{{ primaryCategory.name || 'Unknown' }}</span>
             </NuxtLink>
           </span>
           <span class="text-sm text-gray-600 dark:text-gray-300">
@@ -39,7 +39,7 @@
         <div v-for="tag in post.tags" :key="tag.id"
              class="inline-flex items-center font-bold leading-sm px-3 py-1 mr-1 rounded-full
              bg-gray-300 text-gray-700 dark:bg-gray-700 dark:text-gray-300">
-          <NuxtLink :to="`/tag/${tag.slug}`" class="flex items-center">
+          <NuxtLink :to="`/legacy-blogs/tag/${tag.slug}`" class="flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                  stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -89,6 +89,15 @@ export default {
   data() {
     return {
       content: ''
+    }
+  },
+  computed: {
+    // The API shape cannot be verified while the backend is down: the template
+    // read post.categories[0] while the Post interface declares only `category`.
+    // Normalise both, and let the template guard on null rather than throwing on
+    // an undefined array.
+    primaryCategory() {
+      return this.post?.categories?.[0] ?? this.post?.category ?? null
     }
   },
   created() {
