@@ -105,3 +105,7 @@ pm2.config.js
 
 # Playwright MCP debug artifacts
 .playwright-mcp
+
+# Playwright e2e output
+test-results
+playwright-report
