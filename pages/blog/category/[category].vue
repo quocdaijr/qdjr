@@ -22,6 +22,12 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 
+// The useAsyncData key below is built from `category`, which is evaluated once at
+// setup. That is only correct because the page remounts on every route change.
+// Nuxt 4's data layer shares data/error/status refs between same-key callers, so
+// make the remount an explicit guarantee rather than an incidental one.
+definePageMeta({ key: (route) => route.fullPath })
+
 const route = useRoute()
 const category = computed(() => String(route.params.category || ''))
 

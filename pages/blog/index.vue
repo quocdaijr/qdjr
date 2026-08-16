@@ -2,7 +2,7 @@
   <div class="w-full">
     <HeaderContent title="Blog" description="Notes, write-ups and occasional rambling."/>
 
-    <section v-if="pending" class="flex flex-col items-center my-10 text-2xl text-gray-500 dark:text-gray-300">
+    <section v-if="status === 'pending'" class="flex flex-col items-center my-10 text-2xl text-gray-500 dark:text-gray-300">
       <span class="text-gray-400 pt-2">Loading...</span>
     </section>
 
@@ -70,7 +70,7 @@ useSeoMeta({
   ogType: 'website'
 })
 
-const { data: posts, pending } = await useAsyncData('blog-list', () =>
+const { data: posts, status } = await useAsyncData('blog-list', () =>
   queryCollection('blog')
     .where('draft', '=', false)
     .order('publishedAt', 'DESC')
