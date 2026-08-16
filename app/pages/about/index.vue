@@ -1097,12 +1097,20 @@ function handleProfileImageError(event) {
 // identity). og:title/description/image were also declared with `name:` rather
 // than `property:`, another long-standing bug that useSeoMeta gets right.
 // process.env.baseUrl is undefined at runtime, hence useRuntimeConfig.
-useHead({title: TITLE})
+useHead({
+  title: TITLE,
+  // `keywords` is not a useSeoMeta key in Unhead v3; it belongs in raw meta.
+  meta: [
+    {
+      name: 'keywords',
+      content:
+        'QDJr, Quoc Dai Nguyen, Nguyen Quoc Dai, Senior Backend Software Engineer, profile, cv, PHP, Laravel, Node.js, Kubernetes'
+    }
+  ]
+})
 
 useSeoMeta({
   description: DESCRIPTION,
-  keywords:
-    'QDJr, Quoc Dai Nguyen, Nguyen Quoc Dai, Senior Backend Software Engineer, profile, cv, PHP, Laravel, Node.js, Kubernetes',
   ogUrl: () => `${config.public.baseUrl}/about`,
   ogTitle: TITLE,
   ogDescription: OG_DESCRIPTION,

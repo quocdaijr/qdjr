@@ -98,6 +98,7 @@ export default defineNuxtConfig({
 
   // Modules (buildModules merged into modules in Nuxt 3)
   modules: [
+    '@nuxt/eslint',
     '@pinia/nuxt',
     '@vite-pwa/nuxt',
     '@nuxt/content'

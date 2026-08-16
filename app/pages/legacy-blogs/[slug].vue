@@ -54,7 +54,9 @@ const toIso = (value?: string) => {
 }
 
 useHead(() => ({
-  title: post.value?.title ? `${post.value.title} | QDJr Blog` : 'QDJr Blog'
+  title: post.value?.title ? `${post.value.title} | QDJr Blog` : 'QDJr Blog',
+  // `keywords` is not a useSeoMeta key in Unhead v3; it belongs in raw meta.
+  meta: [{name: 'keywords', content: tags.value.join(', ')}]
 }))
 
 // Was a Nuxt 2 head() with `hid` on every meta entry. `hid` was removed in
@@ -66,7 +68,6 @@ useHead(() => ({
 // so the hardcoded fallback always won.
 useSeoMeta({
   description: () => post.value?.description || '',
-  keywords: () => tags.value.join(', '),
   ogType: 'article',
   ogUrl: () => fullUrl.value,
   ogTitle: () => (post.value?.title ? `${post.value.title} | QDJr Blog` : ''),

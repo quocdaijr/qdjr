@@ -1,4 +1,5 @@
-import {expect, Page, test} from '@playwright/test'
+import type { Page} from '@playwright/test';
+import {expect, test} from '@playwright/test'
 
 const HAMBURGER = 'header button.w-10.h-10'
 const DRAWER = '.nav-mobile'

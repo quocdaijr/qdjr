@@ -84,13 +84,14 @@ const tagsStr = computed(() => (post.value?.tags || []).join(', '))
 const fullUrl = computed(() => `${runtimeConfig.public.baseUrl}${route.path}`)
 
 useHead(() => ({
-  title: post.value?.title ? `${post.value.title} | QDJr Blog` : 'QDJr Blog'
+  title: post.value?.title ? `${post.value.title} | QDJr Blog` : 'QDJr Blog',
+  // `keywords` is not a useSeoMeta key in Unhead v3; it belongs in raw meta.
+  meta: [{name: 'keywords', content: tagsStr.value}]
 }))
 
 useSeoMeta({
   title: () => post.value?.title || '',
   description: () => post.value?.description || '',
-  keywords: () => tagsStr.value,
   ogType: 'article',
   ogUrl: () => fullUrl.value,
   ogTitle: () => (post.value?.title ? `${post.value.title} | QDJr Blog` : ''),

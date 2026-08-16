@@ -38,11 +38,14 @@ if (notFound.value) {
 
 // The template previously called tag.id.toString() on a value that starts as
 // null, which threw on first render before asyncData resolved.
-useHead(() => ({title: tag.value?.name || 'QDJr Blog'}))
+useHead(() => ({
+  title: tag.value?.name || 'QDJr Blog',
+  // `keywords` is not a useSeoMeta key in Unhead v3; it belongs in raw meta.
+  meta: [{name: 'keywords', content: tag.value?.name || ''}]
+}))
 
 useSeoMeta({
   description: () => tag.value?.description || '',
-  keywords: () => tag.value?.name || '',
   ogUrl: () => `${config.public.baseUrl}/legacy-blogs/tag/${tag.value?.slug ?? ''}`,
   ogTitle: () => (tag.value?.name ? `${tag.value.name} | QDJr Blog` : ''),
   ogDescription: () => tag.value?.description || '',

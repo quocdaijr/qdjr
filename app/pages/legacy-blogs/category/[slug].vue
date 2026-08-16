@@ -39,13 +39,16 @@ if (notFound.value) {
 // The template previously called category.id.toString() on a value that starts
 // as null, which threw on first render before asyncData resolved. It is guarded
 // behind v-else-if="category" now.
-useHead(() => ({title: category.value?.name || 'QDJr Blog'}))
+useHead(() => ({
+  title: category.value?.name || 'QDJr Blog',
+  // `keywords` is not a useSeoMeta key in Unhead v3; it belongs in raw meta.
+  meta: [{name: 'keywords', content: category.value?.name || ''}]
+}))
 
 // `hid` keys dropped: removed in Unhead v2. og:* were also declared with `name:`
 // rather than `property:`; useSeoMeta emits the correct form.
 useSeoMeta({
   description: () => category.value?.description || '',
-  keywords: () => category.value?.name || '',
   ogUrl: () =>
     `${config.public.baseUrl}/legacy-blogs/category/${category.value?.slug ?? ''}`,
   ogTitle: () => (category.value?.name ? `${category.value.name} | QDJr Blog` : ''),

@@ -57,11 +57,6 @@
 <script>
 export default {
   name: "Social",
-  data() {
-    return {
-      isDropdownShareOpen: false
-    }
-  },
   setup() {
     // Was: process.env.baseUrl + this.$route.path
     // process.env.baseUrl is undefined at runtime (it is only read at config-eval
@@ -71,6 +66,11 @@ export default {
     const config = useRuntimeConfig()
     return {
       url: computed(() => config.public.baseUrl + route.path)
+    }
+  },
+  data() {
+    return {
+      isDropdownShareOpen: false
     }
   },
   methods: {
