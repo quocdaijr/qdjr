@@ -62,9 +62,15 @@ export default {
       isDropdownShareOpen: false
     }
   },
-  computed: {
-    url() {
-      return process.env.baseUrl + this.$route.path
+  setup() {
+    // Was: process.env.baseUrl + this.$route.path
+    // process.env.baseUrl is undefined at runtime (it is only read at config-eval
+    // time), so every share URL rendered as "undefined/blog/...". $route also
+    // relies on a vue-router global property that may not survive vue-router 5.
+    const route = useRoute()
+    const config = useRuntimeConfig()
+    return {
+      url: computed(() => config.public.baseUrl + route.path)
     }
   },
   methods: {

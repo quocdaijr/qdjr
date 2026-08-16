@@ -20,9 +20,14 @@
 <script>
 export default {
   name: "PostSearch",
-  data() {
+  // Was: data() { txt: this.$route.query.txt || "" }
+  // This component is rendered by Header.vue on every route, so a reliance on
+  // vue-router's $route global property is a whole-site crash risk under
+  // vue-router 5. useRoute() is the supported API.
+  setup() {
+    const route = useRoute()
     return {
-      txt: this.$route.query.txt || ""
+      txt: ref(String(route.query.txt ?? ""))
     }
   },
   // watch: {

@@ -1,16 +1,14 @@
 <template>
   <div class="w-full">
-    <HeaderContent :title="$route.query.txt"/>
-    <PostList list-type="bySearch" :extra-value="$route.query.txt.toString()"/>
+    <HeaderContent :title="txt"/>
+    <PostList list-type="bySearch" :extra-value="txt"/>
   </div>
 </template>
 
-<script>
-import HeaderContent from "~/components/HeaderContent";
-import PostList from "~/components/post/List";
-
-export default {
-  name: "index",
-  components: {PostList, HeaderContent}
-}
+<script setup lang="ts">
+// Was: $route.query.txt.toString() inline in the template, which threw
+// "Cannot read properties of undefined (reading 'toString')" whenever
+// /legacy-blogs/search was visited without a ?txt= param.
+const route = useRoute()
+const txt = computed(() => String(route.query.txt ?? ''))
 </script>
