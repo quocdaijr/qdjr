@@ -124,22 +124,26 @@ function formatDate(value: string | Date | undefined) {
   background-color: #fff;
   color: #24292e;
 }
+
 .prose :not(pre) > code {
   padding: 0.15em 0.35em;
   border-radius: 0.25rem;
   border: 1px solid #e5e7eb;
   font-size: 0.9em;
 }
+
 .prose :not(pre) > code::before,
 .prose :not(pre) > code::after {
   content: '';
 }
+
 .prose pre.shiki {
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   padding: 1rem;
   overflow-x: auto;
 }
+
 .prose pre.shiki code {
   background: transparent;
   padding: 0;

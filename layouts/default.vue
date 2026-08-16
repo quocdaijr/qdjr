@@ -38,7 +38,6 @@ useHead({
 }
 
 ::-webkit-scrollbar-track {
-  -webkit-border-radius: 5px;
   border-radius: 5px;
 }
 
@@ -49,6 +48,6 @@ useHead({
 
 /* Disable background color when press link, button,... */
 * {
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-tap-highlight-color: rgb(0 0 0 / 0%);
 }
 </style>
