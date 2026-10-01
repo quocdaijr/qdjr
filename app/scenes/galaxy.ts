@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import type {SceneFactory} from './types'
 
 const PALETTE = {
-  dark: {bg: 0x0a0920, sun: 0xffb347, star: 0xcfd3ff, orbit: 0x5a5c8a, starOpacity: 0.9, ambient: 0.12},
+  dark: {bg: 0x0a0920, sun: 0xffb347, star: 0xcfd3ff, orbit: 0x5a5c8a, starOpacity: 0.9, ambient: 0.22},
   light: {bg: 0xedeef8, sun: 0xe58f1a, star: 0x3b3d6b, orbit: 0x9a9cc4, starOpacity: 0.45, ambient: 0.6}
 } as const
 
@@ -27,8 +27,8 @@ const PLANETS: readonly PlanetSpec[] = [
 
 const SUN_RADIUS = 1.2
 // ponytail: tuned by eye for ACES tone mapping; raise if planets look muddy, lower if the inner ones blow out.
-const SUN_INTENSITY_DARK = 260
-const SUN_INTENSITY_LIGHT = 180
+const SUN_INTENSITY_DARK = 420
+const SUN_INTENSITY_LIGHT = 260
 const STAR_COUNT = 2000
 const STAR_SHELL_MIN = 60
 const STAR_SHELL_MAX = 120
@@ -39,7 +39,9 @@ const CAMERA_FOV = 50
 const CAMERA_START = {radius: 24, height: 9}
 const CAMERA_END = {radius: 11, height: 3}
 const CAMERA_SWEEP = Math.PI * 0.9
-const LOOK_AT = new THREE.Vector3(0, -1.5, 0) // keeps the sun below the hero text on /
+// Looking left of and below the sun pushes the system to the lower right of the
+// viewport, clear of the left-biased hero text on /.
+const LOOK_AT = new THREE.Vector3(-6, -1.5, 0)
 
 function randomInShell(min: number, max: number): [number, number, number] {
   const r = min + Math.random() * (max - min)

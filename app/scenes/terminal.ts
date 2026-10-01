@@ -21,7 +21,7 @@ const CAMERA_BASE_Z = 8
 const JOURNEY_RISE = 9 // how high the camera climbs over the /about journey
 const JOURNEY_ADVANCE = 6
 const POINTER_SWAY = 0.6
-const ICO_POSITION = new THREE.Vector3(0, 1.4, -10)
+const ICO_POSITION = new THREE.Vector3(6, 1.8, -12) // right of the hero text column
 const ICO_SPIN = 0.25
 
 function heightAt(x: number, z: number): number {

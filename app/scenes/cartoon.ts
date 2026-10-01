@@ -110,7 +110,9 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect}) => {
     return cloud
   })
 
-  const lookAt = new THREE.Vector3(0, 0.3, 0)
+  // Looking left of and above the island pushes it to the lower right of the
+  // viewport, clear of the left-biased hero text on /.
+  const lookAt = new THREE.Vector3(-2.5, 1.4, 0)
 
   return {
     scene,
