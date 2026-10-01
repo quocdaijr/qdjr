@@ -61,6 +61,30 @@ run `document.documentElement.classList.toggle('dark')` in the console.
 through `useJourney()`; the content lives in `app/data/profile.ts`. The locked
 design system is documented in [`design.md`](./design.md).
 
+
+## 🌐 Languages
+
+Vietnamese is the default (`/`, `/about`, `/blog`); English lives under `/en`.
+The header link switches language and keeps the current page. Browsers that
+prefer English are redirected from `/` to `/en` once; the choice is remembered
+in the `i18n_lang` cookie. UI strings are in `i18n/locales/{vi,en}.json`; the
+profile copy is in `app/data/profile.{vi,en}.ts`.
+
+### Translating posts
+
+Posts are written in Vietnamese in `content/blog/`. English versions are
+machine-translated with Google Cloud Translation and committed to
+`content/en/blog/`:
+
+    GOOGLE_TRANSLATE_API_KEY=… npm run translate:posts            # new or changed posts
+    GOOGLE_TRANSLATE_API_KEY=… npm run translate:posts -- --force # re-translate all
+    npm run translate:posts -- --dry-run                         # preview, no API call
+
+Each English post is labelled "Machine translated" and links to the original.
+A post without a translation appears on the English blog in Vietnamese with a
+"Vietnamese only" label. Edit a translation by hand if you like; it is
+regenerated only when its Vietnamese source changes (tracked by `sourceHash`).
+
 ## 🏗️ Build
 
 ```bash

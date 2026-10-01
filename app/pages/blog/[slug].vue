@@ -49,7 +49,7 @@
         </div>
 
         <div v-if="post.author" class="flex items-center gap-3 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200">
-          <div class="w-12 h-12 flex justify-center items-center uppercase rounded-full text-xl text-white bg-yellow-500 dark:bg-yellow-600 shrink-0">
+          <div class="w-12 h-12 flex justify-center items-center uppercase rounded-full text-xl text-white bg-yellow-700 shrink-0">
             <b>{{ post.author.charAt(0).toUpperCase() }}</b>
           </div>
           <div>
