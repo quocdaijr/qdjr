@@ -1,95 +1,84 @@
-// Theme management store for dark/light mode switching
-import { defineStore } from 'pinia'
+// Theme = vibe (user choice, persisted) + dark mode (derived from the Vietnam
+// clock, never persisted, no manual toggle).
+import {defineStore} from 'pinia'
+import {isNightInVietnam} from '~/utils/vnTime'
+
+export type Vibe = 'terminal' | 'cartoon' | 'galaxy'
+
+export const VIBES: readonly Vibe[] = ['terminal', 'cartoon', 'galaxy'] as const
+export const DEFAULT_VIBE: Vibe = 'terminal'
+export const VIBE_STORAGE_KEY = 'vibe'
+
+const CLOCK_INTERVAL_MS = 60_000
+
+export function isVibe(value: unknown): value is Vibe {
+  return typeof value === 'string' && (VIBES as readonly string[]).includes(value)
+}
 
 export interface ThemeState {
+  vibe: Vibe
   isDarkMode: boolean
   isInitialized: boolean
 }
 
 export const useThemeStore = defineStore('theme', {
   state: (): ThemeState => ({
+    vibe: DEFAULT_VIBE,
     isDarkMode: false,
     isInitialized: false
   }),
 
   getters: {
-    currentTheme: (state): 'dark' | 'light' => {
-      return state.isDarkMode ? 'dark' : 'light'
-    },
-    
-    logoSrc: (state): string => {
-      return state.isDarkMode ? '/logo-dark.svg' : '/logo.svg'
-    }
+    currentTheme: (state): 'dark' | 'light' => (state.isDarkMode ? 'dark' : 'light'),
+    logoSrc: (state): string => (state.isDarkMode ? '/logo-dark.svg' : '/logo.svg')
   },
 
   actions: {
-    // Initialize theme from localStorage or system preference
-    initializeTheme() {
+    // Restore the saved vibe (if valid) and evaluate the clock once.
+    initializeTheme(now: Date = new Date()) {
       if (import.meta.client && !this.isInitialized) {
-        // Check localStorage first
-        const savedTheme = localStorage.getItem('isDarkMode')
-        
-        if (savedTheme !== null) {
-          this.isDarkMode = savedTheme === 'true'
-        } else {
-          // Fall back to system preference
-          this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-        }
-        
-        // Apply theme to document
+        const saved = localStorage.getItem(VIBE_STORAGE_KEY)
+        this.vibe = isVibe(saved) ? saved : DEFAULT_VIBE
+        this.isDarkMode = isNightInVietnam(now)
         this.applyTheme()
         this.isInitialized = true
       }
     },
 
-    // Toggle between dark and light mode
-    toggleTheme() {
-      this.isDarkMode = !this.isDarkMode
-      this.saveTheme()
+    setVibe(vibe: Vibe) {
+      if (!isVibe(vibe)) return
+      this.vibe = vibe
+      if (import.meta.client) localStorage.setItem(VIBE_STORAGE_KEY, vibe)
       this.applyTheme()
     },
 
-    // Set specific theme
-    setTheme(isDark: boolean) {
-      this.isDarkMode = isDark
-      this.saveTheme()
+    nextVibe() {
+      const index = VIBES.indexOf(this.vibe)
+      this.setVibe(VIBES[(index + 1) % VIBES.length])
+    },
+
+    // Re-evaluate dark mode. Called once a minute by startClock().
+    syncClock(now: Date = new Date()) {
+      this.isDarkMode = isNightInVietnam(now)
       this.applyTheme()
     },
 
-    // Apply theme to document
     applyTheme() {
       if (import.meta.client) {
-        const htmlElement = document.documentElement
-        
-        if (this.isDarkMode) {
-          htmlElement.classList.add('dark')
-        } else {
-          htmlElement.classList.remove('dark')
-        }
+        const html = document.documentElement
+        html.classList.toggle('dark', this.isDarkMode)
+        html.dataset.vibe = this.vibe
       }
     },
 
-    // Save theme preference to localStorage
-    saveTheme() {
+    // Returns a stop function so callers (and tests) can clear the interval.
+    startClock(intervalMs: number = CLOCK_INTERVAL_MS): () => void {
+      let stop = () => {}
       if (import.meta.client) {
-        localStorage.setItem('isDarkMode', this.isDarkMode.toString())
+        const id = setInterval(() => this.syncClock(), intervalMs)
+        stop = () => clearInterval(id)
       }
-    },
-
-    // Listen for system theme changes
-    watchSystemTheme() {
-      if (import.meta.client) {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-        
-        mediaQuery.addEventListener('change', (e) => {
-          // Only update if user hasn't manually set a preference
-          const savedTheme = localStorage.getItem('isDarkMode')
-          if (savedTheme === null) {
-            this.isDarkMode = e.matches
-            this.applyTheme()
-          }
-        })
-      }
+      return stop
     }
   }
 })
