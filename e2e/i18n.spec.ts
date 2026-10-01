@@ -42,8 +42,18 @@ test.describe('languages', () => {
   test('the 404 page speaks the current language', async ({page}) => {
     await page.goto('/trang-khong-ton-tai')
     await expect(page.getByText('Xin lỗi, không tìm thấy nội dung bạn cần!')).toBeVisible()
+    await expect(page.locator('html')).toHaveAttribute('lang', 'vi-VN')
     await page.goto('/en/page-that-does-not-exist')
     await expect(page.getByText("Sorry, We couldn't find what you are looking for!")).toBeVisible()
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en-US')
+  })
+
+  test('the journey rail is labelled in the page language', async ({page}, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'rail is hidden below 60rem')
+    await page.goto('/about')
+    await expect(page.locator('nav.rail')).toHaveAttribute('aria-label', 'Các chặng hành trình')
+    await page.goto('/en/about')
+    await expect(page.locator('nav.rail')).toHaveAttribute('aria-label', 'Journey stops')
   })
 
   test('profile content is translated, not just the chrome', async ({page}) => {

@@ -60,6 +60,10 @@ const statusText = computed(() => String(statusCode.value).split('').join('  '))
 const {t, te} = useI18n()
 const localePath = useLocalePath()
 
+// error.vue renders outside app.vue, so it sets <html lang> itself.
+const i18nHead = useLocaleHead()
+useHead(() => ({htmlAttrs: {lang: i18nHead.value.htmlAttrs?.lang}}))
+
 const message = computed(() => {
   const key = `error.${statusCode.value}`
   return te(key) ? t(key) : t('error.default')
