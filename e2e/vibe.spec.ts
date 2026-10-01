@@ -69,4 +69,27 @@ test.describe('vibe switcher', () => {
     await page.goto('/blog')
     await expect(page.locator('canvas.vibe-scene')).toHaveCount(0)
   })
+
+  test('rapid vibe switching with a live renderer, then leaving the page, logs no errors', async ({page}) => {
+    const errors: string[] = []
+    page.on('console', (msg) => msg.type() === 'error' && errors.push(msg.text()))
+    page.on('pageerror', (err) => errors.push(err.message))
+
+    await page.goto('/')
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+
+    // Dispose-then-build runs synchronously on every click; no waits between.
+    const hero = page.locator('.hero')
+    for (const label of ['Cartoon', 'Galaxy', 'Terminal', 'Galaxy', 'Cartoon', 'Terminal']) {
+      await hero.locator(SEGMENTED_OPTION(label)).click()
+    }
+    await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'terminal')
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+
+    // Unmount mid-life: the renderer must be torn down without touching a disposed scene.
+    await page.getByRole('link', {name: 'Read the blog →'}).click()
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(0)
+
+    expect(errors).toEqual([])
+  })
 })

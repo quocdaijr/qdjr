@@ -45,7 +45,7 @@ import {PROFILE, QUOTE} from '~/data/profile'
 
 /* Terminal vibe: the N8 prompt, as a typographic cue only. */
 [data-vibe="terminal"] .hero-display::before {
-  content: "$ whoami";
+  content: "$ whoami" / ""; /* decorative: keep it out of the h1 accessible name */
   display: block;
   margin-bottom: var(--space-2xs);
   font-size: var(--text-md);
