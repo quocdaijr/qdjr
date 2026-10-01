@@ -118,7 +118,8 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@pinia/nuxt',
     '@vite-pwa/nuxt',
-    '@nuxt/content'
+    '@nuxt/content',
+    '@nuxtjs/i18n'
     // Note: robots and sitemap will be added back in next phase with proper configuration
   ],
 
@@ -134,6 +135,26 @@ export default defineNuxtConfig({
           langs: ['js', 'ts', 'vue', 'bash', 'json', 'yaml', 'md', 'html', 'css', 'php', 'python', 'go']
         }
       }
+    }
+  },
+
+  // Vietnamese at /, English under /en. Browsers whose preferred language is
+  // English are redirected once from / to /en; the cookie remembers a manual
+  // choice made with the header language switch.
+  i18n: {
+    strategy: 'prefix_except_default',
+    defaultLocale: 'vi',
+    baseUrl: process.env.APP_URL || 'https://qdjr.me',
+    locales: [
+      {code: 'vi', language: 'vi-VN', name: 'Tiếng Việt', file: 'vi.json'},
+      {code: 'en', language: 'en-US', name: 'English', file: 'en.json'}
+    ],
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_lang',
+      redirectOn: 'root',
+      alwaysRedirect: false,
+      fallbackLocale: 'vi'
     }
   },
 

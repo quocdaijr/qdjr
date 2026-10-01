@@ -10,6 +10,9 @@ export default defineConfig({
   reporter: process.env.CI ? 'github' : 'list',
   use: {
     baseURL: BASE_URL,
+    // The site redirects English-preferring browsers from / to /en on first
+    // visit. Pin the browser to Vietnamese so / stays the Vietnamese page.
+    locale: 'vi-VN',
     trace: 'on-first-retry'
   },
   // Screenshot comparison budget. 0 while triaging a change; a small ratio keeps

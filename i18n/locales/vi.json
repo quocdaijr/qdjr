@@ -1,0 +1,41 @@
+{
+  "nav": {"home": "Trang chủ", "blog": "Blog", "about": "Giới thiệu", "categories": "Danh mục", "toggleMenu": "Mở hoặc đóng menu điều hướng"},
+  "lang": {"switchTo": "Chuyển sang {language}"},
+  "search": {"label": "Tìm bài viết", "placeholder": "Tìm bài viết ...", "submit": "Tìm"},
+  "vibe": {"legend": "Phong cách", "current": "Phong cách: {current}. Chuyển sang {next}", "title": "Đổi phong cách (hiện tại: {current})", "pick": "Chọn phong cách"},
+  "home": {"primary": "Điều hướng chính", "about": "Về tôi →", "blog": "Đọc blog →"},
+  "about": {
+    "stops": "Các chặng hành trình", "hello": "Xin chào", "whatIDo": "Tôi làm gì", "sayHello": "Liên hệ",
+    "scrollHint": "Cuộn xuống để tiếp tục ↓", "expert": "Chuyên sâu", "proficient": "Thành thạo",
+    "major": "Chuyên ngành", "degree": "Bằng cấp", "position": "Vị trí", "technologies": "Công nghệ",
+    "thirdParties": "Bên thứ ba", "keyAchievements": "Thành tựu chính",
+    "projectCount": "Dự án {n} / {total}", "internal": "nội bộ", "visitLive": "Xem trực tiếp →",
+    "meta": {
+      "title": "Nguyễn Quốc Đại - Kỹ sư Phần mềm Backend Cấp cao",
+      "description": "Nguyễn Quốc Đại - Kỹ sư Phần mềm Backend Cấp cao với hơn 6 năm kinh nghiệm xây dựng và vận hành hệ thống backend hiệu năng cao cho nền tảng truyền thông và thương mại điện tử",
+      "ogDescription": "Kỹ sư Phần mềm Backend Cấp cao với hơn 6 năm kinh nghiệm về thiết kế hệ thống, tối ưu hiệu năng và xây dựng giải pháp mở rộng cho hệ thống production",
+      "keywords": "QDJr, Nguyễn Quốc Đại, Quoc Dai Nguyen, Kỹ sư Phần mềm Backend, hồ sơ, cv, PHP, Laravel, Node.js, Kubernetes"
+    }
+  },
+  "blog": {
+    "title": "Blog", "description": "Ghi chép, bài viết và đôi khi là vài dòng lan man.", "metaTitle": "Blog | QDJr", "siteSuffix": "QDJr Blog",
+    "loading": "Đang tải...", "empty": "Chưa có bài viết nào", "readMore": "Đọc tiếp", "published": "Đăng ngày {date}",
+    "author": "Tác giả", "notFound": "Không tìm thấy trang", "back": "Quay lại blog",
+    "tagDescription": "Các bài viết gắn thẻ {tag}.", "tagEmpty": "Chưa có bài viết nào với thẻ này",
+    "categoryDescription": "Các bài viết trong mục {category}.", "categoryEmpty": "Chưa có bài viết nào trong mục này",
+    "searchTitle": "Tìm kiếm", "searchTitleQuery": "Tìm kiếm: {q}", "searchResults": "{count} kết quả",
+    "searchHint": "Tìm bài viết theo tiêu đề, mô tả, thẻ hoặc danh mục.", "searchEnter": "Nhập từ khóa tìm kiếm ở trên",
+    "searchNoMatch": "Không có bài viết nào khớp với “{q}”"
+  },
+  "translation": {
+    "badgeMachine": "Dịch máy", "badgeOriginalOnly": "Chỉ có tiếng Việt",
+    "machineNotice": "Bài viết này được Google Dịch chuyển từ tiếng Việt và có thể có sai sót.",
+    "originalOnlyNotice": "Bài viết này chưa được dịch nên đang hiển thị bản gốc tiếng Việt.",
+    "readOriginal": "Đọc bản gốc tiếng Việt →"
+  },
+  "footer": {"madeWith": "Được làm với", "by": "bởi NguyenQuocDai", "scrollTop": "Lên đầu trang"},
+  "error": {
+    "400": "Yêu cầu không hợp lệ!", "401": "Bạn không có quyền truy cập!", "403": "Bạn không được phép xem nội dung này!",
+    "404": "Xin lỗi, không tìm thấy nội dung bạn cần!", "default": "Đã có lỗi xảy ra!", "home": "Về trang chủ"
+  }
+}

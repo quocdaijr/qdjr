@@ -1,0 +1,41 @@
+{
+  "nav": {"home": "Home", "blog": "Blog", "about": "About", "categories": "Categories", "toggleMenu": "Toggle navigation menu"},
+  "lang": {"switchTo": "Switch to {language}"},
+  "search": {"label": "Search posts", "placeholder": "Search post ...", "submit": "Search"},
+  "vibe": {"legend": "Vibe", "current": "Vibe: {current}. Switch to {next}", "title": "Switch vibe (now: {current})", "pick": "Pick a vibe"},
+  "home": {"primary": "Primary", "about": "About me →", "blog": "Read the blog →"},
+  "about": {
+    "stops": "Journey stops", "hello": "Hello", "whatIDo": "What I do", "sayHello": "Say hello",
+    "scrollHint": "Scroll to continue ↓", "expert": "Expert", "proficient": "Proficient",
+    "major": "Major", "degree": "Degree", "position": "Position", "technologies": "Technologies",
+    "thirdParties": "3rd parties", "keyAchievements": "Key Achievements",
+    "projectCount": "Project {n} / {total}", "internal": "internal", "visitLive": "Visit live →",
+    "meta": {
+      "title": "Quoc Dai Nguyen - Senior Backend Software Engineer",
+      "description": "Quoc Dai Nguyen - Senior Backend Software Engineer with 6+ years of experience building and operating high-performance backend systems for media and e-commerce platforms",
+      "ogDescription": "Senior Backend Software Engineer with 6+ years of experience in system design, performance optimization, and building scalable solutions for production systems",
+      "keywords": "QDJr, Quoc Dai Nguyen, Nguyen Quoc Dai, Senior Backend Software Engineer, profile, cv, PHP, Laravel, Node.js, Kubernetes"
+    }
+  },
+  "blog": {
+    "title": "Blog", "description": "Notes, write-ups and occasional rambling.", "metaTitle": "Blog | QDJr", "siteSuffix": "QDJr Blog",
+    "loading": "Loading...", "empty": "No posts yet", "readMore": "Read more", "published": "Published {date}",
+    "author": "Author", "notFound": "Page Not Found", "back": "Back to blog",
+    "tagDescription": "Posts tagged with {tag}.", "tagEmpty": "No posts with this tag",
+    "categoryDescription": "Posts in {category}.", "categoryEmpty": "No posts in this category",
+    "searchTitle": "Search", "searchTitleQuery": "Search: {q}", "searchResults": "{count} result | {count} results",
+    "searchHint": "Find a post by title, description, tag or category.", "searchEnter": "Enter a search term above",
+    "searchNoMatch": "No posts match “{q}”"
+  },
+  "translation": {
+    "badgeMachine": "Machine translated", "badgeOriginalOnly": "Vietnamese only",
+    "machineNotice": "This post was translated from Vietnamese by Google Translate and may contain mistakes.",
+    "originalOnlyNotice": "This post has not been translated yet, so it is shown in its original Vietnamese.",
+    "readOriginal": "Read the original (Vietnamese) →"
+  },
+  "footer": {"madeWith": "Made with", "by": "by NguyenQuocDai", "scrollTop": "Back to top"},
+  "error": {
+    "400": "Bad request!", "401": "Access is not allowed!", "403": "You aren't permitted to see this!",
+    "404": "Sorry, We couldn't find what you are looking for!", "default": "Something went wrong!", "home": "Back to home"
+  }
+}
