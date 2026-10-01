@@ -166,11 +166,12 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
     build: {
       // The main bundle is ~1MB because several legacy client plugins (prismjs
-      // with many languages, video.js, tsparticles, vue-spinner) are registered
-      // globally. They only run on /legacy-blogs/* but are bundled eagerly.
-      // The whole legacy surface is slated for removal — see
-      // ~/.claude/plans/in-my-project-currently-binary-sifakis.md follow-up #4 —
-      // so raising the warning threshold here is intentional until that happens.
+      // with many languages, video.js, vue-spinner) are registered globally.
+      // They only run on /legacy-blogs/* but are bundled eagerly. The whole
+      // legacy surface is slated for removal, so raising the warning threshold
+      // here is intentional until that happens. three.js is NOT part of this:
+      // it is reached only through dynamic imports in app/scenes/* and lands in
+      // its own async chunk.
       chunkSizeWarningLimit: 1200
     }
   },
