@@ -97,6 +97,13 @@ Two test layers, split by what each can actually verify:
 Playwright starts and stops its own dev server (see `webServer` in
 `playwright.config.ts`), so nothing stays listening on port 3000 after a run.
 
+
+> **Run `npm run typecheck` with the dev server stopped.** `nuxt typecheck`
+> regenerates `.nuxt/` in prepare mode, and `@nuxt/content` skips content
+> processing in that mode, so it writes an empty content dump into the same
+> `.nuxt/` that a running `nuxt dev` serves. The blog then shows "No posts"
+> until the dev server restarts. Production builds are not affected.
+
 ## 📁 Project structure
 
 Nuxt 4 sources live under `app/` (`srcDir`); everything else stays at the repo root.
