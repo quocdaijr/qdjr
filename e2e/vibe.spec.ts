@@ -47,4 +47,26 @@ test.describe('vibe switcher', () => {
 
     await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'galaxy')
   })
+
+  test('hero control switches the vibe and the heading renders before any canvas', async ({page}) => {
+    await page.goto('/')
+
+    await expect(page.getByRole('heading', {level: 1, name: 'Nguyen Quoc Dai'})).toBeVisible()
+    // The mobile drawer holds a second (hidden) segmented control; scope to the hero.
+    await page.locator('.hero').locator(SEGMENTED_OPTION('Cartoon')).click()
+
+    await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'cartoon')
+  })
+
+  test('scene canvas exists on / and /about but not on /blog', async ({page}) => {
+    await page.goto('/')
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+
+    await page.getByRole('link', {name: 'About me →'}).click()
+    await expect(page).toHaveURL(/\/about\/?$/)
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+
+    await page.goto('/blog')
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(0)
+  })
 })
