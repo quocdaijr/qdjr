@@ -1,5 +1,11 @@
 <template>
-  <section :id="`stop-${index}`" :data-stop="index" class="stop" :aria-labelledby="`stop-${index}-title`">
+  <section
+    :id="`stop-${index}`"
+    :data-stop="index"
+    class="stop"
+    :class="{'is-active': active}"
+    :aria-labelledby="`stop-${index}-title`"
+  >
     <div class="stop-panel">
       <p class="stop-stage font-mono" aria-hidden="true">{{ stage }}</p>
       <component :is="`h${level}`" :id="`stop-${index}-title`" class="stop-title font-display">
@@ -11,7 +17,10 @@
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(defineProps<{index: number; title: string; level?: 1 | 2}>(), {level: 2})
+const props = withDefaults(defineProps<{index: number; title: string; level?: 1 | 2; active?: boolean}>(), {
+  level: 2,
+  active: false
+})
 
 const stage = computed(() => String(props.index).padStart(2, '0'))
 </script>
@@ -27,7 +36,10 @@ const stage = computed(() => String(props.index).padStart(2, '0'))
   scroll-margin-top: var(--space-xl);
 }
 
-/* Opaque paper panel (glass is banned); the canvas shows around it. */
+/* Opaque paper panel (glass is banned); the canvas shows around it.
+   A stop waits, dimmed and slightly low, until it is the centred one; then
+   the panel settles and its contents follow in a short stagger. Only
+   opacity and transform move. */
 .stop-panel {
   max-width: 65ch;
   padding: var(--space-lg) var(--space-md);
@@ -35,6 +47,28 @@ const stage = computed(() => String(props.index).padStart(2, '0'))
   border-radius: var(--radius-card);
   background: var(--color-paper);
   color: var(--color-ink);
+  opacity: 0.35;
+  transform: translateY(16px);
+  transition: opacity var(--dur-long) var(--ease-out), transform var(--dur-long) var(--ease-out);
+}
+
+.stop-panel > * {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--dur-long) var(--ease-out), transform var(--dur-long) var(--ease-out);
+}
+
+.stop-panel > :nth-child(2) { transition-delay: 60ms; }
+.stop-panel > :nth-child(3) { transition-delay: 120ms; }
+.stop-panel > :nth-child(4) { transition-delay: 180ms; }
+.stop-panel > :nth-child(5) { transition-delay: 240ms; }
+.stop-panel > :nth-child(6) { transition-delay: 300ms; }
+.stop-panel > :nth-child(n + 7) { transition-delay: 360ms; }
+
+.stop.is-active .stop-panel,
+.stop.is-active .stop-panel > * {
+  opacity: 1;
+  transform: none;
 }
 
 .stop-stage {
@@ -61,6 +95,15 @@ h1.stop-title {
 @media (width >= 60rem) {
   .stop-panel {
     padding: var(--space-xl) var(--space-lg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stop-panel,
+  .stop-panel > * {
+    transform: none;
+    transition-duration: 150ms;
+    transition-delay: 0ms;
   }
 }
 </style>

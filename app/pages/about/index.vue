@@ -2,7 +2,7 @@
   <div class="journey" :data-active-stop="activeStop">
     <JourneyRail :labels="STOP_LABELS" :active="activeStop"/>
 
-    <JourneyStop :index="0" :title="PROFILE.displayName" :level="1">
+    <JourneyStop :index="0" :title="PROFILE.displayName" :level="1" :active="activeStop === 0">
       <img
         :src="PROFILE.photo"
         :alt="PROFILE.photoAlt"
@@ -16,7 +16,7 @@
       <p class="journey-hint" aria-hidden="true">Scroll to continue ↓</p>
     </JourneyStop>
 
-    <JourneyStop :index="1" title="What I do">
+    <JourneyStop :index="1" title="What I do" :active="activeStop === 1">
       <dl class="spec">
         <template v-for="skill in SKILLS" :key="skill.group">
           <dt>{{ skill.group }}</dt>
@@ -32,7 +32,13 @@
       </ul>
     </JourneyStop>
 
-    <JourneyStop v-for="(entry, i) in TIMELINE" :key="entry.period" :index="i + 2" :title="entry.org">
+    <JourneyStop
+      v-for="(entry, i) in TIMELINE"
+      :key="entry.period"
+      :index="TIMELINE_START + i"
+      :title="entry.org"
+      :active="activeStop === TIMELINE_START + i"
+    >
       <p class="journey-period font-mono">{{ entry.period }}</p>
       <p v-if="entry.kind === 'education'"><b>Major:</b> {{ entry.major }}<br><b>Degree:</b> {{ entry.degree }}</p>
       <template v-else>
@@ -46,22 +52,25 @@
       </template>
     </JourneyStop>
 
-    <JourneyStop :index="6" title="Live Projects & Products">
-      <ul class="projects">
-        <li v-for="project in PROJECTS" :key="project.name" class="project">
-          <img :src="project.image" :alt="project.alt" width="48" height="48" loading="lazy" class="project-logo">
-          <div class="project-body">
-            <h3 class="project-name">{{ project.name }}</h3>
-            <p>{{ project.description }}</p>
-            <p class="project-role">{{ project.role }}</p>
-            <a v-if="'url' in project" :href="project.url" target="_blank" rel="noopener noreferrer" class="link">Visit live →</a>
-            <span v-else class="project-internal">Internal</span>
-          </div>
-        </li>
-      </ul>
+    <!-- One stop per project: the logo lands first, then the copy follows. -->
+    <JourneyStop
+      v-for="(project, i) in PROJECTS"
+      :key="project.name"
+      :index="PROJECTS_START + i"
+      :title="project.name"
+      :active="activeStop === PROJECTS_START + i"
+    >
+      <p class="project-kicker font-mono">
+        Project {{ String(i + 1).padStart(2, '0') }} / {{ PROJECTS.length }}
+        <span v-if="!('url' in project)" class="project-internal">· internal</span>
+      </p>
+      <img :src="project.image" :alt="project.alt" width="96" height="96" loading="lazy" class="project-logo">
+      <p class="project-description">{{ project.description }}</p>
+      <p class="project-role">{{ project.role }}</p>
+      <a v-if="'url' in project" :href="project.url" target="_blank" rel="noopener noreferrer" class="link">Visit live →</a>
     </JourneyStop>
 
-    <JourneyStop :index="7" title="Say hello">
+    <JourneyStop :index="CONTACT_INDEX" title="Say hello" :active="activeStop === CONTACT_INDEX">
       <dl class="spec">
         <template v-for="row in CONTACT" :key="row.label">
           <dt>{{ row.label }}</dt>
@@ -78,11 +87,16 @@ import {CONTACT, OTHER_SKILLS, PROFILE, PROJECTS, SKILLS, TIMELINE} from '~/data
 
 defineOptions({name: 'AboutPage'})
 
+// Stop order: Hello · What I do · one per career stage · one per project · Say hello.
+const TIMELINE_START = 2
+const PROJECTS_START = TIMELINE_START + TIMELINE.length
+const CONTACT_INDEX = PROJECTS_START + PROJECTS.length
+
 const STOP_LABELS = [
   'Hello',
   'What I do',
   ...TIMELINE.map((entry) => entry.org),
-  'Live Projects & Products',
+  ...PROJECTS.map((project) => project.name),
   'Say hello'
 ]
 
@@ -134,7 +148,7 @@ useSeoMeta({
 
 <style scoped>
 /* Hallmark · macrostructure: Narrative Workflow · nav: shared header + N3 rail · footer: Ft2
- * feature: F3 tabular spec (skills, contact) · F4 step sequence (timeline) · design-system: design.md · designed-as-app */
+ * feature: F3 tabular spec (skills, contact) · F4 step sequence (timeline, projects) · design-system: design.md · designed-as-app */
 .journey-photo {
   width: 10rem;
   height: 10rem;
@@ -201,48 +215,43 @@ useSeoMeta({
 
 .plain {
   margin: 0;
-  padding-inline-start: 1.1em;
+  padding-inline-start: var(--space-md);
 }
 
 .plain li + li {
   margin-top: var(--space-2xs);
 }
 
-.projects {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-md);
-  margin: 0;
-  padding: 0;
-  list-style: none;
+/* Project stops */
+.project-kicker {
+  margin: 0 0 var(--space-md);
+  font-size: var(--text-sm);
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
 }
 
-.project {
-  display: grid;
-  grid-template-columns: 3rem minmax(0, 1fr);
-  gap: var(--space-sm);
+.project-internal {
+  color: var(--color-accent);
 }
 
 .project-logo {
-  width: 3rem;
-  height: 3rem;
+  width: 6rem;
+  height: 6rem;
+  margin-bottom: var(--space-md);
+  border: var(--rule-hair) solid var(--color-rule);
   border-radius: var(--radius-card);
+  background: var(--color-paper-2);
   object-fit: contain;
 }
 
-.project-name {
-  margin: 0 0 var(--space-3xs);
-  font-size: var(--text-base);
-  font-weight: 700;
+.project-description {
+  margin: 0 0 var(--space-sm);
+  font-size: var(--text-md);
+  line-height: 1.45;
 }
 
-.project-body p {
-  margin: 0 0 var(--space-3xs);
-}
-
-.project-role,
-.project-internal {
+.project-role {
+  margin: 0 0 var(--space-md);
   color: var(--color-muted);
-  font-size: var(--text-sm);
 }
 </style>
