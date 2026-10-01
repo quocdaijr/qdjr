@@ -81,7 +81,24 @@ export default defineNuxtConfig({
         { name: 'format-detection', content: 'telephone=no' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        // Vibe fonts. Three static stylesheets (one per vibe) rather than a
+        // runtime swap: browsers only download font binaries for text that is
+        // actually rendered, so the inactive vibes cost one small CSS fetch each.
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap'
+        },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,700,100,1&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600&display=swap'
+        },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Tomorrow:wght@600&family=Geist:wght@400;600&family=Geist+Mono:wght@400&display=swap'
+        }
       ]
     }
   },
@@ -166,11 +183,12 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
     build: {
       // The main bundle is ~1MB because several legacy client plugins (prismjs
-      // with many languages, video.js, tsparticles, vue-spinner) are registered
-      // globally. They only run on /legacy-blogs/* but are bundled eagerly.
-      // The whole legacy surface is slated for removal — see
-      // ~/.claude/plans/in-my-project-currently-binary-sifakis.md follow-up #4 —
-      // so raising the warning threshold here is intentional until that happens.
+      // with many languages, video.js, vue-spinner) are registered globally.
+      // They only run on /legacy-blogs/* but are bundled eagerly. The whole
+      // legacy surface is slated for removal, so raising the warning threshold
+      // here is intentional until that happens. three.js is NOT part of this:
+      // it is reached only through dynamic imports in app/scenes/* and lands in
+      // its own async chunk.
       chunkSizeWarningLimit: 1200
     }
   },
