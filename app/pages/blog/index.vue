@@ -18,7 +18,7 @@
     </section>
 
     <section v-else class="py-10 text-gray-500 dark:text-gray-300">
-      <article v-for="post in posts" :key="post.path" :lang="post.originalOnly ? 'vi' : undefined"
+      <article v-for="post in posts" :key="post.path"
                class="max-w-(--breakpoint-lg) mx-auto md:grid md:grid-cols-4">
         <div class="md:col-span-1 md:pr-12 lg:pr-16">
           <div class="relative h-full pb-4 md:border-r md:pb-0 md:pt-2">
@@ -37,9 +37,9 @@
         <div class="pb-8 mb-12 border-b md:col-span-3">
           <div class="prose md:prose-lg dark:prose-invert">
             <img v-if="post.thumbnail" :src="post.thumbnail" :alt="post.title" class="rounded-lg">
-            <h2 class="text-xl font-semibold py-4">{{ post.title }}</h2>
+            <h2 class="text-xl font-semibold py-4" :lang="post.originalOnly ? 'vi' : undefined">{{ post.title }}</h2>
             <PostTranslationBadge :post="post"/>
-            <i v-if="post.description" class="block text-sm font-normal">{{ post.description }}</i>
+            <i v-if="post.description" class="block text-sm font-normal" :lang="post.originalOnly ? 'vi' : undefined">{{ post.description }}</i>
             <div v-if="post.tags && post.tags.length" class="mt-3 text-xs">
               <NuxtLinkLocale v-for="tag in post.tags" :key="tag" :to="`/blog/tag/${tag}`"
                         class="inline-block mr-2 mb-1 px-2 py-0.5 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200">

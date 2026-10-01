@@ -1,6 +1,6 @@
 <template>
   <div class="h-full">
-    <HeaderContent v-if="post" :title="post.title" :background="post.cover || ''"/>
+    <HeaderContent v-if="post" :title="post.title" :background="post.cover || ''" :lang="articleLang"/>
 
     <div v-if="post"
          class="flex pb-8 px-1 sm:px-2 my-12 border-b md:col-span-3 border-gray-200 dark:border-gray-600 w-full max-w-(--breakpoint-lg) mx-auto">

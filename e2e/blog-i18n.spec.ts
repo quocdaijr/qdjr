@@ -35,4 +35,23 @@ test.describe('bilingual blog', () => {
     await page.goto('/en/blog/search')
     await expect(page.locator('main')).toContainText('Enter a search term above')
   })
+
+  test('Vietnamese text on English pages carries lang="vi", and only that text', async ({page}) => {
+    // Untranslated originals (no API key in CI): the title and description are
+    // Vietnamese, the badge, date and "Read more" around them are English.
+    await page.goto('/en/blog')
+    const first = page.locator('main article').first()
+    await expect(first).toBeVisible()
+    if (await first.locator('.translation-badge', {hasText: 'Vietnamese only'}).count()) {
+      await expect(first).not.toHaveAttribute('lang', /.+/)
+      await expect(first.locator('h2')).toHaveAttribute('lang', 'vi')
+    }
+
+    await page.goto('/en/blog/hello-world')
+    const notice = page.locator('[data-translation-notice]')
+    await expect(notice).toBeVisible()
+    if ((await notice.getAttribute('data-kind')) === 'original-only') {
+      await expect(page.locator('header h1').last()).toHaveAttribute('lang', 'vi')
+    }
+  })
 })

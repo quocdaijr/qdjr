@@ -1,5 +1,5 @@
 import {describe, expect, test} from 'vitest'
-import {needsTranslation, protect, restore, splitFrontMatter, translateMarkdownBody, translatePost} from '~~/scripts/translate/markdown.mjs'
+import {needsTranslation, parseCliArgs, protect, restore, splitFrontMatter, translateMarkdownBody, translatePost} from '~~/scripts/translate/markdown.mjs'
 
 // Stands in for Google: changes the words (prefix) but keeps every tag.
 const fakeTranslate = async (segments: string[]) => segments.map((s) => `EN ${s}`)
@@ -77,5 +77,32 @@ describe('needsTranslation', () => {
     expect(needsTranslation(existing, 'def', false)).toBe(true)
     expect(needsTranslation(null, 'abc', false)).toBe(true)
     expect(needsTranslation(existing, 'abc', true)).toBe(true)
+  })
+})
+
+describe('review fixes', () => {
+  test('keeps HTML entities inside inline code exactly as written', () => {
+    const source = 'Dùng `&lt;div&gt;` và `a &amp;&amp; b` trong code'
+    const {html, tokens} = protect(source)
+    expect(restore(html, tokens)).toBe(source)
+  })
+
+  test('keeps a whole link URL that contains parentheses', async () => {
+    const body = 'Xem [wiki](https://en.wikipedia.org/wiki/Foo_(bar)) nhé'
+    const {html, tokens} = protect(body)
+    expect(tokens).toContain('https://en.wikipedia.org/wiki/Foo_(bar)')
+    // Even if the translator moves text around the link, the URL survives intact.
+    const moved = html.replace(' nhé', '').replace('Xem ', 'See ')
+    expect(restore(moved, tokens)).toBe('See [wiki](https://en.wikipedia.org/wiki/Foo_(bar))')
+  })
+
+  test('preserves a Markdown hard line break (two trailing spaces)', async () => {
+    const {body: out} = await translateMarkdownBody('dòng một  \ndòng hai', fakeTranslate)
+    expect(out.split('\n')[0]).toBe('EN dòng một  ')
+  })
+
+  test('--only without a value is an error, not "translate everything"', () => {
+    expect(() => parseCliArgs(['--only'])).toThrow(/--only needs a post name/)
+    expect(parseCliArgs(['--only', 'hello-world', '--force'])).toEqual({force: true, dryRun: false, only: 'hello-world'})
   })
 })

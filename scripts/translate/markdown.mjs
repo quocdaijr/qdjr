@@ -56,7 +56,8 @@ export function protect(text) {
   s = s.replace(/`[^`]+`/g, stash) // inline code
   s = s.replace(/!\[[^\]]*\]\([^)]*\)/g, stash) // images
   s = s.replace(/<https?:\/\/[^>\s]+>/g, stash) // autolinks
-  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_m, label, url) => {
+  // One level of balanced parentheses in the URL, e.g. …/wiki/Foo_(bar).
+  s = s.replace(/\[([^\]]+)\]\(((?:[^()\s]|\([^()\s]*\))+)\)/g, (_m, label, url) => {
     tokens.push(url)
     return `${OPEN}A${tokens.length - 1}${CLOSE}${label}${OPEN}/A${CLOSE}`
   })
@@ -80,20 +81,21 @@ export function protect(text) {
 /** Inverse of protect(); null when any placeholder did not survive exactly once. */
 export function restore(html, tokens) {
   const used = new Array(tokens.length).fill(0)
-  const take = (k) => {
-    const i = Number(k)
-    used[i] += 1
-    return tokens[i] ?? ''
+  const mark = (k) => {
+    used[Number(k)] += 1
+    return `${OPEN}T${k}${CLOSE}`
   }
 
-  const s = html
-    .replace(/<a\b[^>]*\bdata-k="(\d+)"[^>]*>([\s\S]*?)<\/a>/g, (_m, k, label) => `[${label.trim()}](${take(k)})`)
-    .replace(/<span\b[^>]*\bdata-k="(\d+)"[^>]*>\s*<\/span>/g, (_m, k) => take(k))
+  // Placeholders become sentinels first, so decoding the translated text can
+  // never touch the protected code spans and URLs that go back in afterwards.
+  const marked = html
+    .replace(/<a\b[^>]*\bdata-k="(\d+)"[^>]*>([\s\S]*?)<\/a>/g, (_m, k, label) => `[${label.trim()}](${mark(k)})`)
+    .replace(/<span\b[^>]*\bdata-k="(\d+)"[^>]*>\s*<\/span>/g, (_m, k) => mark(k))
     .replace(/<b>\s*([\s\S]*?)\s*<\/b>/g, '**$1**')
     .replace(/<i>\s*([\s\S]*?)\s*<\/i>/g, '*$1*')
 
-  if (used.some((n) => n !== 1) || /<\/?(?:a|span|b|i)\b/.test(s)) return null
-  return decodeHtml(s)
+  if (used.some((n) => n !== 1) || /<\/?(?:a|span|b|i)\b/.test(marked)) return null
+  return decodeHtml(marked).replace(new RegExp(`${OPEN}T(\\d+)${CLOSE}`, 'g'), (_m, k) => tokens[Number(k)])
 }
 
 /** Call the translator in bounded batches; order of results matches sources. */
@@ -134,8 +136,9 @@ function collectJobs(lines) {
     }
 
     const prefix = LINE_PREFIX.exec(line)[1]
-    const text = line.slice(prefix.length)
-    if (HAS_LETTER.test(text)) jobs.push({index, cellIndex: null, prefix, text, ...protect(text)})
+    const trailing = / {2,}$/.exec(line)?.[0] ?? '' // Markdown hard line break
+    const text = line.slice(prefix.length, line.length - trailing.length)
+    if (HAS_LETTER.test(text)) jobs.push({index, cellIndex: null, prefix, trailing, text, ...protect(text)})
   })
   return jobs
 }
@@ -155,7 +158,7 @@ export async function translateMarkdownBody(body, translate) {
     if (restored === null) keptLines += 1
     const value = restored === null ? job.text : restored.trim()
     if (job.cellIndex === null) {
-      out[job.index] = job.prefix + value
+      out[job.index] = job.prefix + value + job.trailing
       return
     }
     const row = cells.get(job.index) ?? lines[job.index].split('|')
@@ -193,4 +196,14 @@ export async function translatePost(raw, translate, {provider, sourceHash, now})
 export function needsTranslation(existingRaw, sourceHash, force) {
   if (force || existingRaw === null) return true
   return splitFrontMatter(existingRaw).data.sourceHash !== sourceHash
+}
+
+/** Parse translate-posts CLI flags. `--only` must name a post; a bare `--only` would otherwise translate (and bill) every post. */
+export function parseCliArgs(argv) {
+  const onlyAt = argv.indexOf('--only')
+  const only = onlyAt >= 0 ? argv[onlyAt + 1] : null
+  if (onlyAt >= 0 && (!only || only.startsWith('--'))) {
+    throw new Error('--only needs a post name, e.g. --only hello-world')
+  }
+  return {force: argv.includes('--force'), dryRun: argv.includes('--dry-run'), only}
 }

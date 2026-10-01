@@ -14,7 +14,7 @@ import {createHash} from 'node:crypto'
 import {existsSync} from 'node:fs'
 import {mkdir, readdir, readFile, writeFile} from 'node:fs/promises'
 import path from 'node:path'
-import {needsTranslation, translatePost} from './translate/markdown.mjs'
+import {needsTranslation, parseCliArgs, translatePost} from './translate/markdown.mjs'
 
 const ROOT = path.resolve(import.meta.dirname, '..')
 const SOURCE_DIR = path.join(ROOT, 'content/blog')
@@ -25,11 +25,14 @@ const TARGET_LANG = 'en'
 const PROVIDER = 'google-translate'
 const PREVIEW_LINES = 40
 
-const args = process.argv.slice(2)
-const force = args.includes('--force')
-const dryRun = args.includes('--dry-run')
-const onlyAt = args.indexOf('--only')
-const only = onlyAt >= 0 ? args[onlyAt + 1] : null
+let cli
+try {
+  cli = parseCliArgs(process.argv.slice(2))
+} catch (error) {
+  console.error(`translate:posts failed: ${error.message}`)
+  process.exit(1)
+}
+const {force, dryRun, only} = cli
 
 function googleTranslator(apiKey) {
   return async (segments) => {

@@ -18,11 +18,11 @@
     </section>
 
     <section v-else class="py-10 max-w-(--breakpoint-lg) mx-auto">
-      <NuxtLinkLocale v-for="post in results" :key="post.path" :to="post.path" :lang="post.originalOnly ? 'vi' : undefined"
+      <NuxtLinkLocale v-for="post in results" :key="post.path" :to="post.path"
                 class="block py-4 px-2 border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">{{ post.title }}</h2>
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100" :lang="post.originalOnly ? 'vi' : undefined">{{ post.title }}</h2>
         <PostTranslationBadge :post="post"/>
-        <p v-if="post.description" class="text-gray-600 dark:text-gray-300 mt-1">{{ post.description }}</p>
+        <p v-if="post.description" class="text-gray-600 dark:text-gray-300 mt-1" :lang="post.originalOnly ? 'vi' : undefined">{{ post.description }}</p>
         <span class="text-xs text-gray-600 dark:text-gray-400">{{ formatPostDate(post.publishedAt, locale) }}</span>
       </NuxtLinkLocale>
     </section>
