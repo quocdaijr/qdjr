@@ -25,6 +25,14 @@ test.describe('about journey', () => {
     await expect(page.locator('.journey')).toHaveAttribute('data-active-stop', '7')
   })
 
+  test('the journey page opts into smooth scrolling (blog routes do not)', async ({page}) => {
+    await page.goto('/about')
+    await page.locator('#stop-0').waitFor()
+
+    const behavior = await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)
+    expect(behavior).toBe('smooth')
+  })
+
   test('a stop taller than the viewport still becomes active on mobile', async ({page}, testInfo) => {
     test.skip(testInfo.project.name !== 'mobile', 'mobile-only: the projects stop is several viewports tall')
     await page.goto('/about')
