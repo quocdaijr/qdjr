@@ -8,6 +8,9 @@
               class="flex items-center px-5 py-3 font-semibold text-gray-600 dark:text-gray-300">
       <span class="w-full" @click="methodToggleNav">About</span>
     </NuxtLink>
+    <div class="px-5 py-3">
+      <VibeSwitch variant="segmented"/>
+    </div>
     <div v-if="categories" v-click-outside="closeCatMenu"
          class="relative flex items-center px-5 py-3 font-semibold text-gray-600 dark:text-gray-300 cursor-pointer">
       <div class="w-full flex justify-between items-center" @click="toggleCatMenu">
