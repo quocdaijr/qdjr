@@ -48,7 +48,7 @@
         </div>
 
         <div v-if="post.author" class="flex items-center gap-3 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200">
-          <div class="w-12 h-12 flex justify-center items-center uppercase rounded-full text-xl text-white bg-yellow-500 dark:bg-yellow-600 shrink-0">
+          <div class="w-12 h-12 flex justify-center items-center uppercase rounded-full text-xl text-white bg-yellow-700 shrink-0">
             <b>{{ post.author.charAt(0).toUpperCase() }}</b>
           </div>
           <div>
@@ -61,7 +61,7 @@
 
     <div v-else class="flex flex-col items-center my-20 text-2xl text-gray-500 dark:text-gray-300">
       <span>Page Not Found</span>
-      <NuxtLink to="/blog" class="mt-4 text-base text-blue-500 hover:underline">Back to blog</NuxtLink>
+      <NuxtLink to="/blog" class="mt-4 text-base text-blue-600 hover:underline dark:text-blue-400">Back to blog</NuxtLink>
     </div>
   </div>
 </template>

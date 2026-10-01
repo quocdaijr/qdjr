@@ -8,13 +8,13 @@
     <section v-if="!q"
              class="flex flex-col items-center my-10 text-center text-2xl text-gray-500 dark:text-gray-300">
       <span class="text-gray-400 pt-2">Enter a search term above</span>
-      <NuxtLink to="/blog" class="mt-4 text-base text-blue-500 hover:underline">Back to blog</NuxtLink>
+      <NuxtLink to="/blog" class="mt-4 text-base text-blue-600 hover:underline dark:text-blue-400">Back to blog</NuxtLink>
     </section>
 
     <section v-else-if="!results.length"
              class="flex flex-col items-center my-10 text-center text-2xl text-gray-500 dark:text-gray-300">
       <span class="text-gray-400 pt-2">No posts match “{{ q }}”</span>
-      <NuxtLink to="/blog" class="mt-4 text-base text-blue-500 hover:underline">Back to blog</NuxtLink>
+      <NuxtLink to="/blog" class="mt-4 text-base text-blue-600 hover:underline dark:text-blue-400">Back to blog</NuxtLink>
     </section>
 
     <section v-else class="py-10 max-w-(--breakpoint-lg) mx-auto">

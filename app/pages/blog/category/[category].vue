@@ -5,7 +5,7 @@
     <section v-if="!posts || !posts.length"
              class="flex flex-col items-center my-10 text-center text-2xl text-gray-500 dark:text-gray-300">
       <span class="text-gray-400 pt-2">No posts in this category</span>
-      <NuxtLink to="/blog" class="mt-4 text-base text-blue-500 hover:underline">Back to blog</NuxtLink>
+      <NuxtLink to="/blog" class="mt-4 text-base text-blue-600 hover:underline dark:text-blue-400">Back to blog</NuxtLink>
     </section>
 
     <section v-else class="py-10 max-w-(--breakpoint-lg) mx-auto">
