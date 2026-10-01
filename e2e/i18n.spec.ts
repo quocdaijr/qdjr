@@ -16,4 +16,33 @@ test.describe('languages', () => {
     await expect(page.locator('link[rel="alternate"][hreflang="en-US"]')).toHaveAttribute('href', /\/en\/about$/)
     await expect(page.locator('link[rel="alternate"][hreflang="vi-VN"]')).toHaveAttribute('href', /\/about$/)
   })
+
+  test('the chrome follows the language', async ({page}, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'desktop nav')
+    await page.goto('/blog')
+    await expect(page.locator('header nav').filter({visible: true}).first()).toContainText('Giới thiệu')
+    await expect(page.locator('#site-search').first()).toHaveAttribute('placeholder', 'Tìm bài viết ...')
+
+    await page.goto('/en/blog')
+    await expect(page.locator('header nav').filter({visible: true}).first()).toContainText('About')
+    await expect(page.locator('#site-search').first()).toHaveAttribute('placeholder', 'Search post ...')
+  })
+
+  test('the language switch keeps the current page', async ({page}, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'desktop nav holds the switch')
+    await page.goto('/about')
+    await page.locator('header nav .lang-switch').filter({visible: true}).first().click()
+    await expect(page).toHaveURL(/\/en\/about\/?$/)
+
+    await page.locator('header nav .lang-switch').filter({visible: true}).first().click()
+    await expect(page).toHaveURL(/\/about\/?$/)
+    await expect(page).not.toHaveURL(/\/en\//)
+  })
+
+  test('the 404 page speaks the current language', async ({page}) => {
+    await page.goto('/trang-khong-ton-tai')
+    await expect(page.getByText('Xin lỗi, không tìm thấy nội dung bạn cần!')).toBeVisible()
+    await page.goto('/en/page-that-does-not-exist')
+    await expect(page.getByText("Sorry, We couldn't find what you are looking for!")).toBeVisible()
+  })
 })

@@ -6,7 +6,7 @@
       <Clock />
       <div class="flex mb-2 space-x-2">
         <div class="flex items-center">
-          <span>Made with&nbsp;</span>
+          <span>{{ $t('footer.madeWith') }}&nbsp;</span>
           <span>
             &nbsp;
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" viewBox="0 0 20 20"
@@ -17,7 +17,7 @@
             </svg>
             &nbsp;
           </span>
-          <span>&nbsp;by NguyenQuocDai</span>
+          <span>&nbsp;{{ $t('footer.by') }}</span>
         </div>
       </div>
       <!--      <div class="mb-8 text-sm text-gray-500 dark:text-gray-300">-->
@@ -26,7 +26,7 @@
       <!--           href="https://github.com/tailwindlabs/blog.tailwindcss.com">Tailwind Blog</a>-->
       <!--      </div>-->
     </div>
-    <a ref="scrollToTop"
+    <a ref="scrollToTop" role="button" :aria-label="$t('footer.scrollTop')"
       class="animate-bounce fixed right-8 bottom-10 text-gray-100 bg-gray-700 p-1 opacity-80 dark:bg-gray-300 dark:text-gray-600 cursor-pointer hidden"
       @click="scrollTop">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 sm:h-10 sm:w-10" viewBox="0 0 20 20" fill="currentColor">

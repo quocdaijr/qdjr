@@ -18,10 +18,12 @@
 </template>
 
 <script setup>
-const SCENE_ROUTES = new Set(['/', '/about'])
+// Matched by route base name, not path: /en/about and /about are the same page.
+const SCENE_ROUTE_NAMES = new Set(['index', 'about'])
 
 const route = useRoute()
-const hasScene = computed(() => SCENE_ROUTES.has(route.path.replace(/\/+$/, '') || '/'))
+const getRouteBaseName = useRouteBaseName()
+const hasScene = computed(() => SCENE_ROUTE_NAMES.has(String(getRouteBaseName(route) ?? '')))
 
 // Set body attributes for theme styling
 useHead({
