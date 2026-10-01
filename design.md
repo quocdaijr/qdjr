@@ -14,7 +14,7 @@ Light/dark is **not** a user preference: it follows the clock in UTC+7
 
 ## Macrostructure family
 - `/` (profile): **Marquee Hero** — the name is the statement; the three.js canvas is the fold background.
-- `/about`: **Narrative Workflow** — eight numbered stops (`00`–`07`), opaque paper panels over the canvas, N3 side rail ≥ 60 rem.
+- `/about`: **Narrative Workflow** — 17 numbered stops (`00`–`16`: hello · skills · four career stages · one per project · contact), opaque paper panels over the canvas, N3 side rail ≥ 60 rem.
 - Blog / content pages: unchanged layout, retinted by tokens only. Typography only, no enrichment.
 
 ## Theme
