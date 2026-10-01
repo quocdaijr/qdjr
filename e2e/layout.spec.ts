@@ -65,3 +65,35 @@ test('light mode applies at noon in Vietnam', async ({page}, testInfo) => {
 
   await expect(page.locator('html')).not.toHaveClass(/dark/)
 })
+
+test('blog prose follows the vibe tokens', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop', 'runs once, on desktop')
+
+  await page.goto('/blog/hello-world')
+  const article = page.locator('article.prose')
+  await expect(article).toBeVisible()
+
+  // @tailwindcss/typography bakes slate values into --tw-prose-*; main.css
+  // repoints them at the vibe ramp. If that override lands in the wrong
+  // cascade layer the plugin wins and prose stays slate in every vibe, so the
+  // value would neither leave slate's hue nor move when the vibe changes.
+  const readBody = () => article.evaluate((el) => getComputedStyle(el).getPropertyValue('--tw-prose-body'))
+  const terminal = await readBody()
+  await page.evaluate(() => {
+    document.documentElement.dataset.vibe = 'cartoon'
+  })
+  const cartoon = await readBody()
+
+  expect(terminal).not.toContain('258.338') // Tailwind slate hue
+  expect(cartoon).not.toBe(terminal)
+})
+
+test('blog routes do not inherit the journey smooth scroll', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop', 'runs once, on desktop')
+
+  await page.goto('/blog')
+  await expect(page.locator('main')).toBeVisible()
+
+  const behavior = await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)
+  expect(behavior).toBe('auto')
+})
