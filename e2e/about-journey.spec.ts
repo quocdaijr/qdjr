@@ -6,7 +6,7 @@ const FIRST_PROJECT_STOP = 6
 
 test.describe('about journey', () => {
   test('renders one stop per section and per project, with ordered ids', async ({page}) => {
-    await page.goto('/about')
+    await page.goto('/en/about')
 
     await expect(page.locator('[data-stop]')).toHaveCount(STOP_COUNT)
     for (let i = 0; i < STOP_COUNT; i++) {

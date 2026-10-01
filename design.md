@@ -32,7 +32,7 @@ Tailwind `gray-*` / `blue-*` utilities are remapped to the vibe ramps in `main.c
 ## Typography (2+1)
 - terminal: JetBrains Mono 400/700 for everything (single-font by design).
 - cartoon: display Fraunces 700 (SOFT 100, WONK 1) · body Bricolage Grotesque 400/600.
-- galaxy: display Tomorrow 600 · body Geist 400/600 · outlier Geist Mono (stage numbers, clock).
+- galaxy: display Chakra Petch 600 (Tomorrow has no Vietnamese subset) · body Geist 400/600 · outlier Geist Mono (stage numbers, clock).
 - Headings are always roman. Display: `clamp(2.75rem, 5vw + 1rem, 5.25rem)`, tracking −0.03em.
 
 ## Spacing

@@ -97,7 +97,7 @@ export default defineNuxtConfig({
         },
         {
           rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Tomorrow:wght@600&family=Geist:wght@400;600&family=Geist+Mono:wght@400&display=swap'
+          href: 'https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=Geist:wght@400;600&family=Geist+Mono:wght@400&display=swap'
         }
       ]
     }

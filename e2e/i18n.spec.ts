@@ -45,4 +45,14 @@ test.describe('languages', () => {
     await page.goto('/en/page-that-does-not-exist')
     await expect(page.getByText("Sorry, We couldn't find what you are looking for!")).toBeVisible()
   })
+
+  test('profile content is translated, not just the chrome', async ({page}) => {
+    await page.goto('/about')
+    await page.locator('#stop-5').waitFor()
+    await expect(page.locator('#stop-5')).toContainText('Kỹ sư Phần mềm Backend Cấp cao')
+
+    await page.goto('/en/about')
+    await page.locator('#stop-5').waitFor()
+    await expect(page.locator('#stop-5')).toContainText('Senior Backend Software Engineer')
+  })
 })
