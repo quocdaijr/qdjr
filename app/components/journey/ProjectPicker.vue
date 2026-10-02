@@ -113,6 +113,7 @@ onBeforeUnmount(() => (focus.value = null))
 
 .picker-list li {
   flex: 0 0 auto;
+  min-width: 0;
   scroll-snap-align: start;
 }
 
@@ -191,6 +192,7 @@ onBeforeUnmount(() => (focus.value = null))
 }
 
 .picker-name {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }

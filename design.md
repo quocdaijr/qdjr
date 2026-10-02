@@ -45,6 +45,7 @@ Tailwind `gray-*` / `blue-*` utilities are remapped to the vibe ramps in `main.c
 - Cartoon: a train loops the diorama island on `/`; on `/about` it runs to the centred stop's station (braking curve, shortest way round the loop) with a chase camera that frames the station beside the text panel (above it on phones). Reduced motion parks it instantly.
 - Cartoon is Ghibli-painterly: painted sky dome (the island floats in open sky), instanced cumulus clouds, wind sway on tree crowns and meadow grass, petals by day and fireflies at night. All of it freezes under reduced motion.
 - Galaxy: shooting stars cross the sky every few seconds; on the Projects stop each project is a labelled star in its employer's constellation, and picking one fires a shooting star onto it while the camera turns to it.
+- Terminal: on the Projects stop a 3D git graph floats above the grid — one trunk per employer, one branch per project (equal commit counts: a shape, not a record). Picking a project lights its branch, moves `HEAD` to its tip and glides the camera there.
 - Projects: one `/about` stop with a grouped picker (employer → project). Switching cross-fades the detail (opacity + 6 px, `--dur-short`); the rail shows a small sub-dot per project; the cartoon chase camera slides to the picked billboard in the project yard.
 - `prefers-reduced-motion: reduce`: the scene renders one frame per state change; reveals are a 150 ms fade; anchor jumps are instant.
 
