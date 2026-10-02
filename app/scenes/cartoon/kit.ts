@@ -1,9 +1,17 @@
 import * as THREE from 'three'
+import {createWind, type Wind} from './wind'
 
-// Hex because THREE.Color cannot parse oklch(). The warm diorama register:
-// cream sky, terracotta, two greens (design.md cartoon + train-diorama).
+// Hex because THREE.Color cannot parse oklch(). The Ghibli register: a
+// painted blue sky over warm haze, lush meadow greens, cream walls and
+// red-brown roofs by day; a deep blue summer night with fireflies.
 export interface Colors {
+  /** Fog and horizon haze (the sky dome blends from here up to skyTop). */
   sky: number
+  skyTop: number
+  horizon: number
+  sunlight: number
+  petal: number
+  firefly: number
   ground: number
   cliff: number
   grass: number
@@ -30,16 +38,18 @@ export interface Colors {
 
 export const PALETTE: Readonly<Record<'light' | 'dark', Colors>> = {
   light: {
-    sky: 0xf6ecd8, ground: 0x8d5e43, cliff: 0x6f4a35, grass: 0x9bc77a, leaf: 0x5d9c57, leafDark: 0x3f7d5a,
-    trunk: 0x6b4631, wall: 0xfff6e1, roof: 0xd9704a, accent: 0xca4e36, rail: 0x5a5f66, sleeper: 0x7a5236,
-    ballast: 0xc9bca4, platform: 0xd9c9a8, water: 0x6fb3d9, cloud: 0xffffff, stone: 0xb9b2a5, window: 0x3d4a5c,
+    sky: 0xf3ead3, skyTop: 0x7fb8e6, horizon: 0xf3ead3, sunlight: 0xfff0d2, petal: 0xf7c6cf, firefly: 0xf6f08a,
+    ground: 0x8d5e43, cliff: 0x6f4a35, grass: 0x86bf4f, leaf: 0x4f9a3f, leafDark: 0x2f6e3c,
+    trunk: 0x6b4631, wall: 0xfbf3e0, roof: 0xb8533b, accent: 0xca4e36, rail: 0x5a5f66, sleeper: 0x7a5236,
+    ballast: 0xc9bca4, platform: 0xd9c9a8, water: 0x6fb7d6, cloud: 0xffffff, stone: 0xb9b2a5, window: 0x3d4a5c,
     glow: 0xffc36b, train: 0xca4e36, trainDark: 0x3f2a1f, metal: 0x4a4f57,
     flowers: [0xef704c, 0xf2c14e, 0xffffff, 0xc8453a, 0x9b7fd6]
   },
   dark: {
-    sky: 0x2b2320, ground: 0x5e3f2d, cliff: 0x4a3224, grass: 0x6f9a57, leaf: 0x4f8a4b, leafDark: 0x356a4b,
+    sky: 0x3c4777, skyTop: 0x141c46, horizon: 0x3c4777, sunlight: 0x9fb2ff, petal: 0xf7c6cf, firefly: 0xf6f08a,
+    ground: 0x4a3426, cliff: 0x3a2a20, grass: 0x557f45, leaf: 0x3d6b45, leafDark: 0x2a4d36,
     trunk: 0x5a3b2a, wall: 0xe9d9b8, roof: 0xb9583a, accent: 0xca4e36, rail: 0x6c7178, sleeper: 0x5e3f2a,
-    ballast: 0x8f8470, platform: 0xa8977a, water: 0x2f5d7a, cloud: 0xb9aea3, stone: 0x8c857a, window: 0xffb15c,
+    ballast: 0x8f8470, platform: 0xa8977a, water: 0x2f4f7a, cloud: 0x8f96bf, stone: 0x8c857a, window: 0xffb15c,
     glow: 0xffc36b, train: 0xb9472f, trainDark: 0x2b1c14, metal: 0x3a3e45,
     flowers: [0xc9604a, 0xc9a24a, 0xd9cfc4, 0xa83a30, 0x7d68ad]
   }
@@ -86,13 +96,17 @@ export interface Kit {
   material(color: number, side?: THREE.Side): THREE.MeshToonMaterial
   windowMaterial(): THREE.MeshToonMaterial
   glowMaterial(): THREE.MeshToonMaterial
+  /** Foliage material that bends in the shared wind between y = base and base + height. */
+  swayMaterial(color: number, base: number, height: number): THREE.MeshToonMaterial
   mesh(geometry: THREE.BufferGeometry, material: THREE.Material): THREE.Mesh
   random(): number
+  wind: Wind
 }
 
 export function createKit(isDark: boolean): Kit {
   const colors = isDark ? PALETTE.dark : PALETTE.light
   const gradientMap = toonRamp()
+  const wind = createWind()
   const cache = new Map<string, THREE.MeshToonMaterial>()
   const cached = (key: string, make: () => THREE.MeshToonMaterial) => {
     const hit = cache.get(key)
@@ -111,7 +125,10 @@ export function createKit(isDark: boolean): Kit {
     material: (color, side = THREE.FrontSide) => cached(`${color}:${side}`, () => new THREE.MeshToonMaterial({color, gradientMap, side})),
     windowMaterial: () => cached('window', () => lit(colors.window, 1.1)),
     glowMaterial: () => cached('glow', () => lit(colors.glow, 2)),
+    swayMaterial: (color, base, height) =>
+      cached(`sway:${color}:${base}:${height}`, () => wind.patch(new THREE.MeshToonMaterial({color, gradientMap}), base, height)),
     mesh: (geometry, material) => new THREE.Mesh(faceted(geometry), material),
-    random: mulberry32(SEED)
+    random: mulberry32(SEED),
+    wind
   }
 }

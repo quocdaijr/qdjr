@@ -2,8 +2,11 @@ import * as THREE from 'three'
 import {journeyStations} from '~/data/journeyStations'
 import {PROFILE_CONTENT} from '~/data/profile'
 import type {SceneFactory} from '../types'
+import {buildClouds} from './clouds'
 import {createKit} from './kit'
 import {DEFAULT_MOTION, stepTrain, type TrainMotion} from './motion'
+import {buildParticles} from './particles'
+import {buildSky, SUN_DIRECTION} from './sky'
 import {buildStations} from './stations'
 import {buildTrack, sideAt} from './track'
 import {buildTrain} from './train'
@@ -31,12 +34,15 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
   const {colors} = kit
 
   const scene = new THREE.Scene()
-  scene.background = new THREE.Color(colors.sky)
-  scene.fog = new THREE.Fog(colors.sky, FOG.near, FOG.far)
-  scene.add(new THREE.HemisphereLight(colors.sky, colors.ground, isDark ? 0.45 : 1.1))
-  const sun = new THREE.DirectionalLight(0xffffff, isDark ? 0.35 : 1.4)
-  sun.position.set(12, 20, 8)
+  scene.background = null // the painted sky dome is the backdrop
+  scene.fog = new THREE.Fog(colors.horizon, FOG.near, FOG.far)
+  scene.add(buildSky(colors, isDark))
+  scene.add(new THREE.HemisphereLight(colors.skyTop, colors.grass, isDark ? 1.1 : 1.15))
+  // Warm afternoon sun by day, cool moonlight by night, from where the sky dome glows.
+  const sun = new THREE.DirectionalLight(colors.sunlight, isDark ? 1.1 : 1.5)
+  sun.position.copy(SUN_DIRECTION).multiplyScalar(40)
   scene.add(sun)
+  scene.userData.windTime = 0
 
   const camera = new THREE.PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 220)
 
@@ -44,7 +50,9 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
   const stations = buildStations(kit, track, STATIONS, loadAssets && typeof window !== 'undefined')
   const world = buildWorld(kit, track, stations.anchors, detail)
   const train = buildTrain(kit)
-  scene.add(world.group, track.group, stations.group, train.group)
+  const clouds = buildClouds(kit, detail)
+  const particles = buildParticles(kit, detail)
+  scene.add(world.group, track.group, stations.group, train.group, clouds.mesh, particles.object)
 
   const config = {length: track.length, ...DEFAULT_MOTION}
   let motion: TrainMotion = {u: 0, velocity: 0}
@@ -105,6 +113,11 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
       motion = stepTrain(motion, target, dt, config, reduceMotion)
       train.place(track.curve, track.length, motion.u, motion.velocity * track.length, dt)
       world.update(dt, elapsed)
+      const still = reduceMotion ? 0 : dt
+      clouds.update(still)
+      particles.update(still, elapsed)
+      kit.wind.time.value = reduceMotion ? 0 : elapsed
+      scene.userData.windTime = kit.wind.time.value
 
       if (stop === null) overview(pointer)
       else chase(stop, focus)
