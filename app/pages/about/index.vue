@@ -17,19 +17,21 @@
     </JourneyStop>
 
     <JourneyStop :index="1" :title="t('about.whatIDo')" :active="activeStop === 1">
+      <!-- One table: technical skills, then the soft skills in the same rhythm. -->
       <dl class="spec">
         <template v-for="skill in content.skills" :key="skill.group">
           <dt>{{ skill.group }}</dt>
           <dd>
-            <p v-if="skill.expert"><span class="spec-level">{{ t('about.expert') }}</span> {{ skill.expert }}</p>
-            <p v-if="skill.proficient"><span class="spec-level">{{ t('about.proficient') }}</span> {{ skill.proficient }}</p>
+            <p v-if="skill.expert" class="spec-line"><span class="spec-level">{{ t('about.expert') }}</span><span>{{ skill.expert }}</span></p>
+            <p v-if="skill.proficient" class="spec-line"><span class="spec-level">{{ t('about.proficient') }}</span><span>{{ skill.proficient }}</span></p>
             <p v-if="skill.note">{{ skill.note }}</p>
           </dd>
         </template>
+        <template v-for="item in content.otherSkills" :key="item.label">
+          <dt>{{ item.label }}</dt>
+          <dd><p>{{ item.text }}</p></dd>
+        </template>
       </dl>
-      <ul class="plain">
-        <li v-for="item in content.otherSkills" :key="item.label"><b>{{ item.label }}:</b> {{ item.text }}</li>
-      </ul>
     </JourneyStop>
 
     <JourneyStop
@@ -155,27 +157,41 @@ useSeoMeta({
   margin-top: var(--space-md);
 }
 
-/* F3 tabular spec sheet: key/value rows with hairline rules. */
+/* F3 tabular spec sheet: label | value rows. The hairline runs unbroken under
+   both columns (no column gap; the value column pads itself), and label and
+   value share the same top padding so their first lines align. */
 .spec {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-2xs) var(--space-md);
   margin: 0 0 var(--space-md);
+  border-top: var(--rule-hair) solid var(--color-rule);
 }
 
 .spec dt {
-  padding-top: var(--space-2xs);
+  padding-top: var(--space-xs);
   font-weight: 700;
 }
 
 .spec dd {
   margin: 0;
-  padding-bottom: var(--space-2xs);
+  padding: var(--space-3xs) 0 var(--space-xs);
   border-bottom: var(--rule-hair) solid var(--color-rule);
 }
 
 .spec p {
   margin: 0 0 var(--space-3xs);
+}
+
+.spec p:last-child {
+  margin-bottom: 0;
+}
+
+/* "Expert  PHP (Yii2, Laravel)": wrapped values indent past the level label. */
+.spec-line {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--space-2xs);
 }
 
 .spec-level {
@@ -185,18 +201,27 @@ useSeoMeta({
 
 @media (width >= 40rem) {
   .spec {
-    grid-template-columns: 11rem minmax(0, 1fr);
+    grid-template-columns: 13rem minmax(0, 1fr);
   }
 
   .spec dt {
+    padding: var(--space-xs) var(--space-md) var(--space-xs) 0;
     border-bottom: var(--rule-hair) solid var(--color-rule);
-    padding-bottom: var(--space-2xs);
+  }
+
+  .spec dd {
+    padding-top: var(--space-xs);
   }
 }
 
 .plain {
   margin: 0;
   padding-inline-start: var(--space-md);
+  list-style: disc;
+}
+
+.plain li::marker {
+  color: var(--color-muted);
 }
 
 .plain li + li {

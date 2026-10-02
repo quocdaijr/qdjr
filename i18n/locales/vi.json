@@ -5,10 +5,10 @@
   "vibe": {"legend": "Phong cách", "current": "Phong cách: {current}. Chuyển sang {next}", "title": "Đổi phong cách (hiện tại: {current})", "pick": "Chọn phong cách"},
   "home": {"primary": "Điều hướng chính", "about": "Về tôi →", "blog": "Đọc blog →"},
   "about": {
-    "stops": "Các chặng hành trình", "hello": "Xin chào", "whatIDo": "Tôi làm gì", "sayHello": "Liên hệ",
-    "scrollHint": "Cuộn xuống để tiếp tục ↓", "expert": "Chuyên sâu", "proficient": "Thành thạo",
+    "stops": "Các chặng hành trình", "hello": "Xin chào", "whatIDo": "Kỹ năng", "sayHello": "Liên hệ",
+    "scrollHint": "Cuộn xuống để xem tiếp ↓", "expert": "Expert", "proficient": "Proficient",
     "major": "Chuyên ngành", "degree": "Bằng cấp", "position": "Vị trí", "technologies": "Công nghệ",
-    "thirdParties": "Bên thứ ba", "keyAchievements": "Thành tựu chính",
+    "thirdParties": "3rd parties", "keyAchievements": "Thành tựu chính",
     "projectCount": "Dự án {n} / {total}", "internal": "nội bộ", "visitLive": "Xem trực tiếp →",
     "meta": {
       "title": "Nguyễn Quốc Đại - Senior Backend Software Engineer",
