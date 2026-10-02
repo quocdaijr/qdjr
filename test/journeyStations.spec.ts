@@ -8,7 +8,7 @@ const {vi, en} = PROFILE_CONTENT
 describe('journeyStations', () => {
   test('one station per /about stop, in stop order', () => {
     const stations = journeyStations(en)
-    expect(stations).toHaveLength(2 + en.timeline.length + en.projects.length + 1)
+    expect(stations).toHaveLength(2 + en.timeline.length + 1 + 1)
     expect(stations[0].kind).toBe('home')
     expect(stations[1].kind).toBe('workshop')
     expect(stations.at(-1)?.kind).toBe('post')
@@ -19,9 +19,12 @@ describe('journeyStations', () => {
     expect(kinds).toEqual(['school', 'office', 'press', 'tower'])
   })
 
-  test('every project is a billboard showing its logo', () => {
-    const kiosks = journeyStations(en).filter((s) => s.kind === 'kiosk')
-    expect(kiosks.map((k) => k.image)).toEqual(en.projects.map((p) => p.image))
+  test('all projects share one yard station that shows every logo', () => {
+    const stations = journeyStations(en)
+    const yard = stations[2 + en.timeline.length]
+    expect(yard.kind).toBe('yard')
+    expect(yard.images).toEqual(en.projects.map((p) => p.image))
+    expect(stations.filter((s) => s.kind === 'yard')).toHaveLength(1)
   })
 
   test('both languages produce the same stations', () => {

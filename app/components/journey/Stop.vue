@@ -6,7 +6,7 @@
     :class="{'is-active': active}"
     :aria-labelledby="`stop-${index}-title`"
   >
-    <div class="stop-panel">
+    <div class="stop-panel" :class="{'is-wide': wide}">
       <p class="stop-stage font-mono" aria-hidden="true">{{ stage }}</p>
       <component :is="`h${level}`" :id="`stop-${index}-title`" class="stop-title font-display">
         {{ title }}
@@ -17,9 +17,10 @@
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(defineProps<{index: number; title: string; level?: 1 | 2; active?: boolean}>(), {
+const props = withDefaults(defineProps<{index: number; title: string; level?: 1 | 2; active?: boolean; wide?: boolean}>(), {
   level: 2,
-  active: false
+  active: false,
+  wide: false
 })
 
 const stage = computed(() => String(props.index).padStart(2, '0'))
@@ -50,6 +51,11 @@ const stage = computed(() => String(props.index).padStart(2, '0'))
   opacity: 0.35;
   transform: translateY(16px);
   transition: opacity var(--dur-long) var(--ease-out), transform var(--dur-long) var(--ease-out);
+}
+
+/* A stop holding its own sub-navigation (the projects picker) needs the room. */
+.stop-panel.is-wide {
+  max-width: 46rem;
 }
 
 .stop-panel > * {

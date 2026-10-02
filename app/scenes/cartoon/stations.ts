@@ -17,10 +17,16 @@ export interface StationAnchor {
   building: THREE.Vector3
   /** Ground-plane unit vector from the track towards the building (island-inward). */
   side: THREE.Vector3
+  /** Billboard centres of the project yard, in project order (empty for other stations). */
+  targets: THREE.Vector3[]
 }
 
-/** Stations sit at even arc-length spacing, half a gap in from the loop seam. */
-export const stationU = (index: number, count: number) => (index + 0.5) / count
+// Calibration knob: shifts every station along the loop (in station gaps) so
+// the wide project yard lands on a straight; test/scenes.spec.ts pins the fit.
+const STATION_PHASE = 0.25
+
+/** Stations sit at even arc-length spacing, STATION_PHASE gaps in from the loop seam. */
+export const stationU = (index: number, count: number) => (index + STATION_PHASE) / count
 
 function numberSign(label: string, loadAssets: boolean): THREE.Material | null {
   if (!loadAssets || typeof document === 'undefined') return null
@@ -141,7 +147,11 @@ export function buildStations(
       lamp(kit, platformAt.clone().addScaledVector(t, LAMP_ALONG)),
       sign(kit, String(i).padStart(2, '0'), platformAt.clone().addScaledVector(t, SIGN_ALONG), facing, loadAssets)
     )
-    return {u, platform: platformAt, building: buildingAt, side}
+    building.updateMatrixWorld(true)
+    const targets = building.children
+      .filter((child) => child.name.startsWith('billboard-'))
+      .map((board) => board.getWorldPosition(new THREE.Vector3()).setY(board.userData.boardHeight as number))
+    return {u, platform: platformAt, building: buildingAt, side, targets}
   })
 
   return {group, anchors, footprints}

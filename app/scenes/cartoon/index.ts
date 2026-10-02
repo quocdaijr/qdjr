@@ -21,6 +21,8 @@ const OVERVIEW = {position: new THREE.Vector3(12, 26, 38), look: new THREE.Vecto
 // Phones: the island sits below the hero text instead of behind it.
 const OVERVIEW_NARROW = {position: new THREE.Vector3(0, 34, 52), look: new THREE.Vector3(0, 13, -6)}
 const CHASE = {distance: 13, height: 8.5, back: 5, lookShift: 4.5, lookRise: 1.2, frame: 14, narrowDrop: 5}
+// Projects stop: the camera slides along the track to the picked billboard and steps in.
+const YARD_CHASE = {zoom: 3, weight: 0.85, shift: 2.5}
 const CAMERA_SMOOTHING = 2.5
 const POINTER_SWAY = 1.2
 
@@ -53,6 +55,7 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
   const wantLook = new THREE.Vector3()
   const inward = new THREE.Vector3()
   const right = new THREE.Vector3()
+  const offset = new THREE.Vector3()
   const up = new THREE.Vector3(0, 1, 0)
 
   const overview = (pointer: {x: number; y: number}) => {
@@ -63,18 +66,23 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
 
   const anchorAt = (stop: number) => stations.anchors[THREE.MathUtils.clamp(Math.round(stop), 0, stations.anchors.length - 1)]
 
-  const chase = (stop: number) => {
+  const chase = (stop: number, focus: number | null) => {
     const anchor = anchorAt(stop)
+    const picked = focus === null ? undefined : anchor.targets[focus]
     const trainAt = track.curve.getPointAt(motion.u)
     sideAt(track.curve, motion.u, inward)
     if (inward.dot(new THREE.Vector3(-trainAt.x, 0, -trainAt.z)) < 0) inward.negate()
     const tangent = track.curve.getTangentAt(motion.u)
 
     // Stand on the outer side of the train, a little behind, looking across it at the station.
-    wantEye.copy(trainAt).addScaledVector(inward, -CHASE.distance).addScaledVector(tangent, -CHASE.back)
+    // On the yard, frame the track beside the picked billboard rather than the train itself.
+    const along = picked ? tangent.dot(offset.subVectors(picked, trainAt)) : 0
+    const subject = offset.copy(trainAt).addScaledVector(tangent, along)
+    const distance = picked ? CHASE.distance - YARD_CHASE.zoom : CHASE.distance
+    wantEye.copy(subject).addScaledVector(inward, -distance).addScaledVector(tangent, -CHASE.back)
     wantEye.y = CHASE.height
     const nearness = THREE.MathUtils.clamp(1 - trainAt.distanceTo(anchor.building) / CHASE.frame, 0, 1)
-    wantLook.copy(trainAt).lerp(anchor.building, 0.7 * nearness)
+    wantLook.copy(subject).lerp(picked ?? anchor.building, (picked ? YARD_CHASE.weight : 0.7) * nearness)
     wantLook.y += CHASE.lookRise
 
     // Wide screens: shift the aim left so the subject sits right of centre,
@@ -82,14 +90,14 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
     // subject to lift it into the strip above the panel.
     const wide = THREE.MathUtils.clamp((camera.aspect - 0.8) / 0.8, 0, 1)
     right.subVectors(wantLook, wantEye).cross(up).normalize()
-    wantLook.addScaledVector(right, -CHASE.lookShift * wide)
+    wantLook.addScaledVector(right, -(CHASE.lookShift + (picked ? YARD_CHASE.shift : 0)) * wide)
     wantLook.y -= CHASE.narrowDrop * (1 - wide)
   }
 
   return {
     scene,
     camera,
-    update(dt, elapsed, _progress, pointer, stop) {
+    update(dt, elapsed, _progress, pointer, stop, focus) {
       const target = stop === null ? null : anchorAt(stop).u
       // Built while a stop is centred (vibe or theme switch on /about): start
       // parked there rather than re-running the line from the seam.
@@ -99,7 +107,7 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
       world.update(dt, elapsed)
 
       if (stop === null) overview(pointer)
-      else chase(stop)
+      else chase(stop, focus)
       if (!cameraReady || reduceMotion) {
         eye.copy(wantEye)
         look.copy(wantLook)

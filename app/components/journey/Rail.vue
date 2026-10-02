@@ -6,13 +6,17 @@
           <span class="rail-num font-mono">{{ String(i).padStart(2, '0') }}</span>
           <span class="sr-only">{{ label }}</span>
         </a>
+        <!-- Which project is picked inside the projects stop; the picker itself is the accessible control. -->
+        <span v-if="sub && sub.stop === i" class="rail-sub" aria-hidden="true">
+          <span v-for="k in sub.count" :key="k" class="rail-sub-dot" :class="{'is-on': sub.active === k - 1}"/>
+        </span>
       </li>
     </ol>
   </nav>
 </template>
 
 <script setup lang="ts">
-defineProps<{labels: readonly string[]; active: number}>()
+defineProps<{labels: readonly string[]; active: number; sub?: {stop: number; count: number; active: number | null}}>()
 
 const {t} = useI18n()
 </script>
@@ -67,6 +71,25 @@ const {t} = useI18n()
 
   .rail-num {
     font-size: 0.75rem;
+  }
+
+  .rail-sub {
+    display: grid;
+    justify-items: center;
+    gap: 3px;
+    width: 2rem;
+    padding: var(--space-3xs) 0;
+  }
+
+  .rail-sub-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--color-rule);
+  }
+
+  .rail-sub-dot.is-on {
+    background: var(--color-ink);
   }
 }
 </style>

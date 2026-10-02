@@ -122,23 +122,44 @@ const tower: Builder = (kit) => {
   return g
 }
 
-/** Billboard showing the project's logo. */
-const kiosk: Builder = (kit, station, loadAssets) => {
+const BOARD_HEIGHT = 1.75
+// Two rows of five on a plaza; the back row stands taller so it shows over the front.
+const YARD = {columns: 5, spacing: 2, rows: [{z: 0.7, lift: 0}, {z: -1.3, lift: 0.9}], plaza: [10.6, 0.06, 4]} as const
+
+/** One project billboard showing its logo; the origin is its ground centre. */
+function billboard(kit: Kit, image: string, loadAssets: boolean, lift: number): THREE.Group {
   const {wall, trunk, roof} = kit.colors
   const g = new THREE.Group()
   g.add(
-    post(kit, 1.5, trunk, [-0.65, 0]),
-    post(kit, 1.5, trunk, [0.65, 0]),
-    box(kit, [1.6, 1.15, 0.1], kit.material(wall), [0, 1.75, 0]),
-    box(kit, [1.8, 0.08, 0.32], kit.material(roof), [0, 2.38, 0.05])
+    post(kit, 1.5 + lift, trunk, [-0.65, 0]),
+    post(kit, 1.5 + lift, trunk, [0.65, 0]),
+    box(kit, [1.6, 1.15, 0.1], kit.material(wall), [0, BOARD_HEIGHT + lift, 0]),
+    box(kit, [1.8, 0.08, 0.32], kit.material(roof), [0, BOARD_HEIGHT + 0.63 + lift, 0.05])
   )
-  if (loadAssets && station.image) {
-    const texture = new THREE.TextureLoader().load(station.image)
+  if (loadAssets) {
+    const texture = new THREE.TextureLoader().load(image)
     texture.colorSpace = THREE.SRGBColorSpace
     const logo = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 0.95), new THREE.MeshBasicMaterial({map: texture, toneMapped: false}))
-    logo.position.set(0, 1.75, 0.056)
+    logo.position.set(0, BOARD_HEIGHT + lift, 0.056)
     g.add(logo)
   }
+  // The camera aims here when this project is picked.
+  g.userData.boardHeight = BOARD_HEIGHT + lift
+  return g
+}
+
+/** The Projects stop: every project's billboard on one plaza, named billboard-<k>. */
+const yard: Builder = (kit, station, loadAssets) => {
+  const g = new THREE.Group()
+  const plaza = box(kit, [...YARD.plaza], kit.material(kit.colors.platform), [0, 0.03, -0.3])
+  g.add(plaza)
+  ;(station.images ?? []).forEach((image, k) => {
+    const row = YARD.rows[Math.floor(k / YARD.columns)] ?? YARD.rows[YARD.rows.length - 1]
+    const board = billboard(kit, image, loadAssets, row.lift)
+    board.position.set(((k % YARD.columns) - (YARD.columns - 1) / 2) * YARD.spacing, 0, row.z)
+    board.name = `billboard-${k}`
+    g.add(board)
+  })
   return g
 }
 
@@ -162,6 +183,6 @@ export const BUILDERS: Readonly<Record<StationKind, Builder>> = {
   office,
   press,
   tower,
-  kiosk,
+  yard,
   post: postOffice
 }

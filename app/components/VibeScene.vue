@@ -27,6 +27,7 @@ const canvas = ref<HTMLCanvasElement | null>(null)
 const store = useThemeStore()
 const journey = useJourneyProgress()
 const journeyStop = useJourneyStop()
+const journeyFocus = useJourneyFocus()
 
 let renderer: THREE.WebGLRenderer | null = null
 let active: VibeScene | null = null
@@ -46,7 +47,7 @@ function aspectOf(el: HTMLCanvasElement): number {
 
 function renderFrame(dt: number) {
   if (!renderer || !active) return
-  active.update(dt, elapsed, progress, pointer, journeyStop.value)
+  active.update(dt, elapsed, progress, pointer, journeyStop.value, journeyFocus.value)
   renderer.render(active.scene, active.camera)
 }
 
@@ -124,7 +125,7 @@ onMounted(() => {
 
 watch(() => [store.vibe, store.isDarkMode] as const, buildScene)
 
-watch([journey, journeyStop], ([value]) => {
+watch([journey, journeyStop, journeyFocus], ([value]) => {
   if (!reduceMotion) return
   progress = value
   renderFrame(0)

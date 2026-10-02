@@ -5,3 +5,6 @@ export const useJourneyProgress = () => useState<number>('journey-progress', () 
 // stop: index of the centred /about stop, or null when no journey page is
 // mounted (lets a scene tell the home page from the first journey stop).
 export const useJourneyStop = () => useState<number | null>('journey-stop', () => null)
+
+// focus: project picked on the /about Projects stop, or null when the picker is not mounted.
+export const useJourneyFocus = () => useState<number | null>('journey-focus', () => null)
