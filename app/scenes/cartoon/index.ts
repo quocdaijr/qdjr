@@ -17,9 +17,10 @@ const FOG = {near: 38, far: 95}
 // Calibration knobs, tuned by screenshot: the overview keeps the island to the
 // right of the hero text on /, the chase camera frames each station on the
 // right half of the screen beside the /about panel.
-const OVERVIEW = {position: new THREE.Vector3(10, 24, 36), look: new THREE.Vector3(-8, -2, 1)}
-const OVERVIEW_NARROW = {position: new THREE.Vector3(0, 32, 46), look: new THREE.Vector3(0, -2, 0)}
-const CHASE = {distance: 7.5, height: 4.2, back: 2.5, lookShift: 2.4, lookRise: 0.8, frame: 12}
+const OVERVIEW = {position: new THREE.Vector3(12, 26, 38), look: new THREE.Vector3(-12, -1, 2)}
+// Phones: the island sits below the hero text instead of behind it.
+const OVERVIEW_NARROW = {position: new THREE.Vector3(0, 34, 52), look: new THREE.Vector3(0, 13, -6)}
+const CHASE = {distance: 13, height: 8.5, back: 5, lookShift: 4.5, lookRise: 1.2, frame: 14, narrowDrop: 5}
 const CAMERA_SMOOTHING = 2.5
 const POINTER_SWAY = 1.2
 
@@ -71,13 +72,16 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
     wantEye.copy(trainAt).addScaledVector(inward, -CHASE.distance).addScaledVector(tangent, -CHASE.back)
     wantEye.y = CHASE.height
     const nearness = THREE.MathUtils.clamp(1 - trainAt.distanceTo(anchor.building) / CHASE.frame, 0, 1)
-    wantLook.copy(trainAt).lerp(anchor.building, 0.5 * nearness)
+    wantLook.copy(trainAt).lerp(anchor.building, 0.7 * nearness)
     wantLook.y += CHASE.lookRise
 
-    // Shift the aim left so the subject sits right of centre, clear of the text panel.
-    const shift = CHASE.lookShift * THREE.MathUtils.clamp((camera.aspect - 0.8) / 0.8, 0, 1)
+    // Wide screens: shift the aim left so the subject sits right of centre,
+    // clear of the text panel. Phones: the panel is centred, so aim below the
+    // subject to lift it into the strip above the panel.
+    const wide = THREE.MathUtils.clamp((camera.aspect - 0.8) / 0.8, 0, 1)
     right.subVectors(wantLook, wantEye).cross(up).normalize()
-    wantLook.addScaledVector(right, -shift)
+    wantLook.addScaledVector(right, -CHASE.lookShift * wide)
+    wantLook.y -= CHASE.narrowDrop * (1 - wide)
   }
 
   return {
