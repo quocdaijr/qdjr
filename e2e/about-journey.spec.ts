@@ -130,4 +130,26 @@ test.describe('about journey', () => {
     }
     expect(Math.max(...heights) - Math.min(...heights)).toBeLessThan(2)
   })
+
+  for (const vibe of ['cartoon', 'galaxy', 'terminal']) {
+    test(`the projects stop can be driven in the ${vibe} vibe without errors`, async ({page}, testInfo) => {
+      test.skip(testInfo.project.name !== 'desktop', 'one run is enough')
+      const errors: string[] = []
+      page.on('pageerror', (e) => errors.push(e.message))
+      page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
+      await page.addInitScript((v) => localStorage.setItem('vibe', v), vibe)
+
+      await page.goto('/about')
+      const stop = page.locator(`#stop-${PROJECTS_STOP}`)
+      await stop.scrollIntoViewIfNeeded()
+      await expect(page.locator('.journey')).toHaveAttribute('data-active-stop', String(PROJECTS_STOP))
+      for (const k of [0, 4, 9]) {
+        await stop.locator('.picker-item').nth(k).click()
+        await page.waitForTimeout(400)
+      }
+      await page.locator('.vibe-switch-icon').filter({visible: true}).first().click() // rebuild with a project picked
+      await page.waitForTimeout(1500)
+      expect(errors).toEqual([])
+    })
+  }
 })

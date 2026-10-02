@@ -1,6 +1,6 @@
 // test/journeyStations.spec.ts
 import {describe, expect, test} from 'vitest'
-import {journeyStations} from '~/data/journeyStations'
+import {journeyStations, projectsStopIndex} from '~/data/journeyStations'
 import {PROFILE_CONTENT} from '~/data/profile'
 
 const {vi, en} = PROFILE_CONTENT
@@ -29,5 +29,10 @@ describe('journeyStations', () => {
 
   test('both languages produce the same stations', () => {
     expect(journeyStations(vi)).toEqual(journeyStations(en))
+  })
+
+  test('the projects stop is the yard, after the career stages', () => {
+    expect(projectsStopIndex(en)).toBe(2 + en.timeline.length)
+    expect(projectsStopIndex(vi)).toBe(projectsStopIndex(en))
   })
 })

@@ -1,9 +1,14 @@
 import * as THREE from 'three'
-import type {SceneFactory} from './types'
+import {projectsStopIndex} from '~/data/journeyStations'
+import {PROFILE_CONTENT} from '~/data/profile'
+import {panelAim} from '../framing'
+import {approach, type SceneFactory} from '../types'
+import {buildConstellation, CONSTELLATION_CENTRE} from './constellation'
+import {AMBIENT_DURATION, createStreaks, nextAmbientDelay, PICK_DURATION, type Vec3} from './streaks'
 
 const PALETTE = {
-  dark: {bg: 0x0a0920, sun: 0xffb347, star: 0xcfd3ff, orbit: 0x5a5c8a, starOpacity: 0.9, ambient: 0.22},
-  light: {bg: 0xedeef8, sun: 0xe58f1a, star: 0x3b3d6b, orbit: 0x9a9cc4, starOpacity: 0.45, ambient: 0.6}
+  dark: {bg: 0x0a0920, sun: 0xffb347, star: 0xcfd3ff, orbit: 0x5a5c8a, starOpacity: 0.9, ambient: 0.22, streak: 0xffffff, bright: 0xfff4d6, label: '#cfd3ff'},
+  light: {bg: 0xedeef8, sun: 0xe58f1a, star: 0x3b3d6b, orbit: 0x9a9cc4, starOpacity: 0.45, ambient: 0.6, streak: 0x2b2d5b, bright: 0x2b2d5b, label: '#2b2d5b'}
 } as const
 
 interface PlanetSpec {
@@ -43,6 +48,17 @@ const CAMERA_SWEEP = Math.PI * 0.9
 // viewport, clear of the left-biased hero text on /.
 const LOOK_AT = new THREE.Vector3(-6, -1.5, 0)
 
+// The /about Projects stop: the camera leaves the journey orbit for the
+// constellations and keeps the picked star right of the text panel.
+const PROJECTS = PROFILE_CONTENT.en.projects
+const PROJECTS_STOP = projectsStopIndex(PROFILE_CONTENT.en)
+const PROJECTS_CAMERA = {back: 22, overview: 28, rise: 1.5, shift: 10, drop: 3.5, blend: 2.5, glide: 2.5}
+// A picked project's shooting star falls in from up and to the left of its star.
+const PICK_FROM = new THREE.Vector3(-14, 9, -6)
+// Ambient shooting stars cross the view, in camera space.
+const AMBIENT_FROM = {x: [-18, 18], y: [6, 14], z: -45} as const
+const AMBIENT_TRAVEL = new THREE.Vector3(-16, -9, 0)
+
 function randomInShell(min: number, max: number): [number, number, number] {
   const r = min + Math.random() * (max - min)
   const theta = Math.random() * Math.PI * 2
@@ -59,7 +75,7 @@ function points(count: number, place: () => [number, number, number], color: num
   return new THREE.Points(geometry, material)
 }
 
-export const createGalaxyScene: SceneFactory = ({isDark, aspect}) => {
+export const createGalaxyScene: SceneFactory = ({isDark, aspect, reduceMotion = false, loadAssets = true}) => {
   const colors = isDark ? PALETTE.dark : PALETTE.light
 
   const scene = new THREE.Scene()
@@ -125,25 +141,80 @@ export const createGalaxyScene: SceneFactory = ({isDark, aspect}) => {
 
   scene.add(points(STAR_COUNT, () => randomInShell(STAR_SHELL_MIN, STAR_SHELL_MAX), colors.star, 0.45, colors.starOpacity))
 
+  const constellation = buildConstellation(PROJECTS, {star: colors.bright, orbit: colors.orbit, label: colors.label}, loadAssets && typeof window !== 'undefined')
+  const streaks = createStreaks(colors.streak, colors.bg)
+  scene.add(constellation.group, streaks.group)
+
+  const journeyEye = new THREE.Vector3()
+  const projectsEye = new THREE.Vector3()
+  const projectsLook = new THREE.Vector3()
+  const wantEye = new THREE.Vector3()
+  const wantLook = new THREE.Vector3()
+  const look = new THREE.Vector3()
+  let blend = 0
+  let ready = false
+  let lastFocus: number | null = null
+  let nextAmbient = nextAmbientDelay(Math.random)
+
+  const journeyCamera = (progress: number, pointer: {x: number; y: number}) => {
+    const angle = progress * CAMERA_SWEEP
+    const radius = CAMERA_START.radius + (CAMERA_END.radius - CAMERA_START.radius) * progress
+    const height = CAMERA_START.height + (CAMERA_END.height - CAMERA_START.height) * progress
+    journeyEye.set(Math.sin(angle) * radius + pointer.x * 1.2, height - pointer.y * 0.8, Math.cos(angle) * radius)
+  }
+
+  const projectsCamera = (focus: number | null) => {
+    const star = focus === null ? undefined : constellation.stars[focus]
+    const subject = star ? star.position : CONSTELLATION_CENTRE
+    wantEye.set(subject.x, CONSTELLATION_CENTRE.y + PROJECTS_CAMERA.rise, CONSTELLATION_CENTRE.z + (star ? PROJECTS_CAMERA.back : PROJECTS_CAMERA.overview))
+    wantLook.copy(panelAim(subject, wantEye, camera.aspect, PROJECTS_CAMERA))
+  }
+
+  const ambient = (elapsed: number) => {
+    if (elapsed < nextAmbient) return
+    nextAmbient = elapsed + nextAmbientDelay(Math.random)
+    const lerp = (r: readonly [number, number]) => r[0] + Math.random() * (r[1] - r[0])
+    const from = camera.localToWorld(new THREE.Vector3(lerp(AMBIENT_FROM.x), lerp(AMBIENT_FROM.y), AMBIENT_FROM.z))
+    const to = camera.localToWorld(new THREE.Vector3(lerp(AMBIENT_FROM.x), lerp(AMBIENT_FROM.y), AMBIENT_FROM.z).add(AMBIENT_TRAVEL))
+    streaks.launch(from.toArray() as Vec3, to.toArray() as Vec3, elapsed, AMBIENT_DURATION)
+  }
+
   return {
     scene,
     camera,
-    update(dt, _elapsed, progress, pointer) {
+    update(dt, elapsed, progress, pointer, stop, focus) {
       pivots.forEach(({pivot, planet, speed}) => {
         pivot.rotation.y += dt * speed
         planet.rotation.y += dt * 0.5
       })
       belt.rotation.y += dt * 0.05
 
-      const angle = progress * CAMERA_SWEEP
-      const radius = CAMERA_START.radius + (CAMERA_END.radius - CAMERA_START.radius) * progress
-      const height = CAMERA_START.height + (CAMERA_END.height - CAMERA_START.height) * progress
-      camera.position.set(
-        Math.sin(angle) * radius + pointer.x * 1.2,
-        height - pointer.y * 0.8,
-        Math.cos(angle) * radius
-      )
-      camera.lookAt(LOOK_AT)
+      const onProjects = stop === PROJECTS_STOP
+      const picked = onProjects ? focus : null
+      const instant = !ready || reduceMotion
+      blend = instant ? (onProjects ? 1 : 0) : approach(blend, onProjects ? 1 : 0, dt, PROJECTS_CAMERA.blend)
+
+      // A new pick fires a shooting star at its star (not on the first frame of a rebuilt scene).
+      if (picked !== null && picked !== lastFocus && !instant) {
+        const to = constellation.stars[picked].position
+        streaks.launch(to.clone().add(PICK_FROM).toArray() as Vec3, to.toArray() as Vec3, elapsed, PICK_DURATION)
+      }
+      lastFocus = picked
+      if (!reduceMotion) ambient(elapsed)
+      streaks.update(elapsed)
+      constellation.update(dt, picked, instant)
+      constellation.setPresence(blend)
+
+      journeyCamera(progress, pointer)
+      projectsCamera(picked)
+      const glide = instant ? 1 : Math.min(1, dt * PROJECTS_CAMERA.glide)
+      projectsEye.lerp(wantEye, glide)
+      projectsLook.lerp(wantLook, glide)
+      camera.position.lerpVectors(journeyEye, projectsEye, blend)
+      look.lerpVectors(LOOK_AT, projectsLook, blend)
+      camera.lookAt(look)
+      camera.updateMatrixWorld()
+      ready = true
     }
   }
 }
