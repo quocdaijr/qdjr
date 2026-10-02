@@ -66,6 +66,14 @@ Kebab-case only (`stop-panel`, `rail-dot`); the repo's stylelint rejects BEM `__
 ## Scene palette (hex, three.js side)
 See `PALETTE` constants in `app/scenes/{terminal,cartoon,galaxy}.ts`; they mirror the paper/accent hues above.
 
+## Languages
+- Vietnamese default, English under `/en` (`@nuxtjs/i18n`, `prefix_except_default`).
+- Every UI string goes through `t()`; profile copy through `useProfile()`.
+- Machine-translated posts always show `TranslationNotice` (above the article) and
+  `TranslationBadge` (in lists); text shown in a different language than the page
+  carries its own `lang` attribute.
+- Vibe names stay untranslated; tags and categories are slugs.
+
 ## Exports
 ### tokens.css
 `app/assets/css/tokens.css` is the canonical export.

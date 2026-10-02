@@ -22,7 +22,8 @@
     "copy:pm2.config": "cp pm2.config.js.example pm2.config.js",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "translate:posts": "node scripts/translate-posts.mjs"
   },
   "lint-staged": {
     "*.{js,ts,vue}": "eslint --fix",
