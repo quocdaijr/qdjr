@@ -1,5 +1,5 @@
 <template>
-  <nav class="rail" aria-label="Journey stops">
+  <nav class="rail" :aria-label="t('about.stops')">
     <ol class="rail-list">
       <li v-for="(label, i) in labels" :key="i">
         <a :href="`#stop-${i}`" class="rail-dot" :aria-current="i === active ? 'step' : undefined" :title="label">
@@ -13,6 +13,8 @@
 
 <script setup lang="ts">
 defineProps<{labels: readonly string[]; active: number}>()
+
+const {t} = useI18n()
 </script>
 
 <style scoped>

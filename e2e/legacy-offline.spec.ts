@@ -42,7 +42,7 @@ test('legacy routes issue no requests to the dead API host', async ({page}) => {
 test('an invalid slug still 404s through the custom error page', async ({page}) => {
   // Uppercase fails definePageMeta validate(), which is a real 404 rather than
   // a backend problem — so it must reach error.vue, not the offline panel.
-  await page.goto('/legacy-blogs/NOT_A_VALID_SLUG')
+  await page.goto('/en/legacy-blogs/NOT_A_VALID_SLUG')
   await expect(page.locator('svg.emoji-error')).toBeVisible()
   await expect(page.getByText("couldn't find what you are looking for")).toBeVisible()
 })

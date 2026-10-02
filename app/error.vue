@@ -33,9 +33,9 @@
       <button
         type="button"
         class="bg-gray-200 dark:bg-gray-600 text-lg p-3 rounded-md hover:shadow-md"
-        @click="clearError({ redirect: '/' })"
+        @click="clearError({ redirect: localePath('/') })"
       >
-        Back to home
+        {{ t('error.home') }}
       </button>
     </div>
   </div>
@@ -57,14 +57,16 @@ const statusCode = computed(() => props.error?.statusCode ?? 500)
 
 const statusText = computed(() => String(statusCode.value).split('').join('  '))
 
+const {t, te} = useI18n()
+const localePath = useLocalePath()
+
+// error.vue renders outside app.vue, so it sets <html lang> itself.
+const i18nHead = useLocaleHead()
+useHead(() => ({htmlAttrs: {lang: i18nHead.value.htmlAttrs?.lang}}))
+
 const message = computed(() => {
-  const messages: Record<number, string> = {
-    400: 'Bad request!',
-    401: 'Access is not allowed!',
-    403: "You aren't permitted to see this!",
-    404: "Sorry, We couldn't find what you are looking for!"
-  }
-  return messages[statusCode.value] ?? 'Something went wrong!'
+  const key = `error.${statusCode.value}`
+  return te(key) ? t(key) : t('error.default')
 })
 </script>
 

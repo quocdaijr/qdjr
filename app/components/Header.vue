@@ -2,10 +2,10 @@
   <header class="sm:px-4 py-4 lg:px-8 lg:py-6">
     <div class="hidden md:flex items-center justify-between max-w-(--breakpoint-lg) mx-auto">
       <div class="w-1/12 flex justify-start">
-        <NuxtLink to="/" class="inline-block mb-1 hover:scale-125">
-          <span class="sr-only">QDJr</span>
+        <NuxtLinkLocale to="/" class="inline-block mb-1 hover:scale-125">
+          <span class="sr-only">{{ $t('nav.home') }}</span>
           <img class="w-10 pt-2" :src="logoSrc" alt="QDJr">
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
       <PostSearch class="w-6/12 md:w-7/12"/>
       <NavBar class="w-4/12 md:w-3/12" device="pc" :categories="categories"/>
@@ -18,7 +18,7 @@
         <button
           type="button"
           class="w-10 h-10 ml-1 mr-1 rounded"
-          aria-label="Toggle navigation menu"
+          :aria-label="$t('nav.toggleMenu')"
           aria-controls="mobile-nav"
           :aria-expanded="isOpenMenu"
           @click="toggleNav"
@@ -48,10 +48,10 @@
         <VibeSwitch variant="icon"/>
       </div>
       <div class="w-2/12 flex justify-end">
-        <NuxtLink to="/" class="inline-block hover:scale-125">
-          <span class="sr-only">QDJr</span>
+        <NuxtLinkLocale to="/" class="inline-block hover:scale-125">
+          <span class="sr-only">{{ $t('nav.home') }}</span>
           <img class="w-10" :src="logoSrc" alt="QDJr">
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
     </div>
   </header>

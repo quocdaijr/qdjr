@@ -1,24 +1,25 @@
 <template>
   <section class="hero">
-    <h1 class="hero-display font-display reveal" :style="{'--i': 0}">{{ PROFILE.name }}</h1>
-    <p class="hero-role reveal" :style="{'--i': 1}">{{ PROFILE.role }}</p>
+    <h1 class="hero-display font-display reveal" :style="{'--i': 0}">{{ content.profile.name }}</h1>
+    <p class="hero-role reveal" :style="{'--i': 1}">{{ content.profile.role }}</p>
     <blockquote class="hero-quote reveal" :style="{'--i': 2}">
-      <p>“{{ QUOTE.text }}.”</p>
-      <footer>— {{ QUOTE.author }}</footer>
+      <p>“{{ content.quote.text }}.”</p>
+      <footer>— {{ content.quote.author }}</footer>
     </blockquote>
-    <nav class="hero-links reveal" :style="{'--i': 3}" aria-label="Primary">
-      <NuxtLink to="/about" class="link">About me →</NuxtLink>
-      <NuxtLink to="/blog" class="link">Read the blog →</NuxtLink>
+    <nav class="hero-links reveal" :style="{'--i': 3}" :aria-label="t('home.primary')">
+      <NuxtLinkLocale to="/about" class="link">{{ t('home.about') }}</NuxtLinkLocale>
+      <NuxtLinkLocale to="/blog" class="link">{{ t('home.blog') }}</NuxtLinkLocale>
     </nav>
     <div class="hero-vibes reveal" :style="{'--i': 4}">
-      <p class="hero-vibes-label">Pick a vibe</p>
+      <p class="hero-vibes-label">{{ t('vibe.pick') }}</p>
       <VibeSwitch variant="segmented"/>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import {PROFILE, QUOTE} from '~/data/profile'
+const {t} = useI18n()
+const content = useProfile()
 </script>
 
 <style scoped>

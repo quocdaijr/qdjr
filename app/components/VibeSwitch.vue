@@ -1,6 +1,6 @@
 <template>
   <fieldset v-if="variant === 'segmented'" class="vibe-switch">
-    <legend class="sr-only">Vibe</legend>
+    <legend class="sr-only">{{ t('vibe.legend') }}</legend>
     <label v-for="vibe in VIBES" :key="vibe" class="vibe-switch-option">
       <input
         class="sr-only"
@@ -18,8 +18,8 @@
     v-else
     type="button"
     class="vibe-switch-icon"
-    :aria-label="`Vibe: ${LABELS[store.vibe]}. Switch to ${LABELS[nextVibe]}`"
-    :title="`Switch vibe (now: ${LABELS[store.vibe]})`"
+    :aria-label="t('vibe.current', {current: LABELS[store.vibe], next: LABELS[nextVibe]})"
+    :title="t('vibe.title', {current: LABELS[store.vibe]})"
     @click="store.nextVibe()"
   >
     <svg v-if="store.vibe === 'terminal'" viewBox="0 0 24 24" aria-hidden="true">
@@ -47,6 +47,7 @@ const LABELS: Record<Vibe, string> = {
 }
 
 const store = useThemeStore()
+const {t} = useI18n()
 const nextVibe = computed(() => VIBES[(VIBES.indexOf(store.vibe) + 1) % VIBES.length])
 </script>
 

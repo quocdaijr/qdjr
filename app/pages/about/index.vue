@@ -1,51 +1,53 @@
 <template>
   <div class="journey" :data-active-stop="activeStop">
-    <JourneyRail :labels="STOP_LABELS" :active="activeStop"/>
+    <JourneyRail :labels="stopLabels" :active="activeStop"/>
 
-    <JourneyStop :index="0" :title="PROFILE.displayName" :level="1" :active="activeStop === 0">
+    <JourneyStop :index="0" :title="content.profile.displayName" :level="1" :active="activeStop === 0">
       <img
-        :src="PROFILE.photo"
-        :alt="PROFILE.photoAlt"
+        :src="content.profile.photo"
+        :alt="content.profile.photoAlt"
         width="160"
         height="160"
         class="journey-photo"
         @error="handleProfileImageError"
       >
-      <p class="journey-role">{{ PROFILE.role }}</p>
-      <p>{{ PROFILE.summary }}</p>
-      <p class="journey-hint" aria-hidden="true">Scroll to continue ↓</p>
+      <p class="journey-role">{{ content.profile.role }}</p>
+      <p>{{ content.profile.summary }}</p>
+      <p class="journey-hint" aria-hidden="true">{{ t('about.scrollHint') }}</p>
     </JourneyStop>
 
-    <JourneyStop :index="1" title="What I do" :active="activeStop === 1">
+    <JourneyStop :index="1" :title="t('about.whatIDo')" :active="activeStop === 1">
+      <!-- One table: technical skills, then the soft skills in the same rhythm. -->
       <dl class="spec">
-        <template v-for="skill in SKILLS" :key="skill.group">
+        <template v-for="skill in content.skills" :key="skill.group">
           <dt>{{ skill.group }}</dt>
           <dd>
-            <p v-if="'expert' in skill"><span class="spec-level">Expert</span> {{ skill.expert }}</p>
-            <p v-if="'proficient' in skill"><span class="spec-level">Proficient</span> {{ skill.proficient }}</p>
-            <p v-if="'note' in skill">{{ skill.note }}</p>
+            <p v-if="skill.expert" class="spec-line"><span class="spec-level">{{ t('about.expert') }}</span><span>{{ skill.expert }}</span></p>
+            <p v-if="skill.proficient" class="spec-line"><span class="spec-level">{{ t('about.proficient') }}</span><span>{{ skill.proficient }}</span></p>
+            <p v-if="skill.note">{{ skill.note }}</p>
           </dd>
         </template>
+        <template v-for="item in content.otherSkills" :key="item.label">
+          <dt>{{ item.label }}</dt>
+          <dd><p>{{ item.text }}</p></dd>
+        </template>
       </dl>
-      <ul class="plain">
-        <li v-for="item in OTHER_SKILLS" :key="item.label"><b>{{ item.label }}:</b> {{ item.text }}</li>
-      </ul>
     </JourneyStop>
 
     <JourneyStop
-      v-for="(entry, i) in TIMELINE"
+      v-for="(entry, i) in content.timeline"
       :key="entry.period"
       :index="TIMELINE_START + i"
       :title="entry.org"
       :active="activeStop === TIMELINE_START + i"
     >
       <p class="journey-period font-mono">{{ entry.period }}</p>
-      <p v-if="entry.kind === 'education'"><b>Major:</b> {{ entry.major }}<br><b>Degree:</b> {{ entry.degree }}</p>
+      <p v-if="entry.kind === 'education'"><b>{{ t('about.major') }}:</b> {{ entry.major }}<br><b>{{ t('about.degree') }}:</b> {{ entry.degree }}</p>
       <template v-else>
-        <p><b>Position:</b> {{ entry.position }}</p>
-        <p><b>Technologies:</b> {{ entry.technologies }}</p>
-        <p v-if="'thirdParties' in entry"><b>3rd parties:</b> {{ entry.thirdParties }}</p>
-        <p><b>Key Achievements:</b></p>
+        <p><b>{{ t('about.position') }}:</b> {{ entry.position }}</p>
+        <p><b>{{ t('about.technologies') }}:</b> {{ entry.technologies }}</p>
+        <p v-if="entry.thirdParties"><b>{{ t('about.thirdParties') }}:</b> {{ entry.thirdParties }}</p>
+        <p><b>{{ t('about.keyAchievements') }}:</b></p>
         <ul class="plain">
           <li v-for="line in entry.achievements" :key="line">{{ line }}</li>
         </ul>
@@ -54,27 +56,27 @@
 
     <!-- One stop per project: the logo lands first, then the copy follows. -->
     <JourneyStop
-      v-for="(project, i) in PROJECTS"
-      :key="project.name"
-      :index="PROJECTS_START + i"
+      v-for="(project, i) in content.projects"
+      :key="project.image + i"
+      :index="projectsStart + i"
       :title="project.name"
-      :active="activeStop === PROJECTS_START + i"
+      :active="activeStop === projectsStart + i"
     >
       <p class="project-kicker font-mono">
-        Project {{ String(i + 1).padStart(2, '0') }} / {{ PROJECTS.length }}
-        <span v-if="!('url' in project)" class="project-internal">· internal</span>
+        {{ t('about.projectCount', {n: String(i + 1).padStart(2, '0'), total: content.projects.length}) }}
+        <span v-if="!project.url" class="project-internal">· {{ t('about.internal') }}</span>
       </p>
       <img :src="project.image" :alt="project.alt" width="96" height="96" loading="lazy" class="project-logo">
       <p class="project-description">{{ project.description }}</p>
       <p class="project-role">{{ project.role }}</p>
-      <a v-if="'url' in project" :href="project.url" target="_blank" rel="noopener noreferrer" class="link">Visit live →</a>
+      <a v-if="project.url" :href="project.url" target="_blank" rel="noopener noreferrer" class="link">{{ t('about.visitLive') }}</a>
     </JourneyStop>
 
-    <JourneyStop :index="CONTACT_INDEX" title="Say hello" :active="activeStop === CONTACT_INDEX">
+    <JourneyStop :index="contactIndex" :title="t('about.sayHello')" :active="activeStop === contactIndex">
       <dl class="spec">
-        <template v-for="row in CONTACT" :key="row.label">
+        <template v-for="row in content.contact" :key="row.label">
           <dt>{{ row.label }}</dt>
-          <dd><a v-if="'href' in row" :href="row.href" class="link">{{ row.value }}</a><template v-else>{{ row.value }}</template></dd>
+          <dd><a v-if="row.href" :href="row.href" class="link">{{ row.value }}</a><template v-else>{{ row.value }}</template></dd>
         </template>
       </dl>
       <SocialLinks size="lg" class="journey-social"/>
@@ -82,66 +84,47 @@
   </div>
 </template>
 
-<script setup>
-import {CONTACT, OTHER_SKILLS, PROFILE, PROJECTS, SKILLS, TIMELINE} from '~/data/profile'
-
+<script setup lang="ts">
 defineOptions({name: 'AboutPage'})
 
-// Stop order: Hello · What I do · one per career stage · one per project · Say hello.
-const TIMELINE_START = 2
-const PROJECTS_START = TIMELINE_START + TIMELINE.length
-const CONTACT_INDEX = PROJECTS_START + PROJECTS.length
-
-const STOP_LABELS = [
-  'Hello',
-  'What I do',
-  ...TIMELINE.map((entry) => entry.org),
-  ...PROJECTS.map((project) => project.name),
-  'Say hello'
-]
-
-const {activeStop} = useJourney(STOP_LABELS.length)
-
+const {t} = useI18n()
+const localePath = useLocalePath()
 const config = useRuntimeConfig()
+const content = useProfile()
 
-const TITLE = 'Quoc Dai Nguyen - Senior Backend Software Engineer'
-const DESCRIPTION =
-  'Quoc Dai Nguyen - Senior Backend Software Engineer with 6+ years of experience building and operating high-performance backend systems for media and e-commerce platforms'
-const OG_DESCRIPTION =
-  'Senior Backend Software Engineer with 6+ years of experience in system design, performance optimization, and building scalable solutions for production systems'
+// Stop order: Hello · What I do · one per career stage · one per project · Say hello.
+// Section lengths are identical in both languages (test/profile.spec.ts).
+const TIMELINE_START = 2
+const projectsStart = computed(() => TIMELINE_START + content.value.timeline.length)
+const contactIndex = computed(() => projectsStart.value + content.value.projects.length)
 
-function handleProfileImageError(event) {
-  console.warn('Profile image failed to load:', event.target.src)
-  // Replace with a fallback placeholder
-  event.target.src = '/no-image.jpg'
-  event.target.alt = 'Profile image not available'
+const stopLabels = computed(() => [
+  t('about.hello'),
+  t('about.whatIDo'),
+  ...content.value.timeline.map((entry) => entry.org),
+  ...content.value.projects.map((project) => project.name),
+  t('about.sayHello')
+])
+
+const {activeStop} = useJourney(stopLabels.value.length)
+
+function handleProfileImageError(event: Event) {
+  const img = event.target as HTMLImageElement
+  console.warn('Profile image failed to load:', img.src)
+  img.src = '/no-image.jpg'
 }
 
-// Was an Options API head() hook, which Nuxt 3/4 do not support at all — it was
-// silently ignored, so this page has been shipping with no title and no meta
-// tags whatsoever.
-//
-// `hid` keys are dropped (removed in Unhead v2; useSeoMeta dedupes by tag
-// identity). og:title/description/image were also declared with `name:` rather
-// than `property:`, another long-standing bug that useSeoMeta gets right.
-// process.env.baseUrl is undefined at runtime, hence useRuntimeConfig.
-useHead({
-  title: TITLE,
+useHead(() => ({
+  title: t('about.meta.title'),
   // `keywords` is not a useSeoMeta key in Unhead v3; it belongs in raw meta.
-  meta: [
-    {
-      name: 'keywords',
-      content:
-        'QDJr, Quoc Dai Nguyen, Nguyen Quoc Dai, Senior Backend Software Engineer, profile, cv, PHP, Laravel, Node.js, Kubernetes'
-    }
-  ]
-})
+  meta: [{name: 'keywords', content: t('about.meta.keywords')}]
+}))
 
 useSeoMeta({
-  description: DESCRIPTION,
-  ogUrl: () => `${config.public.baseUrl}/about`,
-  ogTitle: TITLE,
-  ogDescription: OG_DESCRIPTION,
+  description: () => t('about.meta.description'),
+  ogUrl: () => `${config.public.baseUrl}${localePath('/about')}`,
+  ogTitle: () => t('about.meta.title'),
+  ogDescription: () => t('about.meta.ogDescription'),
   ogImage: () => `${config.public.baseUrl}/profile.jpg`
 })
 </script>
@@ -174,27 +157,41 @@ useSeoMeta({
   margin-top: var(--space-md);
 }
 
-/* F3 tabular spec sheet: key/value rows with hairline rules. */
+/* F3 tabular spec sheet: label | value rows. The hairline runs unbroken under
+   both columns (no column gap; the value column pads itself), and label and
+   value share the same top padding so their first lines align. */
 .spec {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-2xs) var(--space-md);
   margin: 0 0 var(--space-md);
+  border-top: var(--rule-hair) solid var(--color-rule);
 }
 
 .spec dt {
-  padding-top: var(--space-2xs);
+  padding-top: var(--space-xs);
   font-weight: 700;
 }
 
 .spec dd {
   margin: 0;
-  padding-bottom: var(--space-2xs);
+  padding: var(--space-3xs) 0 var(--space-xs);
   border-bottom: var(--rule-hair) solid var(--color-rule);
 }
 
 .spec p {
   margin: 0 0 var(--space-3xs);
+}
+
+.spec p:last-child {
+  margin-bottom: 0;
+}
+
+/* "Expert  PHP (Yii2, Laravel)": wrapped values indent past the level label. */
+.spec-line {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--space-2xs);
 }
 
 .spec-level {
@@ -204,18 +201,27 @@ useSeoMeta({
 
 @media (width >= 40rem) {
   .spec {
-    grid-template-columns: 11rem minmax(0, 1fr);
+    grid-template-columns: 13rem minmax(0, 1fr);
   }
 
   .spec dt {
+    padding: var(--space-xs) var(--space-md) var(--space-xs) 0;
     border-bottom: var(--rule-hair) solid var(--color-rule);
-    padding-bottom: var(--space-2xs);
+  }
+
+  .spec dd {
+    padding-top: var(--space-xs);
   }
 }
 
 .plain {
   margin: 0;
   padding-inline-start: var(--space-md);
+  list-style: disc;
+}
+
+.plain li::marker {
+  color: var(--color-muted);
 }
 
 .plain li + li {

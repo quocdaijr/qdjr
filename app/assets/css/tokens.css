@@ -139,7 +139,7 @@
   --color-focus: oklch(50% 0.15 65deg);
   --radius-card: 8px;
   --radius-pill: 999px;
-  --vibe-font-display: "Tomorrow", ui-sans-serif, system-ui, sans-serif;
+  --vibe-font-display: "Chakra Petch", ui-sans-serif, system-ui, sans-serif;
   --vibe-font-body: "Geist", ui-sans-serif, system-ui, sans-serif;
   --vibe-font-mono: "Geist Mono", ui-monospace, sfmono-regular, menlo, monospace;
   --vibe-gray-50: oklch(97% 0.025 280deg);

@@ -14,7 +14,7 @@ test.describe('vibe switcher', () => {
     await page.goto('/blog')
     await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'terminal')
 
-    const button = page.getByRole('button', {name: /^Vibe:/}).first()
+    const button = page.locator('header .vibe-switch-icon').filter({visible: true}).first()
     await button.click()
     await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'cartoon')
     await button.click()
@@ -27,7 +27,7 @@ test.describe('vibe switcher', () => {
 
   test('cartoon vibe swaps the body font and persists across reloads', async ({page}) => {
     await page.goto('/blog')
-    const button = page.getByRole('button', {name: /^Vibe:/}).first()
+    const button = page.locator('header .vibe-switch-icon').filter({visible: true}).first()
     await button.click()
     await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'cartoon')
 
@@ -49,7 +49,7 @@ test.describe('vibe switcher', () => {
   })
 
   test('hero control switches the vibe and the heading renders before any canvas', async ({page}) => {
-    await page.goto('/')
+    await page.goto('/en')
 
     await expect(page.getByRole('heading', {level: 1, name: 'Nguyen Quoc Dai'})).toBeVisible()
     // The mobile drawer holds a second (hidden) segmented control; scope to the hero.
@@ -59,14 +59,14 @@ test.describe('vibe switcher', () => {
   })
 
   test('scene canvas exists on / and /about but not on /blog', async ({page}) => {
-    await page.goto('/')
+    await page.goto('/en')
     await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
 
     await page.getByRole('link', {name: 'About me →'}).click()
     await expect(page).toHaveURL(/\/about\/?$/)
     await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
 
-    await page.goto('/blog')
+    await page.goto('/en/blog')
     await expect(page.locator('canvas.vibe-scene')).toHaveCount(0)
   })
 
@@ -75,7 +75,7 @@ test.describe('vibe switcher', () => {
     page.on('console', (msg) => msg.type() === 'error' && errors.push(msg.text()))
     page.on('pageerror', (err) => errors.push(err.message))
 
-    await page.goto('/')
+    await page.goto('/en')
     await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
 
     // Dispose-then-build runs synchronously on every click; no waits between.
