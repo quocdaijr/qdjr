@@ -28,6 +28,35 @@ test.describe('languages', () => {
     await expect(page.locator('#site-search').first()).toHaveAttribute('placeholder', 'Search post ...')
   })
 
+  test('nav labels stay on one line and clear of the search box at every desktop width', async ({page}, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'desktop nav')
+    await page.addInitScript(() => localStorage.setItem('vibe', 'cartoon')) // bordered pills: the widest nav
+    for (const width of [768, 900, 1024, 1280]) {
+      await page.setViewportSize({width, height: 800})
+      await page.goto('/')
+      const nav = page.locator('header nav').filter({visible: true}).first()
+      await expect(nav).toContainText('Giới thiệu')
+      // Distinct line tops of each label's text: more than one means it wrapped.
+      const lines = await nav.locator('a').evaluateAll((links) =>
+        links.map((a) => {
+          const walker = document.createTreeWalker(a, NodeFilter.SHOW_TEXT)
+          const tops = new Set<number>()
+          for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+            if (!node.textContent?.trim()) continue
+            const range = document.createRange()
+            range.selectNodeContents(node)
+            for (const rect of range.getClientRects()) tops.add(Math.round(rect.top))
+          }
+          return tops.size
+        })
+      )
+      expect(lines, `wrapped label at ${width}px`).toEqual(lines.map(() => 1))
+      const search = await page.locator('header form[role="search"]').filter({visible: true}).first().boundingBox()
+      const first = await nav.locator('a').first().boundingBox()
+      expect(first!.x, `nav overlaps search at ${width}px`).toBeGreaterThanOrEqual(search!.x + search!.width)
+    }
+  })
+
   test('the language switch keeps the current page', async ({page}, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'desktop nav holds the switch')
     await page.goto('/about')
