@@ -11,10 +11,10 @@
     "thirdParties": "Bên thứ ba", "keyAchievements": "Thành tựu chính",
     "projectCount": "Dự án {n} / {total}", "internal": "nội bộ", "visitLive": "Xem trực tiếp →",
     "meta": {
-      "title": "Nguyễn Quốc Đại - Kỹ sư Phần mềm Backend Cấp cao",
-      "description": "Nguyễn Quốc Đại - Kỹ sư Phần mềm Backend Cấp cao với hơn 6 năm kinh nghiệm xây dựng và vận hành hệ thống backend hiệu năng cao cho nền tảng truyền thông và thương mại điện tử",
-      "ogDescription": "Kỹ sư Phần mềm Backend Cấp cao với hơn 6 năm kinh nghiệm về thiết kế hệ thống, tối ưu hiệu năng và xây dựng giải pháp mở rộng cho hệ thống production",
-      "keywords": "QDJr, Nguyễn Quốc Đại, Quoc Dai Nguyen, Kỹ sư Phần mềm Backend, hồ sơ, cv, PHP, Laravel, Node.js, Kubernetes"
+      "title": "Nguyễn Quốc Đại - Senior Backend Software Engineer",
+      "description": "Nguyễn Quốc Đại - Senior Backend Software Engineer với hơn 6 năm kinh nghiệm xây dựng và vận hành các hệ thống backend high-performance cho các nền tảng media và e-commerce",
+      "ogDescription": "Senior Backend Software Engineer với hơn 6 năm kinh nghiệm về system design, performance optimization và xây dựng các giải pháp scalable cho hệ thống production",
+      "keywords": "QDJr, Nguyễn Quốc Đại, Quoc Dai Nguyen, Senior Backend Software Engineer, profile, cv, PHP, Laravel, Node.js, Kubernetes"
     }
   },
   "blog": {

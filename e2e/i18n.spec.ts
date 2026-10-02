@@ -59,7 +59,9 @@ test.describe('languages', () => {
   test('profile content is translated, not just the chrome', async ({page}) => {
     await page.goto('/about')
     await page.locator('#stop-5').waitFor()
-    await expect(page.locator('#stop-5')).toContainText('Kỹ sư Phần mềm Backend Cấp cao')
+    // Job titles stay in English; the surrounding copy is Vietnamese.
+    await expect(page.locator('#stop-5')).toContainText('Senior Backend Software Engineer')
+    await expect(page.locator('#stop-5')).toContainText('Thành tựu chính')
 
     await page.goto('/en/about')
     await page.locator('#stop-5').waitFor()

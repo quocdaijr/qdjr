@@ -32,4 +32,15 @@ describe('profile content', () => {
       expect(strings(content).filter((s) => !s.trim())).toEqual([])
     }
   })
+
+  test('job titles, project names and technical terms stay in English', () => {
+    expect(vi.profile.role).toBe(en.profile.role)
+    expect(vi.timeline.map((e) => e.position ?? null)).toEqual(en.timeline.map((e) => e.position ?? null))
+    expect(vi.timeline.map((e) => [e.technologies ?? null, e.thirdParties ?? null])).toEqual(en.timeline.map((e) => [e.technologies ?? null, e.thirdParties ?? null]))
+    expect(vi.skills).toEqual(en.skills)
+    expect(vi.projects.map((p) => p.name)).toEqual(en.projects.map((p) => p.name))
+    // "Backend Software Engineer - <what I did>": the title before the dash is not translated.
+    expect(vi.projects.map((p) => p.role.split(' - ')[0])).toEqual(en.projects.map((p) => p.role.split(' - ')[0]))
+    expect(vi.contact.some((row) => row.value === en.profile.role)).toBe(true)
+  })
 })
