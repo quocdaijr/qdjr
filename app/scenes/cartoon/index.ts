@@ -1,0 +1,107 @@
+import * as THREE from 'three'
+import {journeyStations} from '~/data/journeyStations'
+import {PROFILE_CONTENT} from '~/data/profile'
+import type {SceneFactory} from '../types'
+import {createKit} from './kit'
+import {DEFAULT_MOTION, stepTrain, type TrainMotion} from './motion'
+import {buildStations} from './stations'
+import {buildTrack, sideAt} from './track'
+import {buildTrain} from './train'
+import {buildWorld} from './world'
+
+// Station kinds and logos are language-independent (test/journeyStations.spec.ts).
+const STATIONS = journeyStations(PROFILE_CONTENT.en)
+
+const CAMERA_FOV = 42
+const FOG = {near: 38, far: 95}
+// Calibration knobs, tuned by screenshot: the overview keeps the island to the
+// right of the hero text on /, the chase camera frames each station on the
+// right half of the screen beside the /about panel.
+const OVERVIEW = {position: new THREE.Vector3(10, 24, 36), look: new THREE.Vector3(-8, -2, 1)}
+const OVERVIEW_NARROW = {position: new THREE.Vector3(0, 32, 46), look: new THREE.Vector3(0, -2, 0)}
+const CHASE = {distance: 7.5, height: 4.2, back: 2.5, lookShift: 2.4, lookRise: 0.8, frame: 12}
+const CAMERA_SMOOTHING = 2.5
+const POINTER_SWAY = 1.2
+
+export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion = false, detail = 'high', loadAssets = true}) => {
+  const kit = createKit(isDark)
+  const {colors} = kit
+
+  const scene = new THREE.Scene()
+  scene.background = new THREE.Color(colors.sky)
+  scene.fog = new THREE.Fog(colors.sky, FOG.near, FOG.far)
+  scene.add(new THREE.HemisphereLight(colors.sky, colors.ground, isDark ? 0.45 : 1.1))
+  const sun = new THREE.DirectionalLight(0xffffff, isDark ? 0.35 : 1.4)
+  sun.position.set(12, 20, 8)
+  scene.add(sun)
+
+  const camera = new THREE.PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 220)
+
+  const track = buildTrack(kit)
+  const stations = buildStations(kit, track.curve, STATIONS, loadAssets && typeof window !== 'undefined')
+  const world = buildWorld(kit, track, stations.anchors, detail)
+  const train = buildTrain(kit)
+  scene.add(world.group, track.group, stations.group, train.group)
+
+  const config = {length: track.length, ...DEFAULT_MOTION}
+  let motion: TrainMotion = {u: 0, velocity: 0}
+  let cameraReady = false
+  const eye = new THREE.Vector3()
+  const look = new THREE.Vector3()
+  const wantEye = new THREE.Vector3()
+  const wantLook = new THREE.Vector3()
+  const inward = new THREE.Vector3()
+  const right = new THREE.Vector3()
+  const up = new THREE.Vector3(0, 1, 0)
+
+  const overview = (pointer: {x: number; y: number}) => {
+    const shot = camera.aspect < 1 ? OVERVIEW_NARROW : OVERVIEW
+    wantEye.copy(shot.position).add(new THREE.Vector3(pointer.x * POINTER_SWAY, -pointer.y * POINTER_SWAY * 0.5, 0))
+    wantLook.copy(shot.look)
+  }
+
+  const chase = (stop: number) => {
+    const anchor = stations.anchors[Math.min(stop, stations.anchors.length - 1)]
+    const trainAt = track.curve.getPointAt(motion.u)
+    sideAt(track.curve, motion.u, inward)
+    if (inward.dot(new THREE.Vector3(-trainAt.x, 0, -trainAt.z)) < 0) inward.negate()
+    const tangent = track.curve.getTangentAt(motion.u)
+
+    // Stand on the outer side of the train, a little behind, looking across it at the station.
+    wantEye.copy(trainAt).addScaledVector(inward, -CHASE.distance).addScaledVector(tangent, -CHASE.back)
+    wantEye.y = CHASE.height
+    const nearness = THREE.MathUtils.clamp(1 - trainAt.distanceTo(anchor.building) / CHASE.frame, 0, 1)
+    wantLook.copy(trainAt).lerp(anchor.building, 0.5 * nearness)
+    wantLook.y += CHASE.lookRise
+
+    // Shift the aim left so the subject sits right of centre, clear of the text panel.
+    const shift = CHASE.lookShift * THREE.MathUtils.clamp((camera.aspect - 0.8) / 0.8, 0, 1)
+    right.subVectors(wantLook, wantEye).cross(up).normalize()
+    wantLook.addScaledVector(right, -shift)
+  }
+
+  return {
+    scene,
+    camera,
+    update(dt, elapsed, _progress, pointer, stop) {
+      const target = stop === null ? null : stations.anchors[Math.min(stop, stations.anchors.length - 1)].u
+      motion = stepTrain(motion, target, dt, config, reduceMotion)
+      train.place(track.curve, track.length, motion.u, motion.velocity * track.length, dt)
+      world.update(dt, elapsed)
+
+      if (stop === null) overview(pointer)
+      else chase(stop)
+      if (!cameraReady || reduceMotion) {
+        eye.copy(wantEye)
+        look.copy(wantLook)
+        cameraReady = true
+      } else {
+        const k = Math.min(1, dt * CAMERA_SMOOTHING)
+        eye.lerp(wantEye, k)
+        look.lerp(wantLook, k)
+      }
+      camera.position.copy(eye)
+      camera.lookAt(look)
+    }
+  }
+}
