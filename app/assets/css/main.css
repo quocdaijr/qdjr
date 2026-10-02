@@ -112,6 +112,10 @@
     text-decoration-thickness: 2px;
   }
 
+  .link:active {
+    transform: translateY(1px);
+  }
+
   /* One page-load reveal, staggered by DOM index via --i. */
   .reveal {
     opacity: 0;
