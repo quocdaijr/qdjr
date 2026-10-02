@@ -64,6 +64,16 @@
     overflow-x: clip;
   }
 
+  /* Every page paints the vibe paper, including error.vue, which renders
+     outside the layout and so never receives the layout's bodyAttrs. */
+  body {
+    background-color: var(--vibe-gray-50);
+  }
+
+  .dark body {
+    background-color: var(--vibe-gray-900);
+  }
+
   /* In-page #stop-N links on /about only (vue-router's scrollTo honours this
      property, so blog route changes must not inherit it); reduced-motion users
      get instant jumps. */
@@ -160,6 +170,14 @@
   --tw-prose-invert-body: var(--vibe-gray-300);
   --tw-prose-invert-headings: var(--vibe-gray-50);
   --tw-prose-invert-links: var(--vibe-blue-400);
+}
+
+/* The unlayered .prose rule above outranks the plugin's layered
+   dark:prose-invert, so dark mode re-applies the invert swap here. */
+.dark .prose {
+  --tw-prose-body: var(--tw-prose-invert-body);
+  --tw-prose-headings: var(--tw-prose-invert-headings);
+  --tw-prose-links: var(--tw-prose-invert-links);
 }
 
 [data-vibe="cartoon"] header nav a {

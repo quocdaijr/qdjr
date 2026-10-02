@@ -12,7 +12,7 @@
             clip-rule="evenodd"/>
     </svg>
     <span class="text-gray-400 pt-2">The legacy blog archive is offline.</span>
-    <NuxtLink to="/blog" class="mt-4 text-base text-blue-500 hover:underline dark:text-blue-400">
+    <NuxtLink to="/blog" class="mt-4 text-base text-blue-600 hover:underline dark:text-blue-400">
       Read the current blog instead
     </NuxtLink>
   </section>
@@ -41,7 +41,7 @@
           <i class="text-sm font-normal">{{ post.description }}</i>
           <div class="mt-4">
             <NuxtLink :to="`/legacy-blogs/${post.slug}`"
-                      class="flex items-center text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                      class="flex items-center text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
             >Read more&nbsp;
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd"
@@ -78,7 +78,7 @@
           <i class="text-sm font-normal">{{ postMore.description }}</i>
           <div class="mt-4">
             <NuxtLink :to="`/legacy-blogs/${postMore.slug}`"
-                      class="flex items-center text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                      class="flex items-center text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
             >Read more&nbsp;
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd"

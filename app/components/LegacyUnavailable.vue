@@ -10,7 +10,7 @@
       These posts were served by an API that no longer exists. Everything written
       since lives in the current blog.
     </p>
-    <NuxtLink to="/blog" class="mt-6 text-base text-blue-500 hover:underline dark:text-blue-400">
+    <NuxtLink to="/blog" class="mt-6 text-base text-blue-600 hover:underline dark:text-blue-400">
       Go to the blog
     </NuxtLink>
   </section>

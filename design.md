@@ -24,7 +24,7 @@ Tokens live in `app/assets/css/tokens.css`. Per vibe (light / dark):
 | --- | --- | --- | --- |
 | paper | oklch(96% 0.012 150deg) / oklch(13% 0.012 150deg) | oklch(96% 0.03 85deg) / oklch(24% 0.03 50deg) | oklch(95% 0.015 260deg) / oklch(12% 0.03 280deg) |
 | ink | oklch(22% 0.03 150deg) / oklch(90% 0.05 150deg) | oklch(28% 0.04 50deg) / oklch(93% 0.025 85deg) | oklch(20% 0.04 280deg) / oklch(94% 0.012 280deg) |
-| accent | oklch(50% 0.17 150deg) / oklch(80% 0.2 150deg) | oklch(62% 0.16 40deg) / oklch(72% 0.14 45deg) | oklch(58% 0.15 65deg) / oklch(82% 0.14 80deg) |
+| accent | oklch(50% 0.17 150deg) / oklch(80% 0.2 150deg) | oklch(52% 0.16 40deg) / oklch(72% 0.14 45deg) | oklch(50% 0.15 65deg) / oklch(82% 0.14 80deg) |
 
 Accent ≤ 3 % of any viewport: stage numbers, link underlines, focus rings, the prompt glyph.
 Tailwind `gray-*` / `blue-*` utilities are remapped to the vibe ramps in `main.css` (`@theme inline`).
