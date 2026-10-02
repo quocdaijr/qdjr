@@ -7,6 +7,7 @@ const CENTRE_BAND = '-50% 0px -50% 0px'
 export function useJourney(stopCount: number) {
   const activeStop = ref(0)
   const progress = useJourneyProgress()
+  const stop = useJourneyStop()
   let observer: IntersectionObserver | null = null
 
   onMounted(() => {
@@ -17,6 +18,7 @@ export function useJourney(stopCount: number) {
           const index = Number((entry.target as HTMLElement).dataset.stop)
           if (Number.isNaN(index)) return
           activeStop.value = index
+          stop.value = index
           progress.value = stopCount > 1 ? index / (stopCount - 1) : 0
         })
       },
@@ -29,6 +31,7 @@ export function useJourney(stopCount: number) {
     observer?.disconnect()
     observer = null
     progress.value = 0 // back on /, the scene returns to waypoint 0
+    stop.value = null
   })
 
   return {activeStop}

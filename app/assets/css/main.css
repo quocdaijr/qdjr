@@ -154,6 +154,12 @@
    terminal → N8 terminal-command: links read as CLI flags.
    cartoon  → rounded 2 px chips.
    galaxy   → untouched (the canvas is the mood). */
+
+/* Nav labels never wrap (longer Vietnamese labels like "Giới thiệu"). */
+header nav a {
+  white-space: nowrap;
+}
+
 [data-vibe="terminal"] header nav a > span::before {
   content: "--" / ""; /* decorative: keep it out of the accessible name */
   color: var(--color-accent);

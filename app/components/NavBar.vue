@@ -42,7 +42,7 @@
       </ul>
     </div>
   </nav>
-  <nav v-else class="flex justify-end">
+  <nav v-else class="flex justify-end gap-1">
     <NuxtLinkLocale to="/blog"
               class="flex items-center px-5 py-3 font-semibold text-gray-600 dark:text-gray-300
                hover:scale-125 hover:text-blue-600 dark:hover:text-blue-400">

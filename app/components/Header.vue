@@ -7,8 +7,9 @@
           <img class="w-10 pt-2" :src="logoSrc" alt="QDJr">
         </NuxtLinkLocale>
       </div>
-      <PostSearch class="w-6/12 md:w-7/12"/>
-      <NavBar class="w-4/12 md:w-3/12" device="pc" :categories="categories"/>
+      <!-- The nav keeps its natural width (labels differ per language); search takes the rest. -->
+      <PostSearch class="flex-1 min-w-0 mx-4"/>
+      <NavBar class="shrink-0" device="pc" :categories="categories"/>
       <div class="w-1/12 flex justify-end">
         <VibeSwitch variant="icon"/>
       </div>

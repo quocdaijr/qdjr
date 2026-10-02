@@ -6,6 +6,7 @@
 import * as THREE from 'three'
 import {createCartoonScene} from '~/scenes/cartoon'
 import {createGalaxyScene} from '~/scenes/galaxy'
+import {disposeScene} from '~/scenes/dispose'
 import {createTerminalScene} from '~/scenes/terminal'
 import {approach, type SceneFactory, type ScenePointer, type VibeScene} from '~/scenes/types'
 import type {Vibe} from '~/stores/theme'
@@ -25,6 +26,7 @@ const MAX_PIXEL_RATIO_COARSE = 1.5 // phones: fill-rate bound, and nobody sees t
 const canvas = ref<HTMLCanvasElement | null>(null)
 const store = useThemeStore()
 const journey = useJourneyProgress()
+const journeyStop = useJourneyStop()
 
 let renderer: THREE.WebGLRenderer | null = null
 let active: VibeScene | null = null
@@ -34,6 +36,7 @@ let lastFrame = 0
 let elapsed = 0
 let progress = 0
 let reduceMotion = false
+let detail: 'high' | 'low' = 'high'
 const pointer: ScenePointer = {x: 0, y: 0}
 const pointerTarget: ScenePointer = {x: 0, y: 0}
 
@@ -41,28 +44,9 @@ function aspectOf(el: HTMLCanvasElement): number {
   return el.clientWidth / Math.max(1, el.clientHeight)
 }
 
-/** Free every GPU resource reachable from the graph. scene.remove() alone leaks. */
-function disposeScene(scene: THREE.Scene) {
-  scene.traverse((object) => {
-    const mesh = object as THREE.Mesh
-    mesh.geometry?.dispose()
-    const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
-    materials.forEach((material) => {
-      if (!material) return
-      Object.values(material).forEach((value) => {
-        if ((value as THREE.Texture)?.isTexture) (value as THREE.Texture).dispose()
-      })
-      material.dispose()
-    })
-  })
-  scene.fog = null
-  scene.background = null
-  scene.clear()
-}
-
 function renderFrame(dt: number) {
   if (!renderer || !active) return
-  active.update(dt, elapsed, progress, pointer)
+  active.update(dt, elapsed, progress, pointer, journeyStop.value)
   renderer.render(active.scene, active.camera)
 }
 
@@ -72,7 +56,7 @@ function buildScene() {
     disposeScene(active.scene)
     renderer.renderLists.dispose()
   }
-  active = FACTORIES[store.vibe]({isDark: store.isDarkMode, aspect: aspectOf(canvas.value)})
+  active = FACTORIES[store.vibe]({isDark: store.isDarkMode, aspect: aspectOf(canvas.value), reduceMotion, detail})
   elapsed = 0
   progress = journey.value // a vibe change jumps to the current stop instead of easing from 0
   renderFrame(0)
@@ -109,6 +93,7 @@ onMounted(() => {
   if (!canvas.value) return
   reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches
+  detail = coarsePointer ? 'low' : 'high'
   const pixelRatio = Math.min(window.devicePixelRatio || 1, coarsePointer ? MAX_PIXEL_RATIO_COARSE : MAX_PIXEL_RATIO_FINE)
 
   try {
@@ -139,7 +124,7 @@ onMounted(() => {
 
 watch(() => [store.vibe, store.isDarkMode] as const, buildScene)
 
-watch(journey, (value) => {
+watch([journey, journeyStop], ([value]) => {
   if (!reduceMotion) return
   progress = value
   renderFrame(0)
