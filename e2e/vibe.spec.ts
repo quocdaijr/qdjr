@@ -47,4 +47,49 @@ test.describe('vibe switcher', () => {
 
     await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'galaxy')
   })
+
+  test('hero control switches the vibe and the heading renders before any canvas', async ({page}) => {
+    await page.goto('/')
+
+    await expect(page.getByRole('heading', {level: 1, name: 'Nguyen Quoc Dai'})).toBeVisible()
+    // The mobile drawer holds a second (hidden) segmented control; scope to the hero.
+    await page.locator('.hero').locator(SEGMENTED_OPTION('Cartoon')).click()
+
+    await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'cartoon')
+  })
+
+  test('scene canvas exists on / and /about but not on /blog', async ({page}) => {
+    await page.goto('/')
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+
+    await page.getByRole('link', {name: 'About me →'}).click()
+    await expect(page).toHaveURL(/\/about\/?$/)
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+
+    await page.goto('/blog')
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(0)
+  })
+
+  test('rapid vibe switching with a live renderer, then leaving the page, logs no errors', async ({page}) => {
+    const errors: string[] = []
+    page.on('console', (msg) => msg.type() === 'error' && errors.push(msg.text()))
+    page.on('pageerror', (err) => errors.push(err.message))
+
+    await page.goto('/')
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+
+    // Dispose-then-build runs synchronously on every click; no waits between.
+    const hero = page.locator('.hero')
+    for (const label of ['Cartoon', 'Galaxy', 'Terminal', 'Galaxy', 'Cartoon', 'Terminal']) {
+      await hero.locator(SEGMENTED_OPTION(label)).click()
+    }
+    await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'terminal')
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+
+    // Unmount mid-life: the renderer must be torn down without touching a disposed scene.
+    await page.getByRole('link', {name: 'Read the blog →'}).click()
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(0)
+
+    expect(errors).toEqual([])
+  })
 })
