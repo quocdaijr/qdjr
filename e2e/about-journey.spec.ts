@@ -64,4 +64,22 @@ test.describe('about journey', () => {
 
     await expect(page.locator('.journey')).toHaveAttribute('data-active-stop', '1')
   })
+
+  test('the cartoon train can be driven through the whole journey without errors', async ({page}, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'one run is enough')
+    test.setTimeout(90_000)
+    const errors: string[] = []
+    page.on('pageerror', (e) => errors.push(e.message))
+    page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
+    await page.addInitScript(() => localStorage.setItem('vibe', 'cartoon'))
+
+    await page.goto('/about')
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+    for (const stop of [3, 9, 16, 0, 12]) {
+      await page.locator(`#stop-${stop}`).scrollIntoViewIfNeeded()
+      await expect(page.locator('.journey')).toHaveAttribute('data-active-stop', String(stop))
+    }
+    await page.waitForTimeout(3000)
+    expect(errors).toEqual([])
+  })
 })

@@ -42,6 +42,7 @@ Tailwind `gray-*` / `blue-*` utilities are remapped to the vibe ramps in `main.c
 - Easings `--ease-out`, `--ease-in`, `--ease-in-out`; durations 120 / 220 / 420 ms.
 - DOM: one page-load reveal (`.reveal`), hover underline, terminal caret. No parallax, no scroll-scrubbed DOM.
 - Scene: continuous rAF; camera eases to the active stop (`approach`, speed 3). Pointer sway ≤ 1.2 units.
+- Cartoon: a train loops the diorama island on `/`; on `/about` it runs to the centred stop's station (braking curve, shortest way round the loop) with a chase camera that frames the station beside the text panel (above it on phones). Reduced motion parks it instantly.
 - `prefers-reduced-motion: reduce`: the scene renders one frame per state change; reveals are a 150 ms fade; anchor jumps are instant.
 
 ## Microinteractions stance
