@@ -1,6 +1,6 @@
 <template>
   <div class="journey" :data-active-stop="activeStop">
-    <JourneyRail :labels="stopLabels" :active="activeStop"/>
+    <JourneyRail :labels="stopLabels" :active="activeStop" :sub="{stop: projectsIndex, count: content.projects.length, active: focus}"/>
 
     <JourneyStop :index="0" :title="content.profile.displayName" :level="1" :active="activeStop === 0">
       <img
@@ -54,22 +54,9 @@
       </template>
     </JourneyStop>
 
-    <!-- One stop per project: the logo lands first, then the copy follows. -->
-    <JourneyStop
-      v-for="(project, i) in content.projects"
-      :key="project.image + i"
-      :index="projectsStart + i"
-      :title="project.name"
-      :active="activeStop === projectsStart + i"
-    >
-      <p class="project-kicker font-mono">
-        {{ t('about.projectCount', {n: String(i + 1).padStart(2, '0'), total: content.projects.length}) }}
-        <span v-if="!project.url" class="project-internal">· {{ t('about.internal') }}</span>
-      </p>
-      <img :src="project.image" :alt="project.alt" width="96" height="96" loading="lazy" class="project-logo">
-      <p class="project-description">{{ project.description }}</p>
-      <p class="project-role">{{ project.role }}</p>
-      <a v-if="project.url" :href="project.url" target="_blank" rel="noopener noreferrer" class="link">{{ t('about.visitLive') }}</a>
+    <!-- All projects share one stop; the picker is the sub-section. -->
+    <JourneyStop :index="projectsIndex" :title="t('about.projects')" :active="activeStop === projectsIndex" wide>
+      <JourneyProjectPicker :projects="content.projects"/>
     </JourneyStop>
 
     <JourneyStop :index="contactIndex" :title="t('about.sayHello')" :active="activeStop === contactIndex">
@@ -92,17 +79,18 @@ const localePath = useLocalePath()
 const config = useRuntimeConfig()
 const content = useProfile()
 
-// Stop order: Hello · What I do · one per career stage · one per project · Say hello.
+// Stop order: Hello · What I do · one per career stage · Projects · Say hello.
 // Section lengths are identical in both languages (test/profile.spec.ts).
 const TIMELINE_START = 2
-const projectsStart = computed(() => TIMELINE_START + content.value.timeline.length)
-const contactIndex = computed(() => projectsStart.value + content.value.projects.length)
+const projectsIndex = computed(() => TIMELINE_START + content.value.timeline.length)
+const contactIndex = computed(() => projectsIndex.value + 1)
+const focus = useJourneyFocus()
 
 const stopLabels = computed(() => [
   t('about.hello'),
   t('about.whatIDo'),
   ...content.value.timeline.map((entry) => entry.org),
-  ...content.value.projects.map((project) => project.name),
+  t('about.projects'),
   t('about.sayHello')
 ])
 
@@ -131,7 +119,7 @@ useSeoMeta({
 
 <style scoped>
 /* Hallmark · macrostructure: Narrative Workflow · nav: shared header + N3 rail · footer: Ft2
- * feature: F3 tabular spec (skills, contact) · F4 step sequence (timeline, projects) · design-system: design.md · designed-as-app */
+ * feature: F3 tabular spec (skills, contact) · F4 step sequence (timeline) · picker sub-section (projects) · design-system: design.md · designed-as-app */
 .journey-photo {
   width: 10rem;
   height: 10rem;
@@ -228,36 +216,4 @@ useSeoMeta({
   margin-top: var(--space-2xs);
 }
 
-/* Project stops */
-.project-kicker {
-  margin: 0 0 var(--space-md);
-  font-size: var(--text-sm);
-  letter-spacing: 0.04em;
-  color: var(--color-muted);
-}
-
-.project-internal {
-  color: var(--color-accent);
-}
-
-.project-logo {
-  width: 6rem;
-  height: 6rem;
-  margin-bottom: var(--space-md);
-  border: var(--rule-hair) solid var(--color-rule);
-  border-radius: var(--radius-card);
-  background: var(--color-paper-2);
-  object-fit: contain;
-}
-
-.project-description {
-  margin: 0 0 var(--space-sm);
-  font-size: var(--text-md);
-  line-height: 1.45;
-}
-
-.project-role {
-  margin: 0 0 var(--space-md);
-  color: var(--color-muted);
-}
 </style>

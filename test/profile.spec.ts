@@ -1,5 +1,5 @@
 import {describe, expect, test} from 'vitest'
-import {PROFILE_CONTENT} from '~/data/profile'
+import {PROFILE_CONTENT, type ProfileContent} from '~/data/profile'
 
 const {vi, en} = PROFILE_CONTENT
 
@@ -42,5 +42,15 @@ describe('profile content', () => {
     // "Backend Software Engineer - <what I did>": the title before the dash is not translated.
     expect(vi.projects.map((p) => p.role.split(' - ')[0])).toEqual(en.projects.map((p) => p.role.split(' - ')[0]))
     expect(vi.contact.some((row) => row.value === en.profile.role)).toBe(true)
+  })
+
+  test('projects are grouped by employer the same way in both languages', () => {
+    const runs = (c: ProfileContent) => c.projects.map((p, i, all) => (i === 0 || p.group !== all[i - 1].group ? 'new' : 'same'))
+    expect(runs(vi)).toEqual(runs(en))
+    expect(new Set(en.projects.map((p) => p.group)).size).toBe(2)
+    for (const content of [vi, en]) {
+      // Group names are the employers' timeline names, in that language.
+      expect(content.projects.every((p) => content.timeline.some((t) => t.org === p.group))).toBe(true)
+    }
   })
 })

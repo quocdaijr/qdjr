@@ -27,8 +27,9 @@ export interface VibeScene {
    * @param progress 0..1 position along the /about journey (0 on /)
    * @param pointer smoothed pointer, −1..1
    * @param stop index of the centred /about stop, or null when no journey page is mounted
+   * @param focus item picked inside the centred stop (the Projects picker), or null
    */
-  update(dt: number, elapsed: number, progress: number, pointer: ScenePointer, stop: number | null): void
+  update(dt: number, elapsed: number, progress: number, pointer: ScenePointer, stop: number | null, focus: number | null): void
 }
 
 export type SceneFactory = (options: SceneOptions) => VibeScene

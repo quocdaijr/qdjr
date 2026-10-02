@@ -4,7 +4,7 @@ import {createCartoonScene} from '~/scenes/cartoon'
 import {createGalaxyScene} from '~/scenes/galaxy'
 import {createTerminalScene} from '~/scenes/terminal'
 import {pointInRect, rectsOverlap} from '~/scenes/cartoon/footprint'
-import {buildStations} from '~/scenes/cartoon/stations'
+import {buildStations, stationU} from '~/scenes/cartoon/stations'
 import {disposeScene} from '~/scenes/dispose'
 import {journeyStations} from '~/data/journeyStations'
 import {PROFILE_CONTENT} from '~/data/profile'
@@ -36,9 +36,9 @@ describe.each(Object.entries(FACTORIES))('%s scene', (_name, factory) => {
     const built = factory({isDark: true, aspect: 1, loadAssets: false})
 
     // Terminal and galaxy follow progress; the cartoon train follows the stop.
-    for (let i = 0; i < 600; i++) built.update(1 / 60, i / 60, 0, POINTER, 0)
+    for (let i = 0; i < 600; i++) built.update(1 / 60, i / 60, 0, POINTER, 0, null)
     const start = built.camera.position.clone()
-    for (let i = 0; i < 600; i++) built.update(1 / 60, 10 + i / 60, 1, POINTER, 16)
+    for (let i = 0; i < 600; i++) built.update(1 / 60, 10 + i / 60, 1, POINTER, 7, null)
     const end = built.camera.position.clone()
 
     expect(start.distanceTo(end)).toBeGreaterThan(1)
@@ -47,7 +47,7 @@ describe.each(Object.entries(FACTORIES))('%s scene', (_name, factory) => {
 
   test('survives a long run of frames without producing NaN', () => {
     const built = factory({isDark: false, aspect: 0.5, loadAssets: false})
-    for (let i = 0; i < 600; i++) built.update(0.1, i * 0.1, (i % 100) / 100, {x: 0.5, y: -0.5}, null)
+    for (let i = 0; i < 600; i++) built.update(0.1, i * 0.1, (i % 100) / 100, {x: 0.5, y: -0.5}, null, null)
     expect(built.camera.position.toArray().every(Number.isFinite)).toBe(true)
   })
 })
@@ -61,6 +61,8 @@ describe('approach', () => {
 })
 
 describe('cartoon train', () => {
+  const STATIONS = journeyStations(PROFILE_CONTENT.en)
+  const PROJECTS_STOP = STATIONS.findIndex((s) => s.kind === 'yard')
   const build = (reduceMotion = false) => createCartoonScene({isDark: false, aspect: 16 / 9, loadAssets: false, reduceMotion})
   const distanceToPlatform = (built: ReturnType<typeof build>, stop: number) => {
     const loco = built.scene.getObjectByName('train-loco')!
@@ -70,7 +72,7 @@ describe('cartoon train', () => {
 
   test('builds one platform and one station building per journey stop', () => {
     const built = build()
-    for (let i = 0; i < 17; i++) {
+    for (let i = 0; i < STATIONS.length; i++) {
       expect(built.scene.getObjectByName(`platform-${i}`)).toBeTruthy()
       expect(built.scene.getObjectByName(`station-${i}`)).toBeTruthy()
     }
@@ -78,24 +80,24 @@ describe('cartoon train', () => {
 
   test('runs to the centred stop and parks at its station', () => {
     const built = build()
-    for (let i = 0; i < 60; i++) built.update(1 / 60, i / 60, 0, POINTER, null) // looping on /
-    for (let i = 0; i < 60 * 20; i++) built.update(1 / 60, 1 + i / 60, 0, POINTER, 5)
+    for (let i = 0; i < 60; i++) built.update(1 / 60, i / 60, 0, POINTER, null, null) // looping on /
+    for (let i = 0; i < 60 * 20; i++) built.update(1 / 60, 1 + i / 60, 0, POINTER, 5, null)
     expect(distanceToPlatform(built, 5)).toBeLessThan(1.6)
     const curve = buildTrack(createKit(false)).curve
-    const parked = curve.getPointAt((5 + 0.5) / 17)
+    const parked = curve.getPointAt(stationU(5, STATIONS.length))
     const loco = built.scene.getObjectByName('train-loco')!.position
     expect(Math.hypot(loco.x - parked.x, loco.z - parked.z)).toBeLessThan(1e-6)
   })
 
   test('a scene rebuilt on a journey stop starts parked there (no re-run across the island)', () => {
     const built = build()
-    built.update(1 / 60, 0, 0, POINTER, 9)
-    expect(distanceToPlatform(built, 9)).toBeLessThan(1.6)
+    built.update(1 / 60, 0, 0, POINTER, 4, null)
+    expect(distanceToPlatform(built, 4)).toBeLessThan(1.6)
   })
 
   test('smoke starts at the chimney, not at the world origin', () => {
     const built = build()
-    built.update(1 / 60, 0, 0, POINTER, null)
+    built.update(1 / 60, 0, 0, POINTER, null, null)
     const loco = built.scene.getObjectByName('train-loco')!.getWorldPosition(new THREE.Vector3())
     const puffs = built.scene.getObjectByName('train')!.children.filter((c) => (c as THREE.Mesh).geometry?.type === 'IcosahedronGeometry')
     expect(puffs.length).toBeGreaterThan(0)
@@ -120,16 +122,34 @@ describe('cartoon train', () => {
 
   test('with reduced motion it is at the station on the first frame', () => {
     const built = build(true)
-    built.update(0, 0, 0, POINTER, 12)
-    expect(distanceToPlatform(built, 12)).toBeLessThan(1.6)
+    built.update(0, 0, 0, POINTER, 7, null)
+    expect(distanceToPlatform(built, 7)).toBeLessThan(1.6)
+  })
+
+  test('the project yard has one billboard per project', () => {
+    const built = build()
+    for (let k = 0; k < PROFILE_CONTENT.en.projects.length; k++) expect(built.scene.getObjectByName(`billboard-${k}`)).toBeTruthy()
+  })
+
+  test('on the projects stop the picked billboard lands on the same spot on screen', () => {
+    const last = PROFILE_CONTENT.en.projects.length - 1
+    // Screen x (NDC) of billboard k with project `focus` picked; reduced motion, so frame one is final.
+    const screenX = (focus: number, k: number) => {
+      const built = build(true)
+      built.update(0, 0, 0, POINTER, PROJECTS_STOP, focus)
+      built.camera.updateMatrixWorld()
+      return built.scene.getObjectByName(`billboard-${k}`)!.getWorldPosition(new THREE.Vector3()).project(built.camera).x
+    }
+    expect(Math.abs(screenX(0, 0) - screenX(last, last))).toBeLessThan(0.2)
+    expect(Math.abs(screenX(0, last) - screenX(last, last))).toBeGreaterThan(0.3) // the camera moved
   })
 
   test('keeps moving round the loop on the home page', () => {
     const built = build()
-    built.update(1 / 60, 0, 0, POINTER, null)
+    built.update(1 / 60, 0, 0, POINTER, null, null)
     const loco = built.scene.getObjectByName('train-loco')!
     const start = loco.position.clone()
-    for (let i = 0; i < 180; i++) built.update(1 / 60, i / 60, 0, POINTER, null)
+    for (let i = 0; i < 180; i++) built.update(1 / 60, i / 60, 0, POINTER, null, null)
     expect(loco.position.distanceTo(start)).toBeGreaterThan(1)
   })
 })

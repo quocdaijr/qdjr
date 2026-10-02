@@ -29,6 +29,8 @@ export interface TimelineEntry {
 }
 
 export interface Project {
+  /** Employer, exactly as its timeline `org` reads; the picker groups by it. */
+  group: string
   name: string
   image: string
   alt: string

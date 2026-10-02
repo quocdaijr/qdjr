@@ -9,6 +9,7 @@
     "scrollHint": "Scroll to continue ↓", "expert": "Expert", "proficient": "Proficient",
     "major": "Major", "degree": "Degree", "position": "Position", "technologies": "Technologies",
     "thirdParties": "3rd parties", "keyAchievements": "Key Achievements",
+    "projects": "Projects", "prevProject": "Previous project", "nextProject": "Next project", "projectList": "Project list",
     "projectCount": "Project {n} / {total}", "internal": "internal", "visitLive": "Visit live →",
     "meta": {
       "title": "Quoc Dai Nguyen - Senior Backend Software Engineer",
