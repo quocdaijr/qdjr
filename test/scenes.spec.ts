@@ -17,7 +17,7 @@ const POINTER = {x: 0, y: 0}
 describe.each(Object.entries(FACTORIES))('%s scene', (_name, factory) => {
   test('builds a populated scene with a perspective camera in both modes', () => {
     for (const isDark of [true, false]) {
-      const built = factory({isDark, aspect: 16 / 9})
+      const built = factory({isDark, aspect: 16 / 9, loadAssets: false})
       expect(built.scene.children.length).toBeGreaterThan(0)
       expect(built.camera.isPerspectiveCamera).toBe(true)
       expect(built.camera.aspect).toBeCloseTo(16 / 9)
@@ -25,11 +25,11 @@ describe.each(Object.entries(FACTORIES))('%s scene', (_name, factory) => {
   })
 
   test('moves the camera between journey start and end', () => {
-    const built = factory({isDark: true, aspect: 1})
+    const built = factory({isDark: true, aspect: 1, loadAssets: false})
 
-    built.update(0.016, 0.016, 0, POINTER)
+    built.update(0.016, 0.016, 0, POINTER, null)
     const start = built.camera.position.clone()
-    built.update(0.016, 0.032, 1, POINTER)
+    built.update(0.016, 0.032, 1, POINTER, null)
     const end = built.camera.position.clone()
 
     expect(start.distanceTo(end)).toBeGreaterThan(1)
@@ -37,8 +37,8 @@ describe.each(Object.entries(FACTORIES))('%s scene', (_name, factory) => {
   })
 
   test('survives a long run of frames without producing NaN', () => {
-    const built = factory({isDark: false, aspect: 0.5})
-    for (let i = 0; i < 600; i++) built.update(0.1, i * 0.1, (i % 100) / 100, {x: 0.5, y: -0.5})
+    const built = factory({isDark: false, aspect: 0.5, loadAssets: false})
+    for (let i = 0; i < 600; i++) built.update(0.1, i * 0.1, (i % 100) / 100, {x: 0.5, y: -0.5}, null)
     expect(built.camera.position.toArray().every(Number.isFinite)).toBe(true)
   })
 })
