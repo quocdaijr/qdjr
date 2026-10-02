@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import {journeyStations} from '~/data/journeyStations'
 import {PROFILE_CONTENT} from '~/data/profile'
+import {panelAim} from '../framing'
 import type {SceneFactory} from '../types'
 import {buildClouds} from './clouds'
 import {createKit} from './kit'
@@ -62,9 +63,7 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
   const wantEye = new THREE.Vector3()
   const wantLook = new THREE.Vector3()
   const inward = new THREE.Vector3()
-  const right = new THREE.Vector3()
   const offset = new THREE.Vector3()
-  const up = new THREE.Vector3(0, 1, 0)
 
   const overview = (pointer: {x: number; y: number}) => {
     const shot = camera.aspect < 1 ? OVERVIEW_NARROW : OVERVIEW
@@ -93,13 +92,7 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
     wantLook.copy(subject).lerp(picked ?? anchor.building, (picked ? YARD_CHASE.weight : 0.7) * nearness)
     wantLook.y += CHASE.lookRise
 
-    // Wide screens: shift the aim left so the subject sits right of centre,
-    // clear of the text panel. Phones: the panel is centred, so aim below the
-    // subject to lift it into the strip above the panel.
-    const wide = THREE.MathUtils.clamp((camera.aspect - 0.8) / 0.8, 0, 1)
-    right.subVectors(wantLook, wantEye).cross(up).normalize()
-    wantLook.addScaledVector(right, -(CHASE.lookShift + (picked ? YARD_CHASE.shift : 0)) * wide)
-    wantLook.y -= CHASE.narrowDrop * (1 - wide)
+    wantLook.copy(panelAim(wantLook, wantEye, camera.aspect, {shift: CHASE.lookShift + (picked ? YARD_CHASE.shift : 0), drop: CHASE.narrowDrop}))
   }
 
   return {

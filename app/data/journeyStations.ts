@@ -31,3 +31,6 @@ export function journeyStations(content: ProfileContent): JourneyStation[] {
     {kind: 'post'}
   ]
 }
+
+/** Index of the /about Projects stop (the yard), the same in both languages. */
+export const projectsStopIndex = (content: ProfileContent) => journeyStations(content).findIndex((s) => s.kind === 'yard')

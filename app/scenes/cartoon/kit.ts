@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import {mulberry32} from '../random'
 import {createWind, type Wind} from './wind'
 
 // Hex because THREE.Color cannot parse oklch(). The Ghibli register: a
@@ -56,18 +57,6 @@ export const PALETTE: Readonly<Record<'light' | 'dark', Colors>> = {
 }
 
 const SEED = 20261002
-
-/** Small deterministic PRNG so the island looks the same on every visit. */
-export function mulberry32(seed: number): () => number {
-  let a = seed >>> 0
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0
-    let t = a
-    t = Math.imul(t ^ (t >>> 15), t | 1)
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
 
 /** Three-band toon ramp shared by every material in the scene. */
 function toonRamp(): THREE.DataTexture {
