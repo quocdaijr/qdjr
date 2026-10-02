@@ -8,13 +8,10 @@ const EDGE_MARGIN = 1.2
 const POND = {x: -1, z: 1.5, radius: 2.4}
 const WINDMILL = {x: -6.5, z: -1.5}
 const BALLOON = {x: 13, y: 7, z: -8}
-const COUNTS = {high: {trees: 90, flowers: 160, rocks: 26}, low: {trees: 40, flowers: 60, rocks: 12}}
+const COUNTS = {high: {trees: 90, flowers: 160, rocks: 26, grass: 900}, low: {trees: 40, flowers: 60, rocks: 12, grass: 350}}
 const CLEAR = {track: 1.8, building: 2.6, platform: 1.6}
-const CLOUDS: ReadonlyArray<readonly [number, number, number]> = [
-  [-20, 10, -10], [-9, 12, 6], [2, 9, -14], [12, 11, 8], [22, 10, -4], [-2, 13, 14], [16, 12, -16]
-]
-const CLOUD_SPEED = 0.6
-const CLOUD_WRAP = 30
+const CROWN = {radius: 0.62, height: 1.4}
+const BLADE = {radius: 0.05, height: 0.45}
 const BLADE_SPEED = 0.9
 
 export interface World {
@@ -94,8 +91,9 @@ function instanced(geometry: THREE.BufferGeometry, material: THREE.Material, cou
 
 function forest(kit: Kit, spots: THREE.Vector2[]): THREE.Group {
   const trunks = instanced(faceted(new THREE.CylinderGeometry(0.12, 0.16, 0.6, 5)), kit.material(kit.colors.trunk), spots.length)
+  // Crowns bend in the wind from their base; trunks stay put.
   const crowns = [kit.colors.leaf, kit.colors.leafDark].map((c) =>
-    instanced(faceted(new THREE.ConeGeometry(0.62, 1.4, 6)), kit.material(c), spots.length)
+    instanced(faceted(new THREE.ConeGeometry(CROWN.radius, CROWN.height, 6)), kit.swayMaterial(c, -CROWN.height / 2, CROWN.height), spots.length)
   )
   const m = new THREE.Matrix4()
   const q = new THREE.Quaternion()
@@ -150,15 +148,30 @@ function windmill(kit: Kit): {group: THREE.Group; blades: THREE.Group} {
   return {group, blades}
 }
 
-function cloud(kit: Kit, [x, y, z]: readonly [number, number, number]): THREE.Group {
-  const g = new THREE.Group()
-  for (const [px, py, r] of [[0, 0, 0.9], [0.95, 0.15, 0.7], [-0.9, -0.05, 0.65], [0.3, 0.45, 0.6]] as const) {
-    const puff = kit.mesh(new THREE.SphereGeometry(r, 8, 6), kit.material(kit.colors.cloud))
-    puff.position.set(px, py, 0)
-    g.add(puff)
+/** Grass blades over every free patch of the meadow, swaying in the wind. */
+function meadow(kit: Kit, isFree: IsFree, count: number): THREE.InstancedMesh {
+  const blade = new THREE.ConeGeometry(BLADE.radius, BLADE.height, 3).translate(0, BLADE.height / 2, 0)
+  const mesh = new THREE.InstancedMesh(blade, kit.swayMaterial(0xffffff, 0, BLADE.height), count)
+  mesh.name = 'grass'
+  const m = new THREE.Matrix4()
+  const q = new THREE.Quaternion()
+  const s = new THREE.Vector3()
+  const at = new THREE.Vector3()
+  const tint = new THREE.Color()
+  const shades = [kit.colors.grass, kit.colors.leaf, kit.colors.leafDark]
+  let placed = 0
+  for (let i = 0; i < count * 4 && placed < count; i++) {
+    const x = (kit.random() - 0.5) * ISLAND.width
+    const z = (kit.random() - 0.5) * ISLAND.depth
+    if (!isFree(x, z, 0)) continue
+    q.setFromAxisAngle(at.set(0, 1, 0), kit.random() * Math.PI)
+    s.setScalar(0.7 + kit.random() * 0.8)
+    mesh.setMatrixAt(placed, m.compose(at.set(x, 0, z), q, s))
+    mesh.setColorAt(placed, tint.setHex(shades[placed % shades.length]))
+    placed++
   }
-  g.position.set(x, y, z)
-  return g
+  mesh.count = placed
+  return mesh
 }
 
 function balloon(kit: Kit): THREE.Group {
@@ -180,7 +193,6 @@ export function buildWorld(kit: Kit, track: Track, anchors: StationAnchor[], det
   const pond = kit.mesh(new THREE.CylinderGeometry(POND.radius, POND.radius, 0.08, 12), kit.material(kit.colors.water))
   pond.position.set(POND.x, 0.02, POND.z)
   const mill = windmill(kit)
-  const clouds = CLOUDS.map((spot) => cloud(kit, spot))
   const air = balloon(kit)
 
   const group = new THREE.Group()
@@ -190,10 +202,10 @@ export function buildWorld(kit: Kit, track: Track, anchors: StationAnchor[], det
     forest(kit, scatter(kit, counts.trees, isFree, 0.4, 1.1)),
     scatterMesh(kit, new THREE.IcosahedronGeometry(0.09, 0), 0, scatter(kit, counts.flowers, isFree, 0, 0.35), 0.09, kit.colors.flowers),
     scatterMesh(kit, new THREE.DodecahedronGeometry(0.28, 0), kit.colors.stone, scatter(kit, counts.rocks, isFree, 0.2, 1), 0.12),
+    meadow(kit, isFree, counts.grass),
     pond,
     mill.group,
-    air,
-    ...clouds
+    air
   )
 
   return {
@@ -201,10 +213,6 @@ export function buildWorld(kit: Kit, track: Track, anchors: StationAnchor[], det
     update(dt, elapsed) {
       mill.blades.rotation.z += dt * BLADE_SPEED
       air.position.y = BALLOON.y + Math.sin(elapsed * 0.6) * 0.4
-      for (const c of clouds) {
-        c.position.x += dt * CLOUD_SPEED
-        if (c.position.x > CLOUD_WRAP) c.position.x = -CLOUD_WRAP
-      }
     }
   }
 }
