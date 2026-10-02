@@ -6,6 +6,7 @@
 import * as THREE from 'three'
 import {createCartoonScene} from '~/scenes/cartoon'
 import {createGalaxyScene} from '~/scenes/galaxy'
+import {disposeScene} from '~/scenes/dispose'
 import {createTerminalScene} from '~/scenes/terminal'
 import {approach, type SceneFactory, type ScenePointer, type VibeScene} from '~/scenes/types'
 import type {Vibe} from '~/stores/theme'
@@ -41,25 +42,6 @@ const pointerTarget: ScenePointer = {x: 0, y: 0}
 
 function aspectOf(el: HTMLCanvasElement): number {
   return el.clientWidth / Math.max(1, el.clientHeight)
-}
-
-/** Free every GPU resource reachable from the graph. scene.remove() alone leaks. */
-function disposeScene(scene: THREE.Scene) {
-  scene.traverse((object) => {
-    const mesh = object as THREE.Mesh
-    mesh.geometry?.dispose()
-    const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
-    materials.forEach((material) => {
-      if (!material) return
-      Object.values(material).forEach((value) => {
-        if ((value as THREE.Texture)?.isTexture) (value as THREE.Texture).dispose()
-      })
-      material.dispose()
-    })
-  })
-  scene.fog = null
-  scene.background = null
-  scene.clear()
 }
 
 function renderFrame(dt: number) {

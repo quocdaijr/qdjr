@@ -91,6 +91,7 @@ export function buildTrain(kit: Kit): Train {
 
   const chimney = new THREE.Vector3()
   let wheelAngle = 0
+  let smokeStarted = false
 
   return {
     group,
@@ -108,7 +109,12 @@ export function buildTrain(kit: Kit): Train {
       })
 
       // Puffs drift up from the chimney; they thin out when the train stands still.
+      cars[0].updateMatrixWorld() // localToWorld reads matrixWorld, stale until the next render
       cars[0].localToWorld(chimney.copy(CHIMNEY))
+      if (!smokeStarted) {
+        puffs.forEach((puff) => puff.position.copy(chimney))
+        smokeStarted = true
+      }
       const activity = Math.min(1, 0.25 + Math.abs(speed) / 4)
       for (const puff of puffs) {
         let life = puff.userData.life + dt / SMOKE_LIFE

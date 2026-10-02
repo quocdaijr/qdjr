@@ -39,7 +39,7 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
   const camera = new THREE.PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 220)
 
   const track = buildTrack(kit)
-  const stations = buildStations(kit, track.curve, STATIONS, loadAssets && typeof window !== 'undefined')
+  const stations = buildStations(kit, track, STATIONS, loadAssets && typeof window !== 'undefined')
   const world = buildWorld(kit, track, stations.anchors, detail)
   const train = buildTrain(kit)
   scene.add(world.group, track.group, stations.group, train.group)
@@ -61,8 +61,10 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
     wantLook.copy(shot.look)
   }
 
+  const anchorAt = (stop: number) => stations.anchors[THREE.MathUtils.clamp(Math.round(stop), 0, stations.anchors.length - 1)]
+
   const chase = (stop: number) => {
-    const anchor = stations.anchors[Math.min(stop, stations.anchors.length - 1)]
+    const anchor = anchorAt(stop)
     const trainAt = track.curve.getPointAt(motion.u)
     sideAt(track.curve, motion.u, inward)
     if (inward.dot(new THREE.Vector3(-trainAt.x, 0, -trainAt.z)) < 0) inward.negate()
@@ -88,7 +90,10 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
     scene,
     camera,
     update(dt, elapsed, _progress, pointer, stop) {
-      const target = stop === null ? null : stations.anchors[Math.min(stop, stations.anchors.length - 1)].u
+      const target = stop === null ? null : anchorAt(stop).u
+      // Built while a stop is centred (vibe or theme switch on /about): start
+      // parked there rather than re-running the line from the seam.
+      if (!cameraReady && target !== null) motion = {u: target, velocity: 0}
       motion = stepTrain(motion, target, dt, config, reduceMotion)
       train.place(track.curve, track.length, motion.u, motion.velocity * track.length, dt)
       world.update(dt, elapsed)

@@ -2,10 +2,11 @@ import * as THREE from 'three'
 import type {Kit} from './kit'
 
 // A winding closed loop over the island (island spans x −20..20, z −16..16).
-// Calibration knob: move these points if a station building lands on a curve.
+// Two points per corner keep the bends gentle enough for a straight platform
+// on the inside; test/scenes.spec.ts fails if a station touches the rails.
 const CONTROL: ReadonlyArray<readonly [number, number]> = [
-  [-15, 9], [-7, 12], [3, 10], [13, 11.5], [16.5, 3], [11, -2.5], [15, -10], [6, -12.5],
-  [-2, -8], [-9, -12.5], [-16.5, -7], [-13, 1]
+  [-16.5, 2], [-15.5, 9], [-10, 12.5], [-1, 12.5], [8, 12.5], [14.5, 10.5], [16.5, 3],
+  [14, -3], [14.5, -9.5], [9, -12.5], [2, -11], [-6, -12.5], [-13, -11.5], [-17, -5]
 ]
 
 export const RAIL_HEIGHT = 0.12

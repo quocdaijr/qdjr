@@ -1,8 +1,15 @@
 import * as THREE from 'three'
-import {describe, expect, test} from 'vitest'
+import {describe, expect, test, vi} from 'vitest'
 import {createCartoonScene} from '~/scenes/cartoon'
 import {createGalaxyScene} from '~/scenes/galaxy'
 import {createTerminalScene} from '~/scenes/terminal'
+import {pointInRect, rectsOverlap} from '~/scenes/cartoon/footprint'
+import {buildStations} from '~/scenes/cartoon/stations'
+import {disposeScene} from '~/scenes/dispose'
+import {journeyStations} from '~/data/journeyStations'
+import {PROFILE_CONTENT} from '~/data/profile'
+import {buildTrack} from '~/scenes/cartoon/track'
+import {createKit} from '~/scenes/cartoon/kit'
 import {approach, type SceneFactory} from '~/scenes/types'
 
 // Scene factories build plain three.js object graphs; no renderer (and so no
@@ -71,8 +78,44 @@ describe('cartoon train', () => {
 
   test('runs to the centred stop and parks at its station', () => {
     const built = build()
-    for (let i = 0; i < 60 * 20; i++) built.update(1 / 60, i / 60, 0, POINTER, 5)
+    for (let i = 0; i < 60; i++) built.update(1 / 60, i / 60, 0, POINTER, null) // looping on /
+    for (let i = 0; i < 60 * 20; i++) built.update(1 / 60, 1 + i / 60, 0, POINTER, 5)
     expect(distanceToPlatform(built, 5)).toBeLessThan(1.6)
+    const curve = buildTrack(createKit(false)).curve
+    const parked = curve.getPointAt((5 + 0.5) / 17)
+    const loco = built.scene.getObjectByName('train-loco')!.position
+    expect(Math.hypot(loco.x - parked.x, loco.z - parked.z)).toBeLessThan(1e-6)
+  })
+
+  test('a scene rebuilt on a journey stop starts parked there (no re-run across the island)', () => {
+    const built = build()
+    built.update(1 / 60, 0, 0, POINTER, 9)
+    expect(distanceToPlatform(built, 9)).toBeLessThan(1.6)
+  })
+
+  test('smoke starts at the chimney, not at the world origin', () => {
+    const built = build()
+    built.update(1 / 60, 0, 0, POINTER, null)
+    const loco = built.scene.getObjectByName('train-loco')!.getWorldPosition(new THREE.Vector3())
+    const puffs = built.scene.getObjectByName('train')!.children.filter((c) => (c as THREE.Mesh).geometry?.type === 'IcosahedronGeometry')
+    expect(puffs.length).toBeGreaterThan(0)
+    for (const puff of puffs) expect(puff.position.distanceTo(loco)).toBeLessThan(4)
+  })
+
+  test('every platform and building clears the track and no two footprints overlap', () => {
+    const kit = createKit(false)
+    const track = buildTrack(kit)
+    const rects = buildStations(kit, track, journeyStations(PROFILE_CONTENT.en), false).footprints
+    const TRAIN_HALF_WIDTH = 0.6
+    for (const [i, r] of rects.entries()) {
+      const hit = track.samples.find((p) => pointInRect(r.rect, p.x, p.z, TRAIN_HALF_WIDTH))
+      expect(hit, `${r.label} ${i} sits on the track`).toBeUndefined()
+    }
+    for (let a = 0; a < rects.length; a++) {
+      for (let b = a + 1; b < rects.length; b++) {
+        expect(rectsOverlap(rects[a].rect, rects[b].rect), `${rects[a].label} ${rects[a].station} overlaps ${rects[b].label} ${rects[b].station}`).toBe(false)
+      }
+    }
   })
 
   test('with reduced motion it is at the station on the first frame', () => {
@@ -88,5 +131,18 @@ describe('cartoon train', () => {
     const start = loco.position.clone()
     for (let i = 0; i < 180; i++) built.update(1 / 60, i / 60, 0, POINTER, null)
     expect(loco.position.distanceTo(start)).toBeGreaterThan(1)
+  })
+})
+
+describe('disposeScene', () => {
+  test('frees instanced buffers as well as geometries and materials', () => {
+    const built = createCartoonScene({isDark: false, aspect: 1, loadAssets: false})
+    const instanced: THREE.InstancedMesh[] = []
+    built.scene.traverse((o) => (o as THREE.InstancedMesh).isInstancedMesh && instanced.push(o as THREE.InstancedMesh))
+    expect(instanced.length).toBeGreaterThan(0)
+    const spies = instanced.map((m) => vi.spyOn(m, 'dispose'))
+    disposeScene(built.scene)
+    for (const spy of spies) expect(spy).toHaveBeenCalled()
+    expect(built.scene.children).toHaveLength(0)
   })
 })
