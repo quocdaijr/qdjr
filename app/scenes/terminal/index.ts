@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import {journeyStations, projectsStopIndex} from '~/data/journeyStations'
 import {PROFILE_CONTENT} from '~/data/profile'
-import {panelAim} from '../framing'
+import {homeFraming, panelAim} from '../framing'
 import {pickable} from '../picking'
 import type {SceneFactory} from '../types'
 import {layoutArchitecture} from './architecture'
@@ -30,7 +30,8 @@ const CAMERA_FOV = 60
 const CAMERA_GLIDE = 2
 const POINTER_SWAY = 0.6
 // Home page: the whole map, right of the hero text.
-const OVERVIEW = {eye: new THREE.Vector3(-12, 18, 22), look: new THREE.Vector3(-27, 0, -20)}
+// Home page: the map seen from the front, above, a little from the right.
+const HOME_FROM = new THREE.Vector3(0.35, 0.45, 1)
 const OFFSET = new THREE.Vector3(0, 3.5, 9)
 const POD_SCALE = 0.6
 const FRAME = {shift: 3.6, drop: 2.2}
@@ -109,10 +110,7 @@ export const createTerminalScene: SceneFactory = ({isDark, aspect, reduceMotion 
     return {eye: to, look: panelAim(at, to, camera.aspect, {shift, drop: FRAME.drop * scale})}
   }
 
-  const overviewShot = (pointer: {x: number; y: number}) => ({
-    eye: OVERVIEW.eye.clone().add(new THREE.Vector3(pointer.x * POINTER_SWAY, -pointer.y * POINTER_SWAY * 0.5, 0)),
-    look: OVERVIEW.look.clone()
-  })
+  const home = homeFraming(map.group, HOME_FROM, CAMERA_FOV, POINTER_SWAY)
 
   return {
     scene,
@@ -139,7 +137,7 @@ export const createTerminalScene: SceneFactory = ({isDark, aspect, reduceMotion 
       cron.rotation.set(t * CRON.spin * 0.6, t * CRON.spin, 0)
       scene.updateMatrixWorld()
 
-      const shot = stop === null ? overviewShot(pointer) : stopShot(stop, picked)
+      const shot = stop === null ? home(camera.aspect, pointer) : stopShot(stop, picked)
       const k = !ready || reduceMotion ? 1 : Math.min(1, dt * CAMERA_GLIDE)
       eye.lerp(shot.eye, k)
       look.lerp(shot.look, k)

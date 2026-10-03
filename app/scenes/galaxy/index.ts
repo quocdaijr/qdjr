@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import {projectsStopIndex} from '~/data/journeyStations'
 import {PROFILE_CONTENT} from '~/data/profile'
+import {homeFraming} from '../framing'
 import {pickable} from '../picking'
 import {mulberry32} from '../random'
 import type {SceneFactory} from '../types'
@@ -25,9 +26,9 @@ const SUN_INTENSITY_LIGHT = 260
 const STARS = {count: 2000, min: 60, max: 120}
 const CAMERA_FOV = 50
 const CAMERA_GLIDE = 1.8
-// Home page overview: looking left of and below the sun pushes the system to
-// the lower right of the viewport, clear of the hero text.
-const OVERVIEW = {radius: 24, height: 9, look: new THREE.Vector3(-6, -1.5, 0), sway: {x: 1.2, y: 0.8}}
+// Home page: the whole system from above and in front, fitted to the screen.
+const HOME_FROM = new THREE.Vector3(0.25, 0.42, 1)
+const POINTER_SWAY = 1.2
 
 const PROJECTS = PROFILE_CONTENT.en.projects
 const PROJECTS_STOP = projectsStopIndex(PROFILE_CONTENT.en)
@@ -96,10 +97,7 @@ export const createGalaxyScene: SceneFactory = ({isDark, aspect, reduceMotion = 
   let lastFocus: number | null = null
   let nextAmbient = nextAmbientDelay(random)
 
-  const overviewShot = (pointer: {x: number; y: number}): Shot => ({
-    eye: new THREE.Vector3(pointer.x * OVERVIEW.sway.x, OVERVIEW.height - pointer.y * OVERVIEW.sway.y, OVERVIEW.radius),
-    look: OVERVIEW.look.clone()
-  })
+  const home = homeFraming(bodies.group, HOME_FROM, CAMERA_FOV, POINTER_SWAY)
 
   const subjectOf = (stop: number, focus: number | null) => {
     const i = THREE.MathUtils.clamp(Math.round(stop), 0, bodies.anchors.length - 1)
@@ -153,7 +151,7 @@ export const createGalaxyScene: SceneFactory = ({isDark, aspect, reduceMotion = 
       subject = current
       if (current) current.getWorldPosition(subjectAt)
 
-      const shot = stop === null ? overviewShot(pointer) : stopShot(stop, picked)
+      const shot = stop === null ? home(camera.aspect, pointer) : stopShot(stop, picked)
       const instant = !ready || reduceMotion
       const k = instant ? 1 : Math.min(1, dt * CAMERA_GLIDE)
       eye.lerp(shot.eye, k)

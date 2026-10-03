@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import {journeyStations} from '~/data/journeyStations'
 import {PROFILE_CONTENT} from '~/data/profile'
-import {panelAim} from '../framing'
+import {homeFraming, panelAim} from '../framing'
 import {pickable} from '../picking'
 import type {SceneFactory} from '../types'
 import {buildClouds} from './clouds'
@@ -18,13 +18,14 @@ import {buildWorld} from './world'
 const STATIONS = journeyStations(PROFILE_CONTENT.en)
 
 const CAMERA_FOV = 42
-const FOG = {near: 38, far: 95}
-// Calibration knobs, tuned by screenshot: the overview keeps the island to the
-// right of the hero text on /, the chase camera frames each station on the
-// right half of the screen beside the /about panel.
-const OVERVIEW = {position: new THREE.Vector3(12, 26, 38), look: new THREE.Vector3(-12, -1, 2)}
-// Phones: the island sits below the hero text instead of behind it.
-const OVERVIEW_NARROW = {position: new THREE.Vector3(0, 34, 52), look: new THREE.Vector3(0, 13, -6)}
+// Depth haze; starts far enough out that the home view (camera fitted further
+// back on wide screens) stays crisp.
+const FOG = {near: 70, far: 190}
+// Home page: the island from the front-right and above, fitted to the screen
+// (framing.ts homeFraming). Calibration knobs below: the chase camera frames
+// each station on the right half of the screen beside the /about panel.
+const HOME_FROM = new THREE.Vector3(0.45, 0.6, 1)
+const HOME_FLOOR = -3 // the fit ignores the rock that hangs under the island
 const CHASE = {distance: 13, height: 8.5, back: 5, lookShift: 4.5, lookRise: 1.2, frame: 14, narrowDrop: 5}
 // Projects stop: the camera slides along the track to the picked billboard and steps in.
 const YARD_CHASE = {zoom: 3, weight: 0.85, shift: 2.5}
@@ -38,7 +39,8 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
   const scene = new THREE.Scene()
   scene.background = null // the painted sky dome is the backdrop
   scene.fog = new THREE.Fog(colors.horizon, FOG.near, FOG.far)
-  scene.add(buildSky(colors, isDark))
+  const sky = buildSky(colors, isDark)
+  scene.add(sky)
   scene.add(new THREE.HemisphereLight(colors.skyTop, colors.grass, isDark ? 1.1 : 1.15))
   // Warm afternoon sun by day, cool moonlight by night, from where the sky dome glows.
   const sun = new THREE.DirectionalLight(colors.sunlight, isDark ? 1.1 : 1.5)
@@ -46,7 +48,7 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
   scene.add(sun)
   scene.userData.windTime = 0
 
-  const camera = new THREE.PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 220)
+  const camera = new THREE.PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 400)
 
   const track = buildTrack(kit)
   const stations = buildStations(kit, track, STATIONS, loadAssets && typeof window !== 'undefined')
@@ -77,9 +79,10 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
   const inward = new THREE.Vector3()
   const offset = new THREE.Vector3()
 
+  const home = homeFraming(world.group, HOME_FROM, CAMERA_FOV, POINTER_SWAY, HOME_FLOOR)
   const overview = (pointer: {x: number; y: number}) => {
-    const shot = camera.aspect < 1 ? OVERVIEW_NARROW : OVERVIEW
-    wantEye.copy(shot.position).add(new THREE.Vector3(pointer.x * POINTER_SWAY, -pointer.y * POINTER_SWAY * 0.5, 0))
+    const shot = home(camera.aspect, pointer)
+    wantEye.copy(shot.eye)
     wantLook.copy(shot.look)
   }
 
@@ -142,6 +145,7 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
         look.lerp(wantLook, k)
       }
       camera.position.copy(eye)
+      sky.position.copy(eye) // the dome always surrounds the camera, however far back it stands
       camera.lookAt(look)
     }
   }
