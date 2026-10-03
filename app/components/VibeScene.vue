@@ -19,6 +19,8 @@ import {disposeScene} from '~/scenes/dispose'
 import {resolveAction, shouldHandleClick} from '~/scenes/picking'
 import {applyView} from '~/scenes/viewControl'
 import {createTerminalScene} from '~/scenes/terminal'
+import {createTripScene} from '~/scenes/trip'
+import {findTrip} from '~/data/trips'
 import {approach, type SceneAction, type SceneFactory, type ScenePointer, type VibeScene} from '~/scenes/types'
 import type {Vibe} from '~/stores/theme'
 
@@ -48,6 +50,9 @@ const raycaster = new THREE.Raycaster()
 const ndc = new THREE.Vector2()
 let hoverQueued: PointerEvent | null = null
 const orbit = useSceneOrbit()
+const activeTrip = useActiveTrip()
+const tripProgress = useTripProgress()
+const tripControl = useTripControl()
 
 let renderer: THREE.WebGLRenderer | null = null
 let active: VibeScene | null = null
@@ -94,7 +99,13 @@ function buildScene() {
     disposeScene(active.scene)
     renderer.renderLists.dispose()
   }
-  active = FACTORIES[store.vibe]({isDark: store.isDarkMode, aspect: aspectOf(canvas.value), reduceMotion, detail})
+  // A trip page swaps the vibe scene for its road trip (always the cartoon board).
+  const wanted = activeTrip.value
+  const trip = wanted && findTrip(wanted.slug)
+  const factory = trip
+    ? createTripScene({trip, vehicle: wanted.vehicle, locale: wanted.locale, control: () => tripControl.value, onProgress: (p) => (tripProgress.value = p)})
+    : FACTORIES[store.vibe]
+  active = factory({isDark: store.isDarkMode, aspect: aspectOf(canvas.value), reduceMotion, detail, stopLabels: labels.value})
   elapsed = 0
   progress = journey.value // a vibe change jumps to the current stop instead of easing from 0
   renderFrame(0)
@@ -137,6 +148,7 @@ function actionAt(clientX: number, clientY: number): SceneAction | null {
 function labelFor(action: SceneAction): string {
   if (action.type === 'stop') return labels.value[action.stop] ?? ''
   if (action.type === 'project') return content.value.projects[action.project]?.alt ?? ''
+  if (action.type === 'trip') return action.label
   return t(`scene.fun.${action.id}`)
 }
 
@@ -144,7 +156,8 @@ function onClick(event: MouseEvent) {
   if (orbit.takeDragClick() || !shouldHandleClick(event.target as Element)) return
   const action = actionAt(event.clientX, event.clientY)
   if (!action) return
-  if (action.type === 'fun') active?.play(action.id, elapsed)
+  if (action.type === 'trip') tripControl.value = {...tripControl.value, target: action.mark}
+  else if (action.type === 'fun') active?.play(action.id, elapsed)
   else sceneAction.value = {action, at: performance.now()}
 }
 
@@ -217,11 +230,16 @@ onMounted(() => {
   rafId = requestAnimationFrame(tick)
 })
 
-watch(() => [store.vibe, store.isDarkMode] as const, buildScene)
+watch(() => [store.vibe, store.isDarkMode, labels.value, activeTrip.value?.slug, activeTrip.value?.vehicle, activeTrip.value?.locale] as const, buildScene)
 
 watch(orbit.view, () => {
   if (reduceMotion) renderFrame(0)
 })
+
+// A picked place or a view switch on a trip page: without a frame loop, draw it once.
+watch(tripControl, () => {
+  if (reduceMotion) renderFrame(0)
+}, {deep: true})
 
 watch([journey, journeyStop, journeyFocus], ([value]) => {
   if (!reduceMotion) return

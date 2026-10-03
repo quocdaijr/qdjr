@@ -23,7 +23,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "translate:posts": "node scripts/translate-posts.mjs"
+    "translate:posts": "node scripts/translate-posts.mjs",
+    "trips:build": "node scripts/build-trip.mjs"
   },
   "lint-staged": {
     "*.{js,ts,vue}": "eslint --fix",

@@ -26,18 +26,19 @@ test.describe('scene orbit and zoom', () => {
     await page.goto('/')
     await page.waitForTimeout(2000)
     const before = (await camera(page))!
-    await page.mouse.move(1100, 700)
+    // An empty spot right of the hero: the footer (page UI) starts lower down and keeps its own clicks.
+    await page.mouse.move(1100, 420)
     await page.mouse.down()
-    await page.mouse.move(900, 650, {steps: 12})
+    await page.mouse.move(900, 370, {steps: 12})
     await page.mouse.up()
     await page.waitForTimeout(300)
     expect(distance((await camera(page))!, before)).toBeGreaterThan(1)
     await expect(page).toHaveURL(/\/$/)
 
-    await page.getByRole('button', {name: 'Đặt lại góc nhìn'}).click()
+    await page.getByRole('button', {name: 'Reset góc nhìn'}).click()
     await page.waitForTimeout(300)
     expect(distance((await camera(page))!, before)).toBeLessThan(1e-6)
-    await expect(page.getByRole('button', {name: 'Đặt lại góc nhìn'})).toHaveCount(0)
+    await expect(page.getByRole('button', {name: 'Reset góc nhìn'})).toHaveCount(0)
   })
 
   test('the zoom buttons bring the camera closer and further', async ({page}) => {

@@ -13,7 +13,7 @@ export function useSceneNavigation() {
   const getRouteBaseName = useRouteBaseName()
 
   watch(action, async (current) => {
-    if (!current || current.action.type === 'fun') return
+    if (!current || current.action.type === 'fun' || current.action.type === 'trip') return
     const stop = current.action.type === 'stop' ? current.action.stop : PROJECTS_STOP
     const project = current.action.type === 'project' ? current.action.project : null
     if (getRouteBaseName(route) !== 'about') {

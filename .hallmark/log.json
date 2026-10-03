@@ -1,5 +1,15 @@
 [
   {
+    "date": "2026-10-03",
+    "scope": "page",
+    "macrostructure": "Long Document (/trips) · Marquee Hero (/trips/[slug])",
+    "theme": "design.md — active vibe",
+    "enrichment": "E5 hand-built SVG route thumbnails · Tier-A three.js terrain board",
+    "nav": "shared header + Trips link",
+    "footer": "Ft2",
+    "brief": "trips showcase · one vehicle per trip, real terrain (elevation, passes, bridges, tunnels, towns) on a cartoon diorama"
+  },
+  {
     "date": "2026-10-01",
     "scope": "app",
     "macrostructure": "Marquee Hero (/) · Narrative Workflow (/about)",

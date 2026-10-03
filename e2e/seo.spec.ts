@@ -37,7 +37,7 @@ test('about page emits its title and meta', async ({page}) => {
 test('Vietnamese about page has Vietnamese meta', async ({page}) => {
   await page.goto('/about')
   await expect(page).toHaveTitle(/Nguyễn Quốc Đại/)
-  await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /Senior Backend Software Engineer với hơn 6 năm/)
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /Senior Backend Software Engineer, hơn 6 năm/)
 })
 
 test('blog post emits article meta', async ({page}) => {

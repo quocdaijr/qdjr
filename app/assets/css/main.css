@@ -180,6 +180,107 @@ header nav a {
   color: var(--color-accent);
 }
 
+/* Pages not laid out over the scene (blog, trips, search, legacy) read
+   straight over it, as the home page does: a full-screen veil between the
+   canvas (z 0) and the content (z 10) blurs it and lays half the body ground
+   over it, so the scene stays visible and long text stays readable. */
+.scene-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: color-mix(in oklch, var(--reading-ground) 50%, transparent);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+
+:root {
+  --reading-ground: var(--vibe-gray-50);
+}
+
+.dark {
+  --reading-ground: var(--vibe-gray-900);
+}
+
+/* Without blur, or when less transparency is asked for, the veil thickens. */
+@supports not (backdrop-filter: blur(1px)) {
+  .scene-veil {
+    background: color-mix(in oklch, var(--reading-ground) 85%, transparent);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .scene-veil {
+    background: var(--reading-ground);
+  }
+}
+
+/* Segmented pickers on the trips pages (vehicle, view): real radios, so arrow
+   keys move between options. */
+.seg {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: var(--radius-pill);
+}
+
+.seg-legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.seg-option {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-sm);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+}
+
+.seg-input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.seg-option:hover {
+  background: var(--color-paper-2);
+}
+
+.seg-option:active {
+  transform: translateY(1px);
+}
+
+.seg-option:has(.seg-input:checked) {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-weight: 600;
+}
+
+.seg-option:has(.seg-input:focus-visible) {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .seg-option {
+    transition-duration: 0ms;
+  }
+}
+
 /* @tailwindcss/typography bakes slate values into --tw-prose-*; point the ones
    that matter at the vibe so blog prose retints like everything else. This must
    stay UNLAYERED: the plugin emits its .prose rule inside @layer utilities, and

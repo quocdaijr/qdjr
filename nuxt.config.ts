@@ -41,6 +41,8 @@ export default defineNuxtConfig({
   // App config (replaces head configuration)
   app: {
     head: {
+      // The default vibe (stores/theme.ts) in the page shell, so its tokens apply before any script runs.
+      htmlAttrs: {'data-vibe': 'cartoon'},
       title: 'QDJr Blog',
       meta: [
         { charset: 'utf-8' },
@@ -190,6 +192,10 @@ export default defineNuxtConfig({
 
   // Nitro configuration
   nitro: {
+    // Planned trips (/api/trips/plan), kept 30 days on disk across restarts.
+    storage: {
+      trips: {driver: 'fs', base: './.data/trips'}
+    },
     prerender: {
       // Disable prerendering for now due to SSR directive issues
       // This can be re-enabled after converting components to Composition API

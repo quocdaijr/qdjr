@@ -39,17 +39,18 @@ const collectFailures = () => {
     const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x)
     return (hi + 0.05) / (lo + 0.05)
   }
-  // Translucent backgrounds are composited over what is really behind them.
-  // A glass journey panel sits on the 3D canvas, which can be any colour, so
-  // it is measured against the worst case: over pure white and pure black.
+  // Translucent backgrounds are composited over what is behind them. Glass
+  // panels (/about stops, the trip itinerary) and text on the veiled scene of
+  // the other pages sit on the 3D canvas; it is blurred behind them and painted
+  // in the same light or dark register as the page, so like text drawn straight
+  // on the home page they are measured over the page ground (design.md § Surfaces).
   const over = (top: number[], under: number[]) => [...[0, 1, 2].map((i) => top[i] * top[3] + under[i] * (1 - top[3])), 1]
   const backgroundsOf = (el: Element | null): number[][] => {
     for (let e = el; e; e = e.parentElement) {
       const c = rgba(getComputedStyle(e).backgroundColor)
       if (c[3] === 0) continue
       if (c[3] >= 0.99) return [c]
-      const under = e.classList.contains('stop-panel') ? [[255, 255, 255, 1], [0, 0, 0, 1]] : backgroundsOf(e.parentElement)
-      return under.map((u) => over(c, u))
+      return backgroundsOf(e.parentElement).map((u) => over(c, u))
     }
     return [[255, 255, 255, 1]]
   }

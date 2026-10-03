@@ -1,14 +1,21 @@
 import * as THREE from 'three'
 import {faceted, type Kit} from './kit'
+import {buildFauna} from './fauna'
+import {buildLandscape} from './landscape'
+import {COTTAGES, HILLS, inLake, RIVER_HALF_WIDTH, riverDistance} from './layout'
 import type {StationAnchor} from './stations'
 import type {Track} from './track'
+import {buildVillage} from './village'
+import {buildWater} from './water'
 
 const ISLAND = {width: 40, depth: 32, radius: 7, thickness: 2.4}
 const EDGE_MARGIN = 1.2
-const POND = {x: -1, z: 1.5, radius: 2.4}
+// Earth layers on the island's cut face, top to bottom (shares of the thickness).
+const STRATA = [{share: 0.22, color: 'ground'}, {share: 0.43, color: 'cliff'}, {share: 0.35, color: 'trunk'}] as const
+const WATER_CLEAR = 0.9 // props keep this far from the lake shore and the river bank
 const WINDMILL = {x: -6.5, z: -1.5}
 const BALLOON = {x: 13, y: 7, z: -8}
-const COUNTS = {high: {trees: 90, flowers: 160, rocks: 26, grass: 900}, low: {trees: 40, flowers: 60, rocks: 12, grass: 350}}
+const COUNTS = {high: {trees: 150, flowers: 160, rocks: 26, grass: 900, sheep: 5}, low: {trees: 60, flowers: 60, rocks: 12, grass: 350, sheep: 2}}
 const CLEAR = {track: 1.8, building: 2.6, platform: 1.6}
 const CROWN = {radius: 0.62, height: 1.4}
 const BLADE = {radius: 0.05, height: 0.45}
@@ -18,6 +25,8 @@ const SPIN_DECAY = 4
 
 export interface World {
   group: THREE.Group
+  /** Far peaks and birds: in the scene, but outside the island the cameras frame. */
+  sky: THREE.Group
   /** The windmill, clickable for a spin. */
   windmill: THREE.Group
   /** Easter egg: the blades whirl, then ease back to their breeze. */
@@ -43,21 +52,24 @@ function roundedRect(w: number, h: number, r: number): THREE.Shape {
   return s
 }
 
-/** Grass top with cliff sides, floating on an inverted rock. */
+/** Grass top over layered earth sides (a diorama cut), floating on an inverted rock. */
 function island(kit: Kit): THREE.Group {
-  const geometry = new THREE.ExtrudeGeometry(roundedRect(ISLAND.width, ISLAND.depth, ISLAND.radius), {
-    depth: ISLAND.thickness,
-    bevelEnabled: false,
-    curveSegments: 6
+  const g = new THREE.Group()
+  let y = 0
+  STRATA.forEach((layer, i) => {
+    const depth = ISLAND.thickness * layer.share
+    const geometry = new THREE.ExtrudeGeometry(roundedRect(ISLAND.width, ISLAND.depth, ISLAND.radius), {depth, bevelEnabled: false, curveSegments: 6})
+    geometry.rotateX(-Math.PI / 2) // extrusion now runs up +y; shape y maps to −z
+    const side = kit.material(kit.colors[layer.color])
+    const slab = new THREE.Mesh(geometry, [i === 0 ? kit.material(kit.colors.grass) : side, side])
+    y -= depth
+    slab.position.y = y
+    g.add(slab)
   })
-  geometry.rotateX(-Math.PI / 2) // extrusion now runs up +y; shape y maps to −z
-  const top = new THREE.Mesh(geometry, [kit.material(kit.colors.grass), kit.material(kit.colors.cliff)])
-  top.position.y = -ISLAND.thickness
   const under = kit.mesh(new THREE.CylinderGeometry(ISLAND.width * 0.42, 3, 9, 8), kit.material(kit.colors.ground))
   under.scale.z = ISLAND.depth / ISLAND.width
   under.position.y = -ISLAND.thickness - 4.5
-  const g = new THREE.Group()
-  g.add(top, under)
+  g.add(under)
   return g
 }
 
@@ -71,11 +83,13 @@ function insideIsland(x: number, z: number, margin: number): boolean {
 function freeSpace(track: Track, anchors: StationAnchor[]): IsFree {
   const blocked = [
     ...anchors.flatMap((a) => [{p: a.building, r: CLEAR.building}, {p: a.platform, r: CLEAR.platform}]),
-    {p: new THREE.Vector3(POND.x, 0, POND.z), r: POND.radius + 0.8},
-    {p: new THREE.Vector3(WINDMILL.x, 0, WINDMILL.z), r: 1.8}
+    {p: new THREE.Vector3(WINDMILL.x, 0, WINDMILL.z), r: 1.8},
+    ...HILLS.map((h) => ({p: new THREE.Vector3(h.x, 0, h.z), r: h.r + 0.3})),
+    ...COTTAGES.map((c) => ({p: new THREE.Vector3(c.x, 0, c.z), r: 1.3}))
   ]
   return (x, z, margin) => {
     if (!insideIsland(x, z, EDGE_MARGIN + margin)) return false
+    if (inLake(x, z, WATER_CLEAR + margin) || riverDistance(x, z) < RIVER_HALF_WIDTH + WATER_CLEAR + margin) return false
     const near = (p: THREE.Vector3, r: number) => (p.x - x) ** 2 + (p.z - z) ** 2 < (r + margin) ** 2
     return !track.samples.some((s) => near(s, CLEAR.track)) && !blocked.some((b) => near(b.p, b.r))
   }
@@ -196,10 +210,15 @@ function balloon(kit: Kit): THREE.Group {
 export function buildWorld(kit: Kit, track: Track, anchors: StationAnchor[], detail: 'high' | 'low'): World {
   const counts = COUNTS[detail]
   const isFree = freeSpace(track, anchors)
-  const pond = kit.mesh(new THREE.CylinderGeometry(POND.radius, POND.radius, 0.08, 12), kit.material(kit.colors.water))
-  pond.position.set(POND.x, 0.02, POND.z)
+  const water = buildWater(kit, detail)
+  const village = buildVillage(kit)
+  const fauna = buildFauna(kit, scatter(kit, counts.sheep, isFree, 1, 3), detail)
   const mill = windmill(kit)
   const air = balloon(kit)
+  const landscape = buildLandscape(kit)
+  const sky = new THREE.Group()
+  sky.name = 'sky-life'
+  sky.add(landscape.peaks, fauna.air)
 
   const group = new THREE.Group()
   group.name = 'world'
@@ -209,7 +228,10 @@ export function buildWorld(kit: Kit, track: Track, anchors: StationAnchor[], det
     scatterMesh(kit, new THREE.IcosahedronGeometry(0.09, 0), 0, scatter(kit, counts.flowers, isFree, 0, 0.35), 0.09, kit.colors.flowers),
     scatterMesh(kit, new THREE.DodecahedronGeometry(0.28, 0), kit.colors.stone, scatter(kit, counts.rocks, isFree, 0.2, 1), 0.12),
     meadow(kit, isFree, counts.grass),
-    pond,
+    water.group,
+    village.group,
+    landscape.hills,
+    fauna.group,
     mill.group,
     air
   )
@@ -217,6 +239,7 @@ export function buildWorld(kit: Kit, track: Track, anchors: StationAnchor[], det
   let boost = 0 // extra blade speed, decaying
   return {
     group,
+    sky,
     windmill: mill.group,
     spin() {
       boost = BLADE_SPEED * SPIN_BOOST
@@ -225,6 +248,9 @@ export function buildWorld(kit: Kit, track: Track, anchors: StationAnchor[], det
       boost = Math.max(0, boost - dt * BLADE_SPEED * SPIN_DECAY)
       mill.blades.rotation.z += dt * (BLADE_SPEED + boost)
       air.position.y = BALLOON.y + Math.sin(elapsed * 0.6) * 0.4
+      water.update(dt, elapsed)
+      village.update(dt)
+      fauna.update(dt, elapsed)
     }
   }
 }

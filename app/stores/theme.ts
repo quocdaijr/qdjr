@@ -5,8 +5,9 @@ import {isNightInVietnam} from '~/utils/vnTime'
 
 export type Vibe = 'terminal' | 'cartoon' | 'galaxy'
 
-export const VIBES: readonly Vibe[] = ['terminal', 'cartoon', 'galaxy'] as const
-export const DEFAULT_VIBE: Vibe = 'terminal'
+// Cartoon first and the default; the coding (terminal) vibe last.
+export const VIBES: readonly Vibe[] = ['cartoon', 'galaxy', 'terminal'] as const
+export const DEFAULT_VIBE: Vibe = 'cartoon'
 export const VIBE_STORAGE_KEY = 'vibe'
 
 const CLOCK_INTERVAL_MS = 60_000

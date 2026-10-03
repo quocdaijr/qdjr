@@ -32,7 +32,7 @@ const YARD_CHASE = {zoom: 3, weight: 0.85, shift: 2.5}
 const CAMERA_SMOOTHING = 2.5
 const POINTER_SWAY = 1.2
 
-export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion = false, detail = 'high', loadAssets = true}) => {
+export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion = false, detail = 'high', loadAssets = true, stopLabels = []}) => {
   const kit = createKit(isDark)
   const {colors} = kit
 
@@ -51,12 +51,12 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
   const camera = new THREE.PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 400)
 
   const track = buildTrack(kit)
-  const stations = buildStations(kit, track, STATIONS, loadAssets && typeof window !== 'undefined')
+  const stations = buildStations(kit, track, STATIONS, stopLabels, loadAssets && typeof window !== 'undefined')
   const world = buildWorld(kit, track, stations.anchors, detail)
   const train = buildTrain(kit)
   const clouds = buildClouds(kit, detail)
   const particles = buildParticles(kit, detail)
-  scene.add(world.group, track.group, stations.group, train.group, clouds.mesh, particles.object)
+  scene.add(world.group, world.sky, track.group, stations.group, train.group, clouds.mesh, particles.object)
 
   // Clickable: a station (building or platform) goes to its stop, a yard
   // billboard picks its project, the train whistles, the windmill spins.
@@ -71,6 +71,8 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
 
   const config = {length: track.length, ...DEFAULT_MOTION}
   let motion: TrainMotion = {u: 0, velocity: 0}
+  let lastStop: number | null = null
+  let direction: -1 | 0 | 1 = 0
   let cameraReady = false
   const eye = new THREE.Vector3()
   const look = new THREE.Vector3()
@@ -124,7 +126,13 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
       // Built while a stop is centred (vibe or theme switch on /about): start
       // parked there rather than re-running the line from the seam.
       if (!cameraReady && target !== null) motion = {u: target, velocity: 0}
-      motion = stepTrain(motion, target, dt, config, reduceMotion)
+      // The reader's direction, not the short way: a later stop (or arriving from the home page) is
+      // ahead, an earlier one behind. Stations run forward round the loop in stop order.
+      if (stop !== lastStop) {
+        direction = stop === null ? 0 : lastStop === null || stop > lastStop ? 1 : -1
+        lastStop = stop
+      }
+      motion = stepTrain(motion, target, dt, config, reduceMotion, direction)
       train.place(track.curve, track.length, motion.u, motion.velocity * track.length, dt)
       world.update(dt, elapsed)
       const still = reduceMotion ? 0 : dt

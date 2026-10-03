@@ -9,6 +9,8 @@ export interface SceneOptions {
   detail?: 'high' | 'low'
   /** Load images and draw canvas textures; false in unit tests (no network, no 2D canvas). */
   loadAssets?: boolean
+  /** Short name of each /about stop in the page language (useJourneyLabels), for painted signs. */
+  stopLabels?: readonly string[]
 }
 
 /** Normalised pointer position, −1..1 on both axes, already smoothed by the stage. */
@@ -18,7 +20,11 @@ export interface ScenePointer {
 }
 
 /** What a click on a scene object asks for. */
-export type SceneAction = {type: 'stop'; stop: number} | {type: 'project'; project: number} | {type: 'fun'; id: string}
+export type SceneAction =
+  | {type: 'stop'; stop: number}
+  | {type: 'project'; project: number}
+  | {type: 'fun'; id: string}
+  | {type: 'trip'; mark: number; label: string} // a trip page: drive to this stop or place
 
 export interface VibeScene {
   scene: Scene

@@ -76,6 +76,18 @@ function wagon(kit: Kit, body: number): THREE.Group {
   return g
 }
 
+function tender(kit: Kit): THREE.Group {
+  const {trainDark, train} = kit.colors
+  const g = new THREE.Group()
+  g.add(
+    part(kit, new THREE.BoxGeometry(1.2, 0.2, 0.75), kit.material(trainDark), [0, 0.32, 0]),
+    part(kit, new THREE.BoxGeometry(1.1, 0.5, 0.8), kit.material(train), [0, 0.65, 0]),
+    part(kit, new THREE.BoxGeometry(0.95, 0.16, 0.66), kit.material(kit.colors.window), [0, 0.95, 0]), // the coal heap
+    ...wheels(kit, [-0.35, 0.35])
+  )
+  return g
+}
+
 function smoke(kit: Kit): THREE.Mesh[] {
   return Array.from({length: SMOKE_PUFFS}, (_, i) => {
     const material = new THREE.MeshToonMaterial({color: kit.colors.cloud, transparent: true, opacity: 0, depthWrite: false})
@@ -88,7 +100,8 @@ function smoke(kit: Kit): THREE.Mesh[] {
 export function buildTrain(kit: Kit): Train {
   const group = new THREE.Group()
   group.name = 'train'
-  const cars = [locomotive(kit), wagon(kit, kit.colors.wall), wagon(kit, kit.colors.accent)]
+  // A locomotive, its coal tender and four carriages: long enough to read as a train going somewhere.
+  const cars = [locomotive(kit), tender(kit), wagon(kit, kit.colors.wall), wagon(kit, kit.colors.accent), wagon(kit, kit.colors.water), wagon(kit, kit.colors.wall)]
   const puffs = smoke(kit)
   group.add(...cars, ...puffs)
 

@@ -2,7 +2,7 @@ import type * as THREE from 'three'
 import type {SceneAction} from './types'
 
 // Page UI always wins over the scene underneath it.
-const PAGE_UI = 'a, button, input, select, textarea, label, summary, [role="button"], .stop-panel, header, footer, nav, .rail'
+const PAGE_UI = 'a, button, input, select, textarea, label, summary, [role="button"], .stop-panel, .trip-panel, .reads-over-scene, header, footer, nav, .rail'
 
 export function shouldHandleClick(target: Element | null): boolean {
   return !target?.closest(PAGE_UI)

@@ -34,15 +34,30 @@ function approachSpeed(current: number, desired: number, maxDelta: number): numb
 }
 
 /**
+ * Distance in u to `target` the way the train is told to go: forward (1)
+ * round the loop, backwards (−1), or the short way (0). A train already
+ * within a hair of the station counts as there, whichever way it was told.
+ */
+function remaining(u: number, target: number, direction: -1 | 0 | 1): number {
+  const short = signedLoopDistance(u, target)
+  if (direction === 0 || Math.abs(short) < 1e-4) return short
+  return direction > 0 ? wrapU(target - u) : -wrapU(u - target)
+}
+
+/**
  * One frame of motion. `target` is the station's u on /about, or null on the
- * home page (loop forward at cruising speed).
+ * home page (loop forward at cruising speed). `direction` follows the reader:
+ * a later stop is ahead (1), an earlier one behind (−1), even the long way
+ * round — scrolling down must never send the train backwards. 0 takes the
+ * short way.
  */
 export function stepTrain(
   state: TrainMotion,
   target: number | null,
   dt: number,
   config: MotionConfig,
-  reduceMotion = false
+  reduceMotion = false,
+  direction: -1 | 0 | 1 = 0
 ): TrainMotion {
   const {length, cruise, maxSpeed, accel} = config
   if (target === null) {
@@ -53,7 +68,7 @@ export function stepTrain(
   if (reduceMotion) return {u: wrapU(target), velocity: 0}
   if (dt === 0) return state
 
-  const d = signedLoopDistance(state.u, target)
+  const d = remaining(state.u, target, direction)
   if (Math.abs(d * length) < ARRIVE_DISTANCE && Math.abs(state.velocity * length) < ARRIVE_SPEED) {
     return {u: wrapU(target), velocity: 0}
   }
@@ -62,10 +77,9 @@ export function stepTrain(
   const braking = Math.sqrt(2 * accel * Math.abs(d * length))
   const desired = (Math.sign(d) * Math.min(maxSpeed, braking)) / length
   const velocity = approachSpeed(state.velocity, desired, (accel / length) * dt)
-  const u = state.u + velocity * dt
+  const step = velocity * dt
 
   // Never run past the station in a single frame.
-  const after = signedLoopDistance(wrapU(u), target)
-  if (after !== 0 && Math.sign(after) !== Math.sign(d)) return {u: wrapU(target), velocity: 0}
-  return {u: wrapU(u), velocity}
+  if (Math.sign(step) === Math.sign(d) && Math.abs(step) >= Math.abs(d)) return {u: wrapU(target), velocity: 0}
+  return {u: wrapU(state.u + step), velocity}
 }

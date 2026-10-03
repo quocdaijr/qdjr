@@ -1,43 +1,14 @@
 {
-  "nav": {"home": "Trang chủ", "blog": "Blog", "about": "Giới thiệu", "categories": "Danh mục", "toggleMenu": "Mở hoặc đóng menu điều hướng"},
-  "lang": {"switchTo": "Chuyển sang {language}"},
-  "search": {"label": "Tìm bài viết", "placeholder": "Tìm bài viết ...", "submit": "Tìm"},
-  "vibe": {"legend": "Phong cách", "current": "Phong cách: {current}. Chuyển sang {next}", "title": "Đổi phong cách (hiện tại: {current})", "pick": "Chọn phong cách"},
-  "home": {"primary": "Điều hướng chính", "about": "Về tôi →", "blog": "Đọc blog →"},
-  "about": {
-    "stops": "Các chặng hành trình", "hello": "Xin chào", "whatIDo": "Kỹ năng", "sayHello": "Liên hệ",
-    "scrollHint": "Cuộn xuống để xem tiếp ↓", "expert": "Expert", "proficient": "Proficient",
-    "major": "Chuyên ngành", "degree": "Bằng cấp", "position": "Vị trí", "technologies": "Công nghệ",
-    "thirdParties": "3rd parties", "keyAchievements": "Thành tựu chính",
-    "projects": "Dự án", "prevProject": "Dự án trước", "nextProject": "Dự án tiếp theo", "projectList": "Danh sách dự án",
-    "projectCount": "Dự án {n} / {total}", "internal": "nội bộ", "visitLive": "Xem trực tiếp →",
-    "meta": {
-      "title": "Nguyễn Quốc Đại - Senior Backend Software Engineer",
-      "description": "Nguyễn Quốc Đại - Senior Backend Software Engineer với hơn 6 năm kinh nghiệm xây dựng và vận hành các hệ thống backend high-performance cho các nền tảng media và e-commerce",
-      "ogDescription": "Senior Backend Software Engineer với hơn 6 năm kinh nghiệm về system design, performance optimization và xây dựng các giải pháp scalable cho hệ thống production",
-      "keywords": "QDJr, Nguyễn Quốc Đại, Quoc Dai Nguyen, Senior Backend Software Engineer, profile, cv, PHP, Laravel, Node.js, Kubernetes"
-    }
-  },
-  "blog": {
-    "title": "Blog", "description": "Ghi chép, bài viết và đôi khi là vài dòng lan man.", "metaTitle": "Blog | QDJr", "siteSuffix": "QDJr Blog",
-    "loading": "Đang tải...", "empty": "Chưa có bài viết nào", "readMore": "Đọc tiếp", "published": "Đăng ngày {date}",
-    "author": "Tác giả", "notFound": "Không tìm thấy trang", "back": "Quay lại blog",
-    "tagDescription": "Các bài viết gắn thẻ {tag}.", "tagEmpty": "Chưa có bài viết nào với thẻ này",
-    "categoryDescription": "Các bài viết trong mục {category}.", "categoryEmpty": "Chưa có bài viết nào trong mục này",
-    "searchTitle": "Tìm kiếm", "searchTitleQuery": "Tìm kiếm: {q}", "searchResults": "{count} kết quả",
-    "searchHint": "Tìm bài viết theo tiêu đề, mô tả, thẻ hoặc danh mục.", "searchEnter": "Nhập từ khóa tìm kiếm ở trên",
-    "searchNoMatch": "Không có bài viết nào khớp với “{q}”"
-  },
-  "translation": {
-    "badgeMachine": "Dịch máy", "badgeOriginalOnly": "Chỉ có tiếng Việt",
-    "machineNotice": "Bài viết này được Google Dịch chuyển từ tiếng Việt và có thể có sai sót.",
-    "originalOnlyNotice": "Bài viết này chưa được dịch nên đang hiển thị bản gốc tiếng Việt.",
-    "readOriginal": "Đọc bản gốc tiếng Việt →"
-  },
-  "scene": {"view": "Góc nhìn 3D", "zoomIn": "Phóng to", "zoomOut": "Thu nhỏ", "resetView": "Đặt lại góc nhìn", "fun": {"whistle": "Kéo còi tàu", "spin": "Quay cối xay gió", "comet": "Bắt sao chổi", "burst": "Gửi một loạt request"}},
-  "footer": {"madeWith": "Được làm với", "by": "bởi NguyenQuocDai", "scrollTop": "Lên đầu trang"},
-  "error": {
-    "400": "Yêu cầu không hợp lệ!", "401": "Bạn không có quyền truy cập!", "403": "Bạn không được phép xem nội dung này!",
-    "404": "Xin lỗi, không tìm thấy nội dung bạn cần!", "default": "Đã có lỗi xảy ra!", "home": "Về trang chủ"
-  }
+  "nav": {"home": "Trang chủ", "blog": "Blog", "about": "Giới thiệu", "categories": "Category", "toggleMenu": "Mở/đóng menu"},
+  "lang": {"switchTo": "Đổi sang {language}"},
+  "search": {"label": "Tìm bài viết", "placeholder": "Tìm bài viết…", "submit": "Tìm"},
+  "vibe": {"legend": "Vibe", "current": "Vibe: {current}. Đổi sang {next}", "title": "Đổi vibe (đang dùng: {current})", "pick": "Chọn vibe"},
+  "home": {"primary": "Điều hướng chính", "about": "Về mình →", "blog": "Đọc blog →"},
+  "about": {"stops": "Các chặng", "hello": "Xin chào", "whatIDo": "Kỹ năng", "sayHello": "Liên hệ", "scrollHint": "Scroll xuống để xem tiếp ↓", "expert": "Expert", "proficient": "Proficient", "major": "Chuyên ngành", "degree": "Bằng cấp", "position": "Vị trí", "technologies": "Tech stack", "thirdParties": "3rd parties", "keyAchievements": "Điểm nổi bật", "projects": "Dự án", "prevProject": "Dự án trước", "nextProject": "Dự án sau", "projectList": "Danh sách dự án", "projectCount": "Dự án {n}/{total}", "internal": "internal", "visitLive": "Xem live →", "meta": {"title": "Nguyễn Quốc Đại - Senior Backend Software Engineer", "description": "Nguyễn Quốc Đại - Senior Backend Software Engineer, hơn 6 năm build và vận hành hệ thống backend high-performance cho các nền tảng media và e-commerce", "ogDescription": "Senior Backend Software Engineer, hơn 6 năm kinh nghiệm system design, tối ưu performance và xây giải pháp scalable cho hệ thống production", "keywords": "QDJr, Nguyễn Quốc Đại, Quoc Dai Nguyen, Senior Backend Software Engineer, profile, cv, PHP, Laravel, Node.js, Kubernetes"}},
+  "trips": {"title": "Hành trình", "description": "Mấy chuyến đi từ Sài Gòn, chạy trên một board đồ chơi: đúng route của loại xe bạn chọn, qua đèo, qua cầu, qua hầm, qua phố, trên địa hình thật.", "metaTitle": "Hành trình | QDJr", "open": "Đi thử →", "back": "← Tất cả hành trình", "distance": "{km} km", "duration": "khoảng {h} tiếng {m} phút", "durationMin": "khoảng {m} phút", "itinerary": "Lịch trình", "vehicleLegend": "Phương tiện", "noMotorway": "Xe máy không được chạy cao tốc nên phải đi đường khác: {km} km thay vì {car} km.", "credit": "Route và thời gian: {valhalla} · Data bản đồ © {osm} contributors", "osm": "OpenStreetMap", "valhalla": "Valhalla", "vehicle": {"motorbike": "xe máy", "car": "ô tô", "coach": "xe khách"}, "notFound": "Không có hành trình này", "viewLegend": "Góc nhìn", "view": {"overview": "Toàn cảnh", "driver": "Góc lái"}, "drivingTo": "Đang chạy tới {place}…", "parkedAt": "Đang dừng ở {place}.", "resume": "Chạy tiếp →", "goTo": "Chạy tới {place}", "planning": "Đang tìm route cho {vehicle}…", "planner": {"title": "Tự lên lịch trình", "intro": "Đi từ một chỗ tới một hoặc nhiều chỗ khác, ở đâu trong Việt Nam cũng được, kể cả chạy loanh quanh trong thành phố. Chọn từng địa điểm từ list gợi ý nhé.", "from": "Điểm đi", "to": "Điểm đến {n}", "add": "Thêm điểm đến", "remove": "Bỏ {place}", "up": "Đưa {place} lên trước", "down": "Đưa {place} xuống sau", "placeholder": "Tìm địa điểm…", "searching": "Đang tìm…", "noMatch": "Không thấy chỗ nào khớp", "searchFailed": "Search đang không phản hồi, thử lại sau nhé", "submit": "Lên lịch trình →", "needAll": "Chọn đủ địa điểm từ list gợi ý trước đã nhé.", "loading": "Đang tìm route…", "loadingHint": "Chạy trong thành phố mất vài giây, xuyên Việt thì có khi tới cả phút.", "seconds": "{s}s", "edit": "← Sửa lịch trình", "planned": "Route lấy từ data OpenStreetMap. Gửi link trang này là share được lịch trình.", "retry": "Thử lại", "badStops": "Link này không có lịch trình nào.", "errors": {"noRoute": "Không có đường nào nối mấy chỗ này.", "tooMany": "Bạn tạo nhiều lịch trình quá rồi, một tiếng nữa thử lại nhé.", "busy": "Server đang bận tính route cho người khác, đợi một phút rồi thử lại nhé.", "failed": "Dịch vụ bản đồ không phản hồi, thử lại nhé."}, "metaTitle": "Tự lên lịch trình | QDJr"}},
+  "blog": {"title": "Blog", "description": "Ghi chép, bài viết và thỉnh thoảng vài dòng lan man.", "metaTitle": "Blog | QDJr", "siteSuffix": "QDJr Blog", "loading": "Đang load…", "empty": "Chưa có bài nào", "readMore": "Đọc tiếp", "published": "Đăng ngày {date}", "author": "Tác giả", "notFound": "Không tìm thấy trang", "back": "Về trang blog", "tagDescription": "Các bài có tag {tag}.", "tagEmpty": "Chưa có bài nào với tag này", "categoryDescription": "Các bài trong category {category}.", "categoryEmpty": "Chưa có bài nào trong category này", "searchTitle": "Tìm kiếm", "searchTitleQuery": "Tìm kiếm: {q}", "searchResults": "{count} kết quả", "searchHint": "Tìm bài theo tiêu đề, mô tả, tag hoặc category.", "searchEnter": "Gõ từ khóa vào ô ở trên", "searchNoMatch": "Không có bài nào khớp với “{q}”"},
+  "translation": {"badgeMachine": "Dịch máy", "badgeOriginalOnly": "Chỉ có tiếng Việt", "machineNotice": "Bài này được Google Translate dịch từ tiếng Việt nên có thể sai chỗ này chỗ kia.", "originalOnlyNotice": "Bài này chưa có bản dịch nên đang hiện bản gốc tiếng Việt.", "readOriginal": "Đọc bản gốc tiếng Việt →"},
+  "scene": {"view": "Điều khiển góc nhìn 3D", "zoomIn": "Zoom in", "zoomOut": "Zoom out", "resetView": "Reset góc nhìn", "fun": {"whistle": "Kéo còi tàu", "spin": "Quay cối xay gió", "comet": "Gọi mưa sao chổi", "burst": "Bắn một loạt request"}},
+  "footer": {"madeWith": "Code với", "by": "bởi NguyenQuocDai", "scrollTop": "Lên đầu trang"},
+  "error": {"400": "Request không hợp lệ.", "401": "Bạn cần đăng nhập để xem trang này.", "403": "Bạn không có quyền xem nội dung này.", "404": "Không tìm thấy trang bạn cần.", "default": "Có lỗi xảy ra rồi.", "home": "Về trang chủ"}
 }

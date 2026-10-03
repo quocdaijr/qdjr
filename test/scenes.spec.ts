@@ -107,7 +107,7 @@ describe('cartoon train', () => {
   test('every platform and building clears the track and no two footprints overlap', () => {
     const kit = createKit(false)
     const track = buildTrack(kit)
-    const rects = buildStations(kit, track, journeyStations(PROFILE_CONTENT.en), false).footprints
+    const rects = buildStations(kit, track, journeyStations(PROFILE_CONTENT.en), [], false).footprints
     const TRAIN_HALF_WIDTH = 0.6
     for (const [i, r] of rects.entries()) {
       const hit = track.samples.find((p) => pointInRect(r.rect, p.x, p.z, TRAIN_HALF_WIDTH))
@@ -164,5 +164,14 @@ describe('disposeScene', () => {
     disposeScene(built.scene)
     for (const spy of spies) expect(spy).toHaveBeenCalled()
     expect(built.scene.children).toHaveLength(0)
+  })
+})
+
+describe('cartoon scene at night', () => {
+  test('builds without three.js warnings (no empty adds)', () => {
+    const warn = vi.spyOn(console, 'error').mockImplementation(() => {})
+    createCartoonScene({isDark: true, aspect: 1, loadAssets: false, detail: 'low'})
+    expect(warn).not.toHaveBeenCalled()
+    warn.mockRestore()
   })
 })
