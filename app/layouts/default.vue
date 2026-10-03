@@ -6,7 +6,7 @@
          in the layout keeps the WebGL context alive across / <-> /about. -->
     <LazyVibeScene v-if="hasScene"/>
     <div class="relative z-10 max-w-3xl px-2 mx-auto sm:px-6 xl:max-w-5xl xl:px-0">
-      <div class="flex flex-col justify-between h-screen">
+      <div class="flex flex-col justify-between min-h-screen">
         <Header/>
         <main class="grow font-medium text-gray-700">
           <slot />
