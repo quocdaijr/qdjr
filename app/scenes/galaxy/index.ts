@@ -14,8 +14,8 @@ import {AMBIENT_DURATION, createStreaks, nextAmbientDelay, PICK_DURATION, type V
 // then planets) and the camera glides from one to the next. Projects is Earth,
 // with one orbiter per project; picking one zooms onto it.
 const PALETTE = {
-  dark: {bg: 0x0a0920, sun: 0xffb347, star: 0xcfd3ff, orbit: 0x5a5c8a, starOpacity: 0.9, ambient: 0.22, streak: 0xffffff, label: '#cfd3ff'},
-  light: {bg: 0xedeef8, sun: 0xe58f1a, star: 0x3b3d6b, orbit: 0x9a9cc4, starOpacity: 0.45, ambient: 0.6, streak: 0x2b2d5b, label: '#2b2d5b'}
+  dark: {bg: 0x0a0920, sun: 0xff8a2a, flare: 0xffd166, star: 0xcfd3ff, orbit: 0x3fa9c9, starOpacity: 0.9, ambient: 0.22, night: 0.16, streak: 0xffffff, label: '#cfd3ff'},
+  light: {bg: 0xedeef8, sun: 0xf07a1e, flare: 0xffc24a, star: 0x3b3d6b, orbit: 0x5f9fc4, starOpacity: 0.45, ambient: 0.6, night: 0.42, streak: 0x2b2d5b, label: '#2b2d5b'}
 } as const
 
 const SEED = 20261003
@@ -62,7 +62,7 @@ export const createGalaxyScene: SceneFactory = ({isDark, aspect, reduceMotion = 
   scene.add(new THREE.AmbientLight(0xffffff, colors.ambient))
   scene.add(new THREE.PointLight(colors.sun, isDark ? SUN_INTENSITY_DARK : SUN_INTENSITY_LIGHT, 0, 2))
 
-  const bodies = buildBodies(colors, random)
+  const bodies = buildBodies({sun: colors.sun, flare: colors.flare, orbit: colors.orbit, ambient: colors.night}, random)
   const earthSystem = buildEarthSystem(PROJECTS, colors.label, loadAssets && typeof window !== 'undefined')
   bodies.earth.add(earthSystem.group)
   const streaks = createStreaks(colors.streak, colors.bg, 10)
