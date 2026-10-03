@@ -19,6 +19,8 @@ export interface LabeledText {
 export interface TimelineEntry {
   period: string
   org: string
+  /** Rail label: a name short enough for the side rail (≤ 12 chars). */
+  short: string
   kind: 'education' | 'work'
   major?: string
   degree?: string

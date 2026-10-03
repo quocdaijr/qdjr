@@ -86,13 +86,7 @@ const projectsIndex = computed(() => TIMELINE_START + content.value.timeline.len
 const contactIndex = computed(() => projectsIndex.value + 1)
 const focus = useJourneyFocus()
 
-const stopLabels = computed(() => [
-  t('about.hello'),
-  t('about.whatIDo'),
-  ...content.value.timeline.map((entry) => entry.org),
-  t('about.projects'),
-  t('about.sayHello')
-])
+const stopLabels = useJourneyLabels()
 
 const {activeStop} = useJourney(stopLabels.value.length)
 
@@ -120,6 +114,15 @@ useSeoMeta({
 <style scoped>
 /* Hallmark · macrostructure: Narrative Workflow · nav: shared header + N3 rail · footer: Ft2
  * feature: F3 tabular spec (skills, contact) · F4 step sequence (timeline) · picker sub-section (projects) · design-system: design.md · designed-as-app */
+
+/* The fixed rail of names takes ~11rem on the left; push the journey column
+   right by whatever part of that its own margin does not already cover. */
+@media (width >= 60rem) and (height >= 42rem) {
+  .journey {
+    padding-inline-start: max(0px, calc(11rem - (100vw - 100%) / 2));
+  }
+}
+
 .journey-photo {
   width: 10rem;
   height: 10rem;
@@ -182,9 +185,24 @@ useSeoMeta({
   gap: var(--space-2xs);
 }
 
+/* Ink text (accent text this small cannot hold AA on the glass panel); the
+   accent survives as a dot before the level. */
 .spec-level {
-  color: var(--color-accent);
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2xs);
+  color: var(--color-ink);
   font-weight: 700;
+}
+
+.spec-level::before {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  content: "";
+  transform: translateY(-2px);
 }
 
 @media (width >= 40rem) {

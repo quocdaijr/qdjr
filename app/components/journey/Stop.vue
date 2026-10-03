@@ -7,7 +7,6 @@
     :aria-labelledby="`stop-${index}-title`"
   >
     <div class="stop-panel" :class="{'is-wide': wide}">
-      <p class="stop-stage font-mono" aria-hidden="true">{{ stage }}</p>
       <component :is="`h${level}`" :id="`stop-${index}-title`" class="stop-title font-display">
         {{ title }}
       </component>
@@ -17,18 +16,16 @@
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(defineProps<{index: number; title: string; level?: 1 | 2; active?: boolean; wide?: boolean}>(), {
+withDefaults(defineProps<{index: number; title: string; level?: 1 | 2; active?: boolean; wide?: boolean}>(), {
   level: 2,
   active: false,
   wide: false
 })
-
-const stage = computed(() => String(props.index).padStart(2, '0'))
 </script>
 
 <style scoped>
-/* Hallmark · macrostructure: Narrative Workflow · F4 step knobs: numbering=01/02, layout=vertical stack, connector=none
- * section head: stacked stage number above heading (ordinal content) · design-system: design.md · designed-as-app */
+/* Hallmark · macrostructure: Narrative Workflow · F4 step knobs: numbering=none (section titles), layout=vertical stack, connector=none
+ * section head: heading only · design-system: design.md · designed-as-app */
 .stop {
   display: grid;
   align-content: center;
@@ -37,7 +34,8 @@ const stage = computed(() => String(props.index).padStart(2, '0'))
   scroll-margin-top: var(--space-xl);
 }
 
-/* Opaque paper panel (glass is banned); the canvas shows around it.
+/* Frosted paper panel (90 % paper + 14 px blur, design.md § Surfaces): the
+   scene shows through softly.
    A stop waits, dimmed and slightly low, until it is the centred one; then
    the panel settles and its contents follow in a short stagger. Only
    opacity and transform move. */
@@ -46,11 +44,25 @@ const stage = computed(() => String(props.index).padStart(2, '0'))
   padding: var(--space-lg) var(--space-md);
   border: var(--rule-hair) solid var(--color-rule);
   border-radius: var(--radius-card);
-  background: var(--color-paper);
+  background: color-mix(in oklch, var(--color-paper) 90%, transparent);
+  backdrop-filter: blur(14px) saturate(1.2);
   color: var(--color-ink);
   opacity: 0.35;
   transform: translateY(16px);
   transition: opacity var(--dur-long) var(--ease-out), transform var(--dur-long) var(--ease-out);
+}
+
+/* No blur support, or the reader asked for less transparency: solid paper. */
+@supports not (backdrop-filter: blur(1px)) {
+  .stop-panel {
+    background: var(--color-paper);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .stop-panel {
+    background: var(--color-paper);
+  }
 }
 
 /* A stop holding its own sub-navigation (the projects picker) needs the room. */
@@ -75,13 +87,6 @@ const stage = computed(() => String(props.index).padStart(2, '0'))
 .stop.is-active .stop-panel > * {
   opacity: 1;
   transform: none;
-}
-
-.stop-stage {
-  margin: 0 0 var(--space-2xs);
-  font-size: var(--text-sm);
-  letter-spacing: 0.08em;
-  color: var(--color-accent);
 }
 
 .stop-title {

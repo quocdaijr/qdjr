@@ -26,14 +26,18 @@ Tokens live in `app/assets/css/tokens.css`. Per vibe (light / dark):
 | ink | oklch(22% 0.03 150deg) / oklch(90% 0.05 150deg) | oklch(28% 0.04 50deg) / oklch(93% 0.025 85deg) | oklch(20% 0.04 280deg) / oklch(94% 0.012 280deg) |
 | accent | oklch(50% 0.17 150deg) / oklch(80% 0.2 150deg) | oklch(52% 0.16 40deg) / oklch(72% 0.14 45deg) | oklch(50% 0.15 65deg) / oklch(82% 0.14 80deg) |
 
-Accent ≤ 3 % of any viewport: stage numbers, link underlines, focus rings, the prompt glyph.
+Accent ≤ 3 % of any viewport: the active rail dot, skill-level dots, link underlines, focus rings, the prompt glyph.
 Tailwind `gray-*` / `blue-*` utilities are remapped to the vibe ramps in `main.css` (`@theme inline`).
 
 ## Typography (2+1)
 - terminal: JetBrains Mono 400/700 for everything (single-font by design).
 - cartoon: display Fraunces 700 (SOFT 100, WONK 1) · body Bricolage Grotesque 400/600.
-- galaxy: display Chakra Petch 600 (Tomorrow has no Vietnamese subset) · body Geist 400/600 · outlier Geist Mono (stage numbers, clock).
+- galaxy: display Chakra Petch 600 (Tomorrow has no Vietnamese subset) · body Geist 400/600 · outlier Geist Mono (rail labels, clock).
 - Headings are always roman. Display: `clamp(2.75rem, 5vw + 1rem, 5.25rem)`, tracking −0.03em.
+
+## Surfaces
+- Journey panels on `/about` are frosted glass: `color-mix(in oklch, var(--color-paper) 90%, transparent)` + `backdrop-filter: blur(14px) saturate(1.2)`; solid paper without backdrop-filter support or under `prefers-reduced-transparency`. Contrast is checked against the worst case (panel over pure white and pure black). Glass is allowed nowhere else.
+- Small accent-coloured text does not survive glass at AA: on panels the accent is carried by a dot or rule beside ink text.
 
 ## Spacing
 4-pt named scale `--space-3xs … --space-3xl` in `tokens.css`. Pages use tokens, never raw values.
@@ -60,7 +64,7 @@ Typographic links only (`.link`: word + arrow + 1 px underline, thickens on hove
 - Blog pages MUST NOT load three.js (`SCENE_ROUTES` in `app/layouts/default.vue`).
 
 ## What pages MUST share
-Header shell, Ft2 footer, the tokens, the fonts of the active vibe, the `.link` voice, the stage-number pattern on `/about`.
+Header shell, Ft2 footer, the tokens, the fonts of the active vibe, the `.link` voice, the rail of section names on `/about` (no stage numbers).
 
 ## What pages MAY differ on
 Macrostructure within the family above; the scene's camera path per vibe.

@@ -33,6 +33,7 @@ export const PROFILE_EN: ProfileContent = {
     {
       period: '08/2014 - 12/2018',
       org: 'HCMC University of Natural Resources and Environment',
+      short: 'HCMUNRE',
       kind: 'education',
       major: 'Information Technology',
       degree: "Engineer's Degree",
@@ -41,6 +42,7 @@ export const PROFILE_EN: ProfileContent = {
     {
       period: '08/2018 - 07/2019',
       org: 'Applancer JSC - Onsite at Tuoi Tre Newspaper',
+      short: 'Applancer',
       kind: 'work',
       position: 'Web Developer',
       technologies: 'PHP, Yii2 Framework, MySQL, Elasticsearch, Redis, Nginx, RabbitMQ, Git, Linux, Docker, Supervisor',
@@ -53,6 +55,7 @@ export const PROFILE_EN: ProfileContent = {
     {
       period: '07/2019 - 08/2022',
       org: 'Tuoi Tre Newspaper',
+      short: 'Tuoi Tre',
       kind: 'work',
       position: 'Software Development Engineer',
       technologies:
@@ -69,6 +72,7 @@ export const PROFILE_EN: ProfileContent = {
     {
       period: '08/2022 - Present',
       org: 'FireGroup Technology',
+      short: 'FireGroup',
       kind: 'work',
       position: 'Senior Backend Software Engineer',
       technologies:

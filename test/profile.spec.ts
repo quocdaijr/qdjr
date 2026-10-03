@@ -53,4 +53,16 @@ describe('profile content', () => {
       expect(content.projects.every((p) => content.timeline.some((t) => t.org === p.group))).toBe(true)
     }
   })
+
+  test('every career stage has a short rail name', () => {
+    for (const content of [vi, en]) {
+      for (const entry of content.timeline) {
+        expect(entry.short.trim().length).toBeGreaterThan(0)
+        expect(entry.short.length).toBeLessThanOrEqual(12)
+      }
+    }
+    // Names, not prose: only the Vietnamese diacritics may differ.
+    const plain = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').replace('Đ', 'D').replace('đ', 'd')
+    expect(vi.timeline.map((e) => plain(e.short))).toEqual(en.timeline.map((e) => e.short))
+  })
 })

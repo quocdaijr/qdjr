@@ -39,12 +39,19 @@ const collectFailures = () => {
     const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x)
     return (hi + 0.05) / (lo + 0.05)
   }
-  const backgroundOf = (el: Element | null): number[] => {
+  // Translucent backgrounds are composited over what is really behind them.
+  // A glass journey panel sits on the 3D canvas, which can be any colour, so
+  // it is measured against the worst case: over pure white and pure black.
+  const over = (top: number[], under: number[]) => [...[0, 1, 2].map((i) => top[i] * top[3] + under[i] * (1 - top[3])), 1]
+  const backgroundsOf = (el: Element | null): number[][] => {
     for (let e = el; e; e = e.parentElement) {
       const c = rgba(getComputedStyle(e).backgroundColor)
-      if (c[3] > 0.5) return c
+      if (c[3] === 0) continue
+      if (c[3] >= 0.99) return [c]
+      const under = e.classList.contains('stop-panel') ? [[255, 255, 255, 1], [0, 0, 0, 1]] : backgroundsOf(e.parentElement)
+      return under.map((u) => over(c, u))
     }
-    return [255, 255, 255, 1]
+    return [[255, 255, 255, 1]]
   }
 
   const failures: Array<Omit<Failure, 'page'>> = []
@@ -65,7 +72,7 @@ const collectFailures = () => {
     const size = parseFloat(style.fontSize)
     const bold = Number(style.fontWeight) >= 700
     const need = size >= 24 || (bold && size >= 18.66) ? 3 : 4.5
-    const r = ratio(rgba(style.color), backgroundOf(el))
+    const r = Math.min(...backgroundsOf(el).map((bg) => ratio(rgba(style.color), bg)))
     const key = `${el.tagName}|${el.className}|${style.color}`
     if (r < need && !seen.has(key)) {
       seen.add(key)
