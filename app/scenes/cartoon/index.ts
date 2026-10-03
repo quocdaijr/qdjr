@@ -147,6 +147,7 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
       camera.position.copy(eye)
       sky.position.copy(eye) // the dome always surrounds the camera, however far back it stands
       camera.lookAt(look)
+      camera.userData.look = look // the reader's orbit/zoom turns around this (viewControl.ts)
     }
   }
 }

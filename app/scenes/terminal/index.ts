@@ -143,6 +143,7 @@ export const createTerminalScene: SceneFactory = ({isDark, aspect, reduceMotion 
       look.lerp(shot.look, k)
       camera.position.copy(eye)
       camera.lookAt(look)
+      camera.userData.look = look // the reader's orbit/zoom turns around this (viewControl.ts)
       camera.updateMatrixWorld()
       ready = true
     }

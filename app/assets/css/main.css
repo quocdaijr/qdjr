@@ -236,3 +236,10 @@ header nav a {
 * {
   -webkit-tap-highlight-color: rgb(0 0 0 / 0%);
 }
+
+/* While the reader drags the 3D scene round (useSceneOrbit). */
+.scene-dragging,
+.scene-dragging * {
+  cursor: grabbing !important;
+  user-select: none;
+}

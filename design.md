@@ -55,6 +55,7 @@ Tailwind `gray-*` / `blue-*` utilities are remapped to the vibe ramps in `main.c
 
 ## Microinteractions stance
 Silent success. Hover delay 0 (no tooltips, except the name of a hovered 3D scene object). Focus ring 2 px `--color-focus`, offset 2 px, never animated. Hit targets ≥ 44 px.
+No mouse-follow sway. On desktop the reader drags the scene to look around (a press that moves under 5 px is still a click) and zooms with the wheel on the home page, ⌘/ctrl + wheel or pinch on the journey (the plain wheel keeps scrolling), or the − / + buttons at the bottom left; a reset button appears once the view has moved. Touch keeps scrolling; the buttons are hidden below 40rem.
 Scene objects are clickable shortcuts (pointer only; the rail and the project picker remain the accessible controls): a section's object goes to its section, a project's object picks it, and each vibe has an easter egg (cartoon: train whistle, windmill; galaxy: comet shower; terminal: a cron job that floods the map with requests). Hovering shows the name in a small mono tooltip. Page UI always wins a click over the scene behind it.
 
 ## CTA voice

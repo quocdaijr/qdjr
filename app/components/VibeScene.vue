@@ -7,6 +7,7 @@
     aria-hidden="true"
     :style="{transform: `translate(${hover.x + TIP_OFFSET}px, ${hover.y + TIP_OFFSET}px)`}"
   >{{ hover.label }}</div>
+  <SceneViewControls :moved="orbit.moved.value" @zoom="orbit.zoom" @reset="orbit.reset"/>
 </template>
 
 <script setup lang="ts">
@@ -16,6 +17,7 @@ import {createGalaxyScene} from '~/scenes/galaxy'
 import {createFrameWatch, readDeviceTier, TIER_SETTINGS, type DeviceTier} from '~/scenes/deviceTier'
 import {disposeScene} from '~/scenes/dispose'
 import {resolveAction, shouldHandleClick} from '~/scenes/picking'
+import {applyView} from '~/scenes/viewControl'
 import {createTerminalScene} from '~/scenes/terminal'
 import {approach, type SceneAction, type SceneFactory, type ScenePointer, type VibeScene} from '~/scenes/types'
 import type {Vibe} from '~/stores/theme'
@@ -28,7 +30,6 @@ const FACTORIES: Record<Vibe, SceneFactory> = {
 
 const MAX_DT = 0.1 // seconds; a backgrounded tab resumes without a time jump
 const PROGRESS_SMOOTHING = 3
-const POINTER_SMOOTHING = 4
 const MAX_PIXEL_RATIO_FINE = 2
 const MAX_PIXEL_RATIO_COARSE = 1.5 // phones: fill-rate bound, and nobody sees the difference
 const TIP_OFFSET = 14 // px from the pointer
@@ -46,6 +47,7 @@ const hover = reactive({label: '', x: 0, y: 0})
 const raycaster = new THREE.Raycaster()
 const ndc = new THREE.Vector2()
 let hoverQueued: PointerEvent | null = null
+const orbit = useSceneOrbit()
 
 let renderer: THREE.WebGLRenderer | null = null
 let active: VibeScene | null = null
@@ -56,8 +58,7 @@ let elapsed = 0
 let progress = 0
 let reduceMotion = false
 let detail: 'high' | 'low' = 'high'
-const pointer: ScenePointer = {x: 0, y: 0}
-const pointerTarget: ScenePointer = {x: 0, y: 0}
+const pointer: ScenePointer = {x: 0, y: 0} // held still: no mouse-follow sway
 const PIXEL_RATIO_CAP: Record<DeviceTier, number> = {high: MAX_PIXEL_RATIO_FINE, low: MAX_PIXEL_RATIO_COARSE, minimal: 1}
 let watchFrames: ((dt: number) => boolean) | null = null
 
@@ -83,6 +84,7 @@ function aspectOf(el: HTMLCanvasElement): number {
 function renderFrame(dt: number) {
   if (!renderer || !active) return
   active.update(dt, elapsed, progress, pointer, journeyStop.value, journeyFocus.value)
+  applyView(active.camera, orbit.view.value) // the reader's drag / zoom on top of the scene's shot
   renderer.render(active.scene, active.camera)
 }
 
@@ -104,8 +106,6 @@ function tick(now: number) {
   lastFrame = now
   elapsed += dt
   progress = approach(progress, journey.value, dt, PROGRESS_SMOOTHING)
-  pointer.x = approach(pointer.x, pointerTarget.x, dt, POINTER_SMOOTHING)
-  pointer.y = approach(pointer.y, pointerTarget.y, dt, POINTER_SMOOTHING)
   renderFrame(dt)
   if (hoverQueued) {
     showHover(hoverQueued)
@@ -141,7 +141,7 @@ function labelFor(action: SceneAction): string {
 }
 
 function onClick(event: MouseEvent) {
-  if (!shouldHandleClick(event.target as Element)) return
+  if (orbit.takeDragClick() || !shouldHandleClick(event.target as Element)) return
   const action = actionAt(event.clientX, event.clientY)
   if (!action) return
   if (action.type === 'fun') active?.play(action.id, elapsed)
@@ -156,10 +156,10 @@ function showHover(event: PointerEvent) {
   document.documentElement.style.cursor = action ? 'pointer' : ''
 }
 
+// The scene no longer follows the mouse (the reader drags to look around);
+// pointer moves only drive the hover names.
 function onPointerMove(event: PointerEvent) {
   hoverQueued = event // raycast at most once per frame, from the loop
-  pointerTarget.x = (event.clientX / window.innerWidth) * 2 - 1
-  pointerTarget.y = (event.clientY / window.innerHeight) * 2 - 1
 }
 
 onMounted(() => {
@@ -203,7 +203,8 @@ onMounted(() => {
         const p = new THREE.Box3().setFromObject(o, true).getCenter(new THREE.Vector3()).project(active.camera)
         return {x: ((p.x + 1) / 2) * window.innerWidth, y: ((1 - p.y) / 2) * window.innerHeight, behind: p.z > 1}
       },
-      actionAt
+      actionAt,
+      cameraPosition: () => active?.camera.position.toArray() ?? null
     }
   }
   if (reduceMotion) {
@@ -217,6 +218,10 @@ onMounted(() => {
 })
 
 watch(() => [store.vibe, store.isDarkMode] as const, buildScene)
+
+watch(orbit.view, () => {
+  if (reduceMotion) renderFrame(0)
+})
 
 watch([journey, journeyStop, journeyFocus], ([value]) => {
   if (!reduceMotion) return

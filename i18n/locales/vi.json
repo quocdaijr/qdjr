@@ -34,7 +34,7 @@
     "originalOnlyNotice": "Bài viết này chưa được dịch nên đang hiển thị bản gốc tiếng Việt.",
     "readOriginal": "Đọc bản gốc tiếng Việt →"
   },
-  "scene": {"fun": {"whistle": "Kéo còi tàu", "spin": "Quay cối xay gió", "comet": "Bắt sao chổi", "burst": "Gửi một loạt request"}},
+  "scene": {"view": "Góc nhìn 3D", "zoomIn": "Phóng to", "zoomOut": "Thu nhỏ", "resetView": "Đặt lại góc nhìn", "fun": {"whistle": "Kéo còi tàu", "spin": "Quay cối xay gió", "comet": "Bắt sao chổi", "burst": "Gửi một loạt request"}},
   "footer": {"madeWith": "Được làm với", "by": "bởi NguyenQuocDai", "scrollTop": "Lên đầu trang"},
   "error": {
     "400": "Yêu cầu không hợp lệ!", "401": "Bạn không có quyền truy cập!", "403": "Bạn không được phép xem nội dung này!",

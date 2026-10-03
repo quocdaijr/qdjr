@@ -158,6 +158,7 @@ export const createGalaxyScene: SceneFactory = ({isDark, aspect, reduceMotion = 
       look.lerp(shot.look, k)
       camera.position.copy(eye)
       camera.lookAt(look)
+      camera.userData.look = look // the reader's orbit/zoom turns around this (viewControl.ts)
       camera.updateMatrixWorld()
 
       if (picked !== null && picked !== lastFocus && !instant) passBy(earthSystem.orbiters[picked], elapsed)

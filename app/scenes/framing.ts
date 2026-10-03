@@ -93,7 +93,8 @@ export function fitShot(box: THREE.Box3, from: THREE.Vector3, aspect: number, fo
   })
   const [sx, sy] = shifts(distance)
   const eye = centre.clone().addScaledVector(dir, distance).addScaledVector(right, sx).addScaledVector(up, sy)
-  return {eye, look: eye.clone().add(forward)}
+  // Look at the model's depth, so a reader's orbit turns round the model, not round the lens.
+  return {eye, look: eye.clone().addScaledVector(forward, distance)}
 }
 
 /**
