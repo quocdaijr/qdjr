@@ -31,7 +31,7 @@ test.describe('bilingual blog', () => {
 
   test('blog chrome is translated', async ({page}) => {
     await page.goto('/blog/search')
-    await expect(page.locator('main')).toContainText('Nhập từ khóa tìm kiếm ở trên')
+    await expect(page.locator('main')).toContainText('Gõ từ khóa vào ô ở trên')
     await page.goto('/en/blog/search')
     await expect(page.locator('main')).toContainText('Enter a search term above')
   })

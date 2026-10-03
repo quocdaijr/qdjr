@@ -28,23 +28,29 @@ const STATION_PHASE = 0.25
 /** Stations sit at even arc-length spacing, STATION_PHASE gaps in from the loop seam. */
 export const stationU = (index: number, count: number) => (index + STATION_PHASE) / count
 
-function numberSign(label: string, loadAssets: boolean): THREE.Material | null {
+// Sign boards are a fixed height and as wide as their text.
+const SIGN_HEIGHT = 0.35
+const SIGN_TEXTURE = {height: 64, font: 'bold 34px Fraunces, Georgia, serif', padding: 28}
+
+function signBoard(label: string, loadAssets: boolean): {material: THREE.Material; width: number} | null {
   if (!loadAssets || typeof document === 'undefined') return null
   const canvas = document.createElement('canvas')
-  canvas.width = 128
-  canvas.height = 64
   const ctx = canvas.getContext('2d')
   if (!ctx) return null
+  ctx.font = SIGN_TEXTURE.font
+  canvas.width = Math.ceil(ctx.measureText(label).width) + SIGN_TEXTURE.padding
+  canvas.height = SIGN_TEXTURE.height
   ctx.fillStyle = '#fbf4e2'
-  ctx.fillRect(0, 0, 128, 64)
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
   ctx.fillStyle = '#3f2a1f'
-  ctx.font = 'bold 40px Fraunces, Georgia, serif'
+  ctx.font = SIGN_TEXTURE.font // resizing the canvas resets the context
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
-  ctx.fillText(label, 64, 34)
+  ctx.fillText(label, canvas.width / 2, canvas.height / 2 + 2)
   const texture = new THREE.CanvasTexture(canvas)
   texture.colorSpace = THREE.SRGBColorSpace
-  return new THREE.MeshBasicMaterial({map: texture, toneMapped: false})
+  const material = new THREE.MeshBasicMaterial({map: texture, toneMapped: false})
+  return {material, width: (SIGN_HEIGHT * canvas.width) / canvas.height}
 }
 
 function lamp(kit: Kit, at: THREE.Vector3): THREE.Group {
@@ -61,8 +67,8 @@ function lamp(kit: Kit, at: THREE.Vector3): THREE.Group {
 function sign(kit: Kit, label: string, at: THREE.Vector3, facing: number, loadAssets: boolean): THREE.Group {
   const pole = kit.mesh(new THREE.CylinderGeometry(0.03, 0.03, 1, 5), kit.material(kit.colors.metal))
   pole.position.y = 0.72
-  const face = numberSign(label, loadAssets) ?? kit.material(kit.colors.wall)
-  const board = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.35), face)
+  const face = signBoard(label, loadAssets)
+  const board = new THREE.Mesh(new THREE.PlaneGeometry(face?.width ?? 0.7, SIGN_HEIGHT), face?.material ?? kit.material(kit.colors.wall))
   board.position.y = 1.3
   const g = new THREE.Group()
   g.add(pole, board)
@@ -116,6 +122,8 @@ export function buildStations(
   kit: Kit,
   track: Track,
   list: readonly JourneyStation[],
+  /** Sign text per station, in station order. */
+  labels: readonly string[],
   loadAssets: boolean
 ): {group: THREE.Group; anchors: StationAnchor[]; footprints: Footprint[]} {
   const group = new THREE.Group()
@@ -145,7 +153,7 @@ export function buildStations(
       platform,
       building,
       lamp(kit, platformAt.clone().addScaledVector(t, LAMP_ALONG)),
-      sign(kit, String(i).padStart(2, '0'), platformAt.clone().addScaledVector(t, SIGN_ALONG), facing, loadAssets)
+      sign(kit, labels[i] ?? '', platformAt.clone().addScaledVector(t, SIGN_ALONG), facing, loadAssets)
     )
     building.updateMatrixWorld(true)
     const targets = building.children

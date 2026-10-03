@@ -103,15 +103,20 @@ describe('theme store', () => {
     expect(localStorage.getItem(VIBE_STORAGE_KEY)).toBeNull()
   })
 
+  test('cartoon is the default vibe and the coding (terminal) vibe comes last', () => {
+    expect(DEFAULT_VIBE).toBe('cartoon')
+    expect(VIBES).toEqual(['cartoon', 'galaxy', 'terminal'])
+  })
+
   test('nextVibe cycles through all vibes and wraps', () => {
     const store = useThemeStore()
 
     store.nextVibe()
-    expect(store.vibe).toBe('cartoon')
-    store.nextVibe()
     expect(store.vibe).toBe('galaxy')
     store.nextVibe()
     expect(store.vibe).toBe('terminal')
+    store.nextVibe()
+    expect(store.vibe).toBe('cartoon')
   })
 
   test('syncClock re-evaluates dark mode for a given instant', () => {

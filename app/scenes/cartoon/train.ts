@@ -10,11 +10,14 @@ const SMOKE_PUFFS = 8
 const SMOKE_LIFE = 1.6 // seconds
 const SMOKE_RISE = 0.9 // units/s
 const CHIMNEY = new THREE.Vector3(0.65, 1.5, 0)
+const TOOT = {seconds: 1.4, pace: 2.5}
 
 export interface Train {
   group: THREE.Group
   /** Place the train at u, moving at `speed` units/s (signed). */
   place(curve: THREE.CatmullRomCurve3, length: number, u: number, speed: number, dt: number): void
+  /** Easter egg: a burst of thick smoke for a moment, as if the whistle blew. */
+  toot(): void
 }
 
 function wheels(kit: Kit, xs: number[]): THREE.Mesh[] {
@@ -73,6 +76,18 @@ function wagon(kit: Kit, body: number): THREE.Group {
   return g
 }
 
+function tender(kit: Kit): THREE.Group {
+  const {trainDark, train} = kit.colors
+  const g = new THREE.Group()
+  g.add(
+    part(kit, new THREE.BoxGeometry(1.2, 0.2, 0.75), kit.material(trainDark), [0, 0.32, 0]),
+    part(kit, new THREE.BoxGeometry(1.1, 0.5, 0.8), kit.material(train), [0, 0.65, 0]),
+    part(kit, new THREE.BoxGeometry(0.95, 0.16, 0.66), kit.material(kit.colors.window), [0, 0.95, 0]), // the coal heap
+    ...wheels(kit, [-0.35, 0.35])
+  )
+  return g
+}
+
 function smoke(kit: Kit): THREE.Mesh[] {
   return Array.from({length: SMOKE_PUFFS}, (_, i) => {
     const material = new THREE.MeshToonMaterial({color: kit.colors.cloud, transparent: true, opacity: 0, depthWrite: false})
@@ -85,13 +100,15 @@ function smoke(kit: Kit): THREE.Mesh[] {
 export function buildTrain(kit: Kit): Train {
   const group = new THREE.Group()
   group.name = 'train'
-  const cars = [locomotive(kit), wagon(kit, kit.colors.wall), wagon(kit, kit.colors.accent)]
+  // A locomotive, its coal tender and four carriages: long enough to read as a train going somewhere.
+  const cars = [locomotive(kit), tender(kit), wagon(kit, kit.colors.wall), wagon(kit, kit.colors.accent), wagon(kit, kit.colors.water), wagon(kit, kit.colors.wall)]
   const puffs = smoke(kit)
   group.add(...cars, ...puffs)
 
   const chimney = new THREE.Vector3()
   let wheelAngle = 0
   let smokeStarted = false
+  let toot = 0 // seconds of whistle smoke left
 
   return {
     group,
@@ -115,9 +132,11 @@ export function buildTrain(kit: Kit): Train {
         puffs.forEach((puff) => puff.position.copy(chimney))
         smokeStarted = true
       }
-      const activity = Math.min(1, 0.25 + Math.abs(speed) / 4)
+      toot = Math.max(0, toot - dt)
+      const activity = toot > 0 ? 1 : Math.min(1, 0.25 + Math.abs(speed) / 4)
+      const pace = toot > 0 ? TOOT.pace : 1
       for (const puff of puffs) {
-        let life = puff.userData.life + dt / SMOKE_LIFE
+        let life = puff.userData.life + (dt * pace) / SMOKE_LIFE
         if (life >= 1) {
           life -= 1
           puff.position.copy(chimney)
@@ -127,6 +146,9 @@ export function buildTrain(kit: Kit): Train {
         puff.scale.setScalar(0.5 + life * 1.6)
         ;(puff.material as THREE.MeshToonMaterial).opacity = (1 - life) * 0.7 * activity
       }
+    },
+    toot() {
+      toot = TOOT.seconds
     }
   }
 }

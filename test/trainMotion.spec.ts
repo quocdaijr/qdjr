@@ -73,3 +73,34 @@ describe('stepTrain', () => {
     expect(stepTrain({u: 0.2, velocity: 0}, 0.4, 0, CONFIG)).toEqual({u: 0.2, velocity: 0})
   })
 })
+
+describe('stepTrain with a direction (the /about journey)', () => {
+  function runDirected(start: TrainMotion, target: number, direction: 1 | -1, seconds: number) {
+    const trace: TrainMotion[] = []
+    let state = start
+    for (let i = 0; i < seconds * 60; i++) {
+      state = stepTrain(state, target, DT, CONFIG, false, direction)
+      trace.push(state)
+    }
+    return {state, trace}
+  }
+  // Unwrapped distance travelled frame to frame: positive is forward.
+  const steps = (trace: TrainMotion[]) => trace.slice(1).map((s, i) => signedLoopDistance(trace[i]!.u, s.u))
+
+  test('scrolling forward past several stops keeps going forward, the long way round if need be', () => {
+    // Stop 1 → stop 6 is 0.625 of the loop ahead: the short way would be backwards.
+    const {state, trace} = runDirected({u: 0.156, velocity: 0}, 0.781, 1, 30)
+    expect(steps(trace).every((d) => d >= 0)).toBe(true)
+    expect(state).toEqual({u: 0.781, velocity: 0})
+  })
+
+  test('scrolling back goes backwards, even when forward would be shorter', () => {
+    const {state, trace} = runDirected({u: 0.906, velocity: 0}, 0.031, -1, 30)
+    expect(steps(trace).every((d) => d <= 0)).toBe(true)
+    expect(state).toEqual({u: 0.031, velocity: 0})
+  })
+
+  test('arriving a hair past the station does not send it round the loop again', () => {
+    expect(stepTrain({u: 0.30001, velocity: 0}, 0.3, DT, CONFIG, false, 1)).toEqual({u: 0.3, velocity: 0})
+  })
+})

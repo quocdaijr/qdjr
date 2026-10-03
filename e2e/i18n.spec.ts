@@ -4,7 +4,7 @@ test.describe('languages', () => {
   test('Vietnamese is the default and English lives under /en', async ({page}) => {
     await page.goto('/')
     await expect(page.locator('html')).toHaveAttribute('lang', 'vi-VN')
-    await expect(page.getByRole('link', {name: 'Về tôi →'})).toBeVisible()
+    await expect(page.getByRole('link', {name: 'Về mình →'})).toBeVisible()
 
     await page.goto('/en')
     await expect(page.locator('html')).toHaveAttribute('lang', 'en-US')
@@ -21,7 +21,7 @@ test.describe('languages', () => {
     test.skip(testInfo.project.name !== 'desktop', 'desktop nav')
     await page.goto('/blog')
     await expect(page.locator('header nav').filter({visible: true}).first()).toContainText('Giới thiệu')
-    await expect(page.locator('#site-search').first()).toHaveAttribute('placeholder', 'Tìm bài viết ...')
+    await expect(page.locator('#site-search').first()).toHaveAttribute('placeholder', 'Tìm bài viết…')
 
     await page.goto('/en/blog')
     await expect(page.locator('header nav').filter({visible: true}).first()).toContainText('About')
@@ -70,7 +70,7 @@ test.describe('languages', () => {
 
   test('the 404 page speaks the current language', async ({page}) => {
     await page.goto('/trang-khong-ton-tai')
-    await expect(page.getByText('Xin lỗi, không tìm thấy nội dung bạn cần!')).toBeVisible()
+    await expect(page.getByText('Không tìm thấy trang bạn cần.')).toBeVisible()
     await expect(page.locator('html')).toHaveAttribute('lang', 'vi-VN')
     await page.goto('/en/page-that-does-not-exist')
     await expect(page.getByText("Sorry, We couldn't find what you are looking for!")).toBeVisible()
@@ -80,7 +80,7 @@ test.describe('languages', () => {
   test('the journey rail is labelled in the page language', async ({page}, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'rail is hidden below 60rem')
     await page.goto('/about')
-    await expect(page.locator('nav.rail')).toHaveAttribute('aria-label', 'Các chặng hành trình')
+    await expect(page.locator('nav.rail')).toHaveAttribute('aria-label', 'Các chặng')
     await expect(page.locator('.rail-link').first()).toHaveText('Xin chào')
     await page.goto('/en/about')
     await expect(page.locator('nav.rail')).toHaveAttribute('aria-label', 'Journey stops')
@@ -92,7 +92,7 @@ test.describe('languages', () => {
     await page.locator('#stop-5').waitFor()
     // Job titles stay in English; the surrounding copy is Vietnamese.
     await expect(page.locator('#stop-5')).toContainText('Senior Backend Software Engineer')
-    await expect(page.locator('#stop-5')).toContainText('Thành tựu chính')
+    await expect(page.locator('#stop-5')).toContainText('Điểm nổi bật')
 
     await page.goto('/en/about')
     await page.locator('#stop-5').waitFor()

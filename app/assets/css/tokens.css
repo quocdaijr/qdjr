@@ -8,8 +8,9 @@
  * Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4
  *
  * Rules: OKLCH only in this file. Hue never changes between light and dark —
- * only lightness and chroma move. Terminal is the default vibe, so its tokens
- * live on :root / .dark and are always defined even before the store runs.
+ * only lightness and chroma move. Terminal's tokens live on :root / .dark as
+ * the fallback, always defined; the default vibe (cartoon) comes from the
+ * data-vibe attribute the page shell already carries (nuxt.config.ts).
  */
 
 :root {

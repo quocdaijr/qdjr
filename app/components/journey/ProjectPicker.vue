@@ -87,6 +87,11 @@ function onKey(event: KeyboardEvent) {
   nextTick(() => buttons[next]?.focus())
 }
 
+// A project picked from the 3D scene selects it here too.
+watch(focus, (value) => {
+  if (value !== null && value !== selected.value && value >= 0 && value < props.projects.length) selected.value = value
+})
+
 onMounted(() => (focus.value = selected.value))
 onBeforeUnmount(() => (focus.value = null))
 </script>

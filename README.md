@@ -207,8 +207,26 @@ the same thing for a container host. The `bookworm` base is intentional:
 `better-sqlite3`, required by `@nuxt/content`, needs `python3`/`make`/`g++` when
 no prebuilt binary matches.
 
+Put nginx (or another reverse proxy) in front, and let it **overwrite** the
+forwarded address rather than append to it — the trip planner API
+(`/api/trips/*`) limits plans per visitor by that address, and a client could
+otherwise send its own:
+
+```nginx
+location / {
+  proxy_pass http://127.0.0.1:3000;
+  proxy_set_header Host $host;
+  proxy_set_header X-Forwarded-For $remote_addr;
+}
+```
+
+The PM2 example binds to `127.0.0.1`, so port 3000 is reachable only through the
+proxy. Planned trips are cached on disk in `.data/trips` (30 days); keep that
+directory across deploys.
+
 Static hosting is also possible via `npm run generate` (deploy `.output/public`),
-with the SPA-shell caveat noted above.
+with the SPA-shell caveat noted above — but without a server there is no trip
+planner (`/trips/plan` needs `/api/trips/*`); the curated trips still work.
 
 ## 📚 Documentation
 

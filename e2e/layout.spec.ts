@@ -78,14 +78,14 @@ test('blog prose follows the vibe tokens', async ({page}, testInfo) => {
   // cascade layer the plugin wins and prose stays slate in every vibe, so the
   // value would neither leave slate's hue nor move when the vibe changes.
   const readBody = () => article.evaluate((el) => getComputedStyle(el).getPropertyValue('--tw-prose-body'))
-  const terminal = await readBody()
+  const cartoon = await readBody() // the default vibe
   await page.evaluate(() => {
-    document.documentElement.dataset.vibe = 'cartoon'
+    document.documentElement.dataset.vibe = 'terminal'
   })
-  const cartoon = await readBody()
+  const terminal = await readBody()
 
-  expect(terminal).not.toContain('258.338') // Tailwind slate hue
-  expect(cartoon).not.toBe(terminal)
+  expect(cartoon).not.toContain('258.338') // Tailwind slate hue
+  expect(terminal).not.toBe(cartoon)
 })
 
 test('blog routes do not inherit the journey smooth scroll', async ({page}, testInfo) => {

@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import type {Kit} from './kit'
+import {BRIDGE_U} from './layout'
 
 // A winding closed loop over the island (island spans x −20..20, z −16..16).
 // Two points per corner keep the bends gentle enough for a straight platform
@@ -61,7 +62,9 @@ function sleepers(kit: Kit, curve: THREE.CatmullRomCurve3, length: number): THRE
   return mesh
 }
 
-/** A flat gravel strip under the sleepers. */
+const onBridge = (u: number) => u > BRIDGE_U.from && u < BRIDGE_U.to
+
+/** A flat gravel strip under the sleepers; it stops where the bridge carries the track over the river. */
 function ballast(kit: Kit, curve: THREE.CatmullRomCurve3): THREE.Mesh {
   const positions: number[] = []
   const indices: number[] = []
@@ -74,6 +77,7 @@ function ballast(kit: Kit, curve: THREE.CatmullRomCurve3): THREE.Mesh {
     positions.push(p.x - side.x * BALLAST_HALF_WIDTH, 0.03, p.z - side.z * BALLAST_HALF_WIDTH)
   }
   for (let i = 0; i < SAMPLES; i++) {
+    if (onBridge((i + 0.5) / SAMPLES)) continue
     const a = i * 2
     indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2)
   }
@@ -84,12 +88,51 @@ function ballast(kit: Kit, curve: THREE.CatmullRomCurve3): THREE.Mesh {
   return new THREE.Mesh(geometry, kit.material(kit.colors.ballast, THREE.DoubleSide))
 }
 
+const BRIDGE = {rise: 1.5, inset: 0.62, tube: 0.07, hangers: 7, deckDepth: 0.16}
+
+/** A red arch bridge over the river: an arch each side of the track, hangers down to a plank deck. */
+function bridge(kit: Kit, curve: THREE.CatmullRomCurve3): THREE.Group {
+  const g = new THREE.Group()
+  g.name = 'bridge'
+  const red = kit.material(kit.colors.accent)
+  const side = new THREE.Vector3()
+  const steps = 24
+  const span = (BRIDGE_U.to - BRIDGE_U.from)
+  for (const offset of [-BRIDGE.inset, BRIDGE.inset]) {
+    // The arch: a sine hump over the span, along the rail line.
+    const points = Array.from({length: steps + 1}, (_, i) => {
+      const t = i / steps
+      const u = BRIDGE_U.from + span * t
+      return curve.getPointAt(u).addScaledVector(sideAt(curve, u, side), offset).setY(RAIL_HEIGHT + Math.sin(Math.PI * t) * BRIDGE.rise)
+    })
+    g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), steps, BRIDGE.tube, 5), red))
+    for (let k = 1; k < BRIDGE.hangers; k++) {
+      const t = k / BRIDGE.hangers
+      const top = points[Math.round(t * steps)]!
+      const hanger = kit.mesh(new THREE.CylinderGeometry(0.025, 0.025, top.y - RAIL_HEIGHT, 4), red)
+      hanger.position.set(top.x, (top.y + RAIL_HEIGHT) / 2, top.z)
+      g.add(hanger)
+    }
+  }
+  // Plank deck under the sleepers, where the ballast stops.
+  const deckSteps = 12
+  for (let i = 0; i < deckSteps; i++) {
+    const u = BRIDGE_U.from + (span * (i + 0.5)) / deckSteps
+    const t = curve.getTangentAt(u)
+    const plank = kit.mesh(new THREE.BoxGeometry(1.5, BRIDGE.deckDepth, (curve.getLength() * span) / deckSteps + 0.02), kit.material(kit.colors.trunk))
+    plank.position.copy(curve.getPointAt(u)).setY(RAIL_HEIGHT - BRIDGE.deckDepth / 2 - 0.02)
+    plank.rotation.y = Math.atan2(t.x, t.z)
+    g.add(plank)
+  }
+  return g
+}
+
 export function buildTrack(kit: Kit): Track {
   const curve = trackCurve()
   const length = curve.getLength()
   const group = new THREE.Group()
   group.name = 'track'
   const railMaterial = kit.material(kit.colors.rail)
-  group.add(ballast(kit, curve), sleepers(kit, curve, length), rail(curve, -GAUGE, railMaterial), rail(curve, GAUGE, railMaterial))
+  group.add(ballast(kit, curve), sleepers(kit, curve, length), rail(curve, -GAUGE, railMaterial), rail(curve, GAUGE, railMaterial), bridge(kit, curve))
   return {curve, length, samples: curve.getSpacedPoints(SAMPLES), group}
 }

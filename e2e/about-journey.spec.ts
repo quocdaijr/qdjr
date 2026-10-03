@@ -66,8 +66,9 @@ test.describe('about journey', () => {
       return {filter: s.backdropFilter || (s as unknown as Record<string, string>).webkitBackdropFilter, alpha: m.length > 3 ? m[3] : 1}
     })
     expect(filter).toContain('blur')
-    expect(alpha).toBeGreaterThanOrEqual(0.8)
-    expect(alpha).toBeLessThanOrEqual(0.9)
+    // The scene must show through: 50–70 % paper (design.md § Surfaces).
+    expect(alpha).toBeGreaterThanOrEqual(0.5)
+    expect(alpha).toBeLessThanOrEqual(0.7)
   })
 
   test('the journey page opts into smooth scrolling (blog routes do not)', async ({page}) => {

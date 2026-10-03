@@ -6,36 +6,40 @@ const HAMBURGER = 'header button.w-10.h-10'
 const SEGMENTED_OPTION = (label: string) => `label.vibe-switch-option:has-text("${label}")`
 
 test.describe('vibe switcher', () => {
-  test('defaults to terminal and the header button cycles without console errors', async ({page}) => {
+  test('defaults to cartoon and the header button cycles without console errors', async ({page}) => {
     const errors: string[] = []
     page.on('console', (msg) => msg.type() === 'error' && errors.push(msg.text()))
     page.on('pageerror', (err) => errors.push(err.message))
 
     await page.goto('/blog')
-    await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'terminal')
+    await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'cartoon')
 
     const button = page.locator('header .vibe-switch-icon').filter({visible: true}).first()
-    await button.click()
-    await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'cartoon')
     await button.click()
     await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'galaxy')
     await button.click()
     await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'terminal')
+    await button.click()
+    await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'cartoon')
 
     expect(errors).toEqual([])
   })
 
-  test('cartoon vibe swaps the body font and persists across reloads', async ({page}) => {
+  test('the default cartoon vibe has its body font from the first paint; a picked vibe persists across reloads', async ({page}) => {
     await page.goto('/blog')
-    const button = page.locator('header .vibe-switch-icon').filter({visible: true}).first()
-    await button.click()
     await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'cartoon')
-
     const font = await page.evaluate(() => getComputedStyle(document.body).fontFamily)
     expect(font).toContain('Bricolage Grotesque')
 
+    await page.locator('header .vibe-switch-icon').filter({visible: true}).first().click()
+    await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'galaxy')
     await page.reload()
-    await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'cartoon')
+    await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'galaxy')
+  })
+
+  test('the page shell already carries the cartoon vibe before any script runs', async ({request}) => {
+    const html = await (await request.get('/')).text()
+    expect(html).toMatch(/<html[^>]*data-vibe="cartoon"/)
   })
 
   test('the mobile drawer exposes the segmented control', async ({page}, testInfo) => {
@@ -58,7 +62,7 @@ test.describe('vibe switcher', () => {
     await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'cartoon')
   })
 
-  test('scene canvas exists on / and /about but not on /blog', async ({page}) => {
+  test('scene canvas exists on every page, behind a veil where the page has no panels', async ({page}) => {
     await page.goto('/en')
     await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
 
@@ -66,8 +70,14 @@ test.describe('vibe switcher', () => {
     await expect(page).toHaveURL(/\/about\/?$/)
     await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
 
+    await expect(page.locator('.scene-veil')).toHaveCount(0)
+
     await page.goto('/en/blog')
-    await expect(page.locator('canvas.vibe-scene')).toHaveCount(0)
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+    await expect(page.locator('.scene-veil')).toHaveCount(1)
+
+    await page.goto('/en/trips')
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
   })
 
   test('rapid vibe switching with a live renderer, then leaving the page, logs no errors', async ({page}) => {
@@ -86,9 +96,11 @@ test.describe('vibe switcher', () => {
     await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'terminal')
     await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
 
-    // Unmount mid-life: the renderer must be torn down without touching a disposed scene.
-    await page.getByRole('link', {name: 'Read the blog →'}).click()
-    await expect(page.locator('canvas.vibe-scene')).toHaveCount(0)
+    // Leave for a page with its own scene (a trip): the vibe scene is disposed and replaced without touching a disposed scene.
+    await page.goto('/en/trips')
+    await page.getByRole('link', {name: 'Ride along →'}).first().click()
+    await expect(page.locator('.trip-panel')).toBeVisible()
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
 
     expect(errors).toEqual([])
   })

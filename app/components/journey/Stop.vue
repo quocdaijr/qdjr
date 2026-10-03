@@ -34,7 +34,7 @@ withDefaults(defineProps<{index: number; title: string; level?: 1 | 2; active?: 
   scroll-margin-top: var(--space-xl);
 }
 
-/* Frosted paper panel (90 % paper + 14 px blur, design.md § Surfaces): the
+/* Frosted paper panel (50 % paper + 18 px blur, design.md § Surfaces): the
    scene shows through softly.
    A stop waits, dimmed and slightly low, until it is the centred one; then
    the panel settles and its contents follow in a short stagger. Only
@@ -44,8 +44,8 @@ withDefaults(defineProps<{index: number; title: string; level?: 1 | 2; active?: 
   padding: var(--space-lg) var(--space-md);
   border: var(--rule-hair) solid var(--color-rule);
   border-radius: var(--radius-card);
-  background: color-mix(in oklch, var(--color-paper) 90%, transparent);
-  backdrop-filter: blur(14px) saturate(1.2);
+  background: color-mix(in oklch, var(--color-paper) 50%, transparent);
+  backdrop-filter: blur(18px) saturate(1.3);
   color: var(--color-ink);
   opacity: 0.35;
   transform: translateY(16px);

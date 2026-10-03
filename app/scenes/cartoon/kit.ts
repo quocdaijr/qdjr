@@ -34,6 +34,8 @@ export interface Colors {
   train: number
   trainDark: number
   metal: number
+  /** Rice paddies on the trip board. */
+  paddy: number
   flowers: readonly number[]
 }
 
@@ -43,7 +45,7 @@ export const PALETTE: Readonly<Record<'light' | 'dark', Colors>> = {
     ground: 0x8d5e43, cliff: 0x6f4a35, grass: 0x86bf4f, leaf: 0x4f9a3f, leafDark: 0x2f6e3c,
     trunk: 0x6b4631, wall: 0xfbf3e0, roof: 0xb8533b, accent: 0xca4e36, rail: 0x5a5f66, sleeper: 0x7a5236,
     ballast: 0xc9bca4, platform: 0xd9c9a8, water: 0x6fb7d6, cloud: 0xffffff, stone: 0xb9b2a5, window: 0x3d4a5c,
-    glow: 0xffc36b, train: 0xca4e36, trainDark: 0x3f2a1f, metal: 0x4a4f57,
+    glow: 0xffc36b, train: 0xca4e36, trainDark: 0x3f2a1f, metal: 0x4a4f57, paddy: 0xc3d96a,
     flowers: [0xef704c, 0xf2c14e, 0xffffff, 0xc8453a, 0x9b7fd6]
   },
   dark: {
@@ -51,7 +53,7 @@ export const PALETTE: Readonly<Record<'light' | 'dark', Colors>> = {
     ground: 0x4a3426, cliff: 0x3a2a20, grass: 0x557f45, leaf: 0x3d6b45, leafDark: 0x2a4d36,
     trunk: 0x5a3b2a, wall: 0xe9d9b8, roof: 0xb9583a, accent: 0xca4e36, rail: 0x6c7178, sleeper: 0x5e3f2a,
     ballast: 0x8f8470, platform: 0xa8977a, water: 0x2f4f7a, cloud: 0x8f96bf, stone: 0x8c857a, window: 0xffb15c,
-    glow: 0xffc36b, train: 0xb9472f, trainDark: 0x2b1c14, metal: 0x3a3e45,
+    glow: 0xffc36b, train: 0xb9472f, trainDark: 0x2b1c14, metal: 0x3a3e45, paddy: 0x7e8f45,
     flowers: [0xc9604a, 0xc9a24a, 0xd9cfc4, 0xa83a30, 0x7d68ad]
   }
 }
@@ -83,6 +85,8 @@ export interface Kit {
   colors: Colors
   isDark: boolean
   material(color: number, side?: THREE.Side): THREE.MeshToonMaterial
+  /** Toon material coloured per vertex (the trip terrain). */
+  vertexColorMaterial(): THREE.MeshToonMaterial
   windowMaterial(): THREE.MeshToonMaterial
   glowMaterial(): THREE.MeshToonMaterial
   /** Foliage material that bends in the shared wind between y = base and base + height. */
@@ -112,6 +116,7 @@ export function createKit(isDark: boolean): Kit {
     colors,
     isDark,
     material: (color, side = THREE.FrontSide) => cached(`${color}:${side}`, () => new THREE.MeshToonMaterial({color, gradientMap, side})),
+    vertexColorMaterial: () => cached('vertex', () => new THREE.MeshToonMaterial({vertexColors: true, gradientMap})),
     windowMaterial: () => cached('window', () => lit(colors.window, 1.1)),
     glowMaterial: () => cached('glow', () => lit(colors.glow, 2)),
     swayMaterial: (color, base, height) =>
