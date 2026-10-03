@@ -28,6 +28,7 @@ export const PROFILE_VI: ProfileContent = {
     {
       period: '08/2014 - 12/2018',
       org: 'Trường Đại học Tài nguyên và Môi trường TP.HCM',
+      short: 'HCMUNRE',
       kind: 'education',
       major: 'Công nghệ Thông tin',
       degree: 'Kỹ sư',
@@ -36,6 +37,7 @@ export const PROFILE_VI: ProfileContent = {
     {
       period: '08/2018 - 07/2019',
       org: 'Applancer JSC - Onsite tại Báo Tuổi Trẻ',
+      short: 'Applancer',
       kind: 'work',
       position: 'Web Developer',
       technologies: 'PHP, Yii2 Framework, MySQL, Elasticsearch, Redis, Nginx, RabbitMQ, Git, Linux, Docker, Supervisor',
@@ -48,6 +50,7 @@ export const PROFILE_VI: ProfileContent = {
     {
       period: '07/2019 - 08/2022',
       org: 'Báo Tuổi Trẻ',
+      short: 'Tuổi Trẻ',
       kind: 'work',
       position: 'Software Development Engineer',
       technologies:
@@ -64,6 +67,7 @@ export const PROFILE_VI: ProfileContent = {
     {
       period: '08/2022 - Nay',
       org: 'FireGroup Technology',
+      short: 'FireGroup',
       kind: 'work',
       position: 'Senior Backend Software Engineer',
       technologies:

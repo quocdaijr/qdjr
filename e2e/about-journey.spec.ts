@@ -34,14 +34,40 @@ test.describe('about journey', () => {
 
   test('rail tracks the centred stop on desktop', async ({page}, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'rail is hidden below 60rem')
-    await page.goto('/about')
+    await page.goto('/en/about')
+    await expect(page.locator('.rail-link')).toHaveText(['Hello', 'What I do', 'HCMUNRE', 'Applancer', 'Tuoi Tre', 'FireGroup', 'Projects', 'Say hello'])
 
     await page.locator('#stop-4').scrollIntoViewIfNeeded()
     await expect(page.locator('.journey')).toHaveAttribute('data-active-stop', '4')
-    await expect(page.locator('.rail-dot[aria-current="step"]')).toHaveText(/04/)
+    await expect(page.locator('.rail-link[aria-current="step"]')).toHaveText('Tuoi Tre')
 
-    await page.locator('.rail-dot', {hasText: '07'}).click()
+    await page.locator('.rail-link', {hasText: 'Say hello'}).click()
     await expect(page.locator('.journey')).toHaveAttribute('data-active-stop', '7')
+
+    // The rail never sits on top of a panel.
+    const rail = (await page.locator('nav.rail').boundingBox())!
+    const panel = (await page.locator('#stop-7 .stop-panel').boundingBox())!
+    expect(rail.x + rail.width).toBeLessThanOrEqual(panel.x)
+  })
+
+  test('panels carry a section title only, no stage number', async ({page}) => {
+    await page.goto('/about')
+    await page.locator('#stop-0').waitFor()
+    await expect(page.locator('.stop-stage')).toHaveCount(0)
+  })
+
+  test('journey panels are frosted glass over the scene', async ({page}) => {
+    await page.goto('/about')
+    const panel = page.locator('#stop-0 .stop-panel')
+    await panel.waitFor()
+    const {filter, alpha} = await panel.evaluate((el) => {
+      const s = getComputedStyle(el)
+      const m = s.backgroundColor.match(/[\d.]+/g)!.map(Number)
+      return {filter: s.backdropFilter || (s as unknown as Record<string, string>).webkitBackdropFilter, alpha: m.length > 3 ? m[3] : 1}
+    })
+    expect(filter).toContain('blur')
+    expect(alpha).toBeGreaterThanOrEqual(0.8)
+    expect(alpha).toBeLessThanOrEqual(0.9)
   })
 
   test('the journey page opts into smooth scrolling (blog routes do not)', async ({page}) => {

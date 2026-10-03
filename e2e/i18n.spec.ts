@@ -81,8 +81,10 @@ test.describe('languages', () => {
     test.skip(testInfo.project.name !== 'desktop', 'rail is hidden below 60rem')
     await page.goto('/about')
     await expect(page.locator('nav.rail')).toHaveAttribute('aria-label', 'Các chặng hành trình')
+    await expect(page.locator('.rail-link').first()).toHaveText('Xin chào')
     await page.goto('/en/about')
     await expect(page.locator('nav.rail')).toHaveAttribute('aria-label', 'Journey stops')
+    await expect(page.locator('.rail-link').first()).toHaveText('Hello')
   })
 
   test('profile content is translated, not just the chrome', async ({page}) => {
