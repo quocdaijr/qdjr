@@ -13,9 +13,15 @@ const CLEAR = {track: 1.8, building: 2.6, platform: 1.6}
 const CROWN = {radius: 0.62, height: 1.4}
 const BLADE = {radius: 0.05, height: 0.45}
 const BLADE_SPEED = 0.9
+const SPIN_BOOST = 8
+const SPIN_DECAY = 4
 
 export interface World {
   group: THREE.Group
+  /** The windmill, clickable for a spin. */
+  windmill: THREE.Group
+  /** Easter egg: the blades whirl, then ease back to their breeze. */
+  spin(): void
   update(dt: number, elapsed: number): void
 }
 
@@ -208,10 +214,16 @@ export function buildWorld(kit: Kit, track: Track, anchors: StationAnchor[], det
     air
   )
 
+  let boost = 0 // extra blade speed, decaying
   return {
     group,
+    windmill: mill.group,
+    spin() {
+      boost = BLADE_SPEED * SPIN_BOOST
+    },
     update(dt, elapsed) {
-      mill.blades.rotation.z += dt * BLADE_SPEED
+      boost = Math.max(0, boost - dt * BLADE_SPEED * SPIN_DECAY)
+      mill.blades.rotation.z += dt * (BLADE_SPEED + boost)
       air.position.y = BALLOON.y + Math.sin(elapsed * 0.6) * 0.4
     }
   }

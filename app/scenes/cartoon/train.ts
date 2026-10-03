@@ -10,11 +10,14 @@ const SMOKE_PUFFS = 8
 const SMOKE_LIFE = 1.6 // seconds
 const SMOKE_RISE = 0.9 // units/s
 const CHIMNEY = new THREE.Vector3(0.65, 1.5, 0)
+const TOOT = {seconds: 1.4, pace: 2.5}
 
 export interface Train {
   group: THREE.Group
   /** Place the train at u, moving at `speed` units/s (signed). */
   place(curve: THREE.CatmullRomCurve3, length: number, u: number, speed: number, dt: number): void
+  /** Easter egg: a burst of thick smoke for a moment, as if the whistle blew. */
+  toot(): void
 }
 
 function wheels(kit: Kit, xs: number[]): THREE.Mesh[] {
@@ -92,6 +95,7 @@ export function buildTrain(kit: Kit): Train {
   const chimney = new THREE.Vector3()
   let wheelAngle = 0
   let smokeStarted = false
+  let toot = 0 // seconds of whistle smoke left
 
   return {
     group,
@@ -115,9 +119,11 @@ export function buildTrain(kit: Kit): Train {
         puffs.forEach((puff) => puff.position.copy(chimney))
         smokeStarted = true
       }
-      const activity = Math.min(1, 0.25 + Math.abs(speed) / 4)
+      toot = Math.max(0, toot - dt)
+      const activity = toot > 0 ? 1 : Math.min(1, 0.25 + Math.abs(speed) / 4)
+      const pace = toot > 0 ? TOOT.pace : 1
       for (const puff of puffs) {
-        let life = puff.userData.life + dt / SMOKE_LIFE
+        let life = puff.userData.life + (dt * pace) / SMOKE_LIFE
         if (life >= 1) {
           life -= 1
           puff.position.copy(chimney)
@@ -127,6 +133,9 @@ export function buildTrain(kit: Kit): Train {
         puff.scale.setScalar(0.5 + life * 1.6)
         ;(puff.material as THREE.MeshToonMaterial).opacity = (1 - life) * 0.7 * activity
       }
+    },
+    toot() {
+      toot = TOOT.seconds
     }
   }
 }

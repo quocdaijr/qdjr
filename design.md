@@ -54,7 +54,8 @@ Tailwind `gray-*` / `blue-*` utilities are remapped to the vibe ramps in `main.c
 - `prefers-reduced-motion: reduce`: the scene renders one frame per state change; reveals are a 150 ms fade; anchor jumps are instant.
 
 ## Microinteractions stance
-Silent success. Hover delay 0 (no tooltips). Focus ring 2 px `--color-focus`, offset 2 px, never animated. Hit targets ≥ 44 px.
+Silent success. Hover delay 0 (no tooltips, except the name of a hovered 3D scene object). Focus ring 2 px `--color-focus`, offset 2 px, never animated. Hit targets ≥ 44 px.
+Scene objects are clickable shortcuts (pointer only; the rail and the project picker remain the accessible controls): a section's object goes to its section, a project's object picks it, and each vibe has an easter egg (cartoon: train whistle, windmill; galaxy: comet shower; terminal: a cron job that floods the map with requests). Hovering shows the name in a small mono tooltip. Page UI always wins a click over the scene behind it.
 
 ## CTA voice
 Typographic links only (`.link`: word + arrow + 1 px underline, thickens on hover). No filled buttons on the profile pages.

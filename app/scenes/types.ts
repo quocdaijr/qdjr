@@ -1,4 +1,4 @@
-import type {PerspectiveCamera, Scene} from 'three'
+import type {Object3D, PerspectiveCamera, Scene} from 'three'
 
 export interface SceneOptions {
   isDark: boolean
@@ -17,9 +17,16 @@ export interface ScenePointer {
   y: number
 }
 
+/** What a click on a scene object asks for. */
+export type SceneAction = {type: 'stop'; stop: number} | {type: 'project'; project: number} | {type: 'fun'; id: string}
+
 export interface VibeScene {
   scene: Scene
   camera: PerspectiveCamera
+  /** Objects the pointer can hit; each (or an ancestor) carries userData.action (see picking.ts). */
+  pickables: Object3D[]
+  /** Play a decorative reaction (train whistle, comet…); a no-op under reduced motion. */
+  play(id: string, elapsed: number): void
   /**
    * Advance the scene one frame and place the camera.
    * @param dt seconds since the previous frame, clamped to 0.1

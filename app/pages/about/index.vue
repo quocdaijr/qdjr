@@ -90,6 +90,14 @@ const stopLabels = useJourneyLabels()
 
 const {activeStop} = useJourney(stopLabels.value.length)
 
+// Arriving from a scene click on / (or a shared link): stops mount after load,
+// so scroll to the requested one once they exist.
+const route = useRoute()
+onMounted(() => {
+  const id = route.hash.slice(1)
+  if (id.startsWith('stop-')) nextTick(() => document.getElementById(id)?.scrollIntoView({block: 'center'}))
+})
+
 function handleProfileImageError(event: Event) {
   const img = event.target as HTMLImageElement
   console.warn('Profile image failed to load:', img.src)

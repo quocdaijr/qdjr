@@ -34,6 +34,7 @@
     "originalOnlyNotice": "This post has not been translated yet, so it is shown in its original Vietnamese.",
     "readOriginal": "Read the original (Vietnamese) →"
   },
+  "scene": {"fun": {"whistle": "Blow the whistle", "spin": "Spin the windmill", "comet": "Catch the comet", "burst": "Send a burst of requests"}},
   "footer": {"madeWith": "Made with", "by": "by NguyenQuocDai", "scrollTop": "Back to top"},
   "error": {
     "400": "Bad request!", "401": "Access is not allowed!", "403": "You aren't permitted to see this!",

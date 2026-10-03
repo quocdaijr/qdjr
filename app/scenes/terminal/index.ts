@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import {journeyStations, projectsStopIndex} from '~/data/journeyStations'
 import {PROFILE_CONTENT} from '~/data/profile'
 import {panelAim} from '../framing'
+import {pickable} from '../picking'
 import type {SceneFactory} from '../types'
 import {layoutArchitecture} from './architecture'
 import {buildArchitecture} from './nodes'
@@ -33,6 +34,7 @@ const OVERVIEW = {eye: new THREE.Vector3(-12, 18, 22), look: new THREE.Vector3(-
 const OFFSET = new THREE.Vector3(0, 3.5, 9)
 const POD_SCALE = 0.6
 const FRAME = {shift: 3.6, drop: 2.2}
+const CRON = {position: new THREE.Vector3(-14, 6.5, -19), spin: 0.8}
 // The Projects panel is wider, so its subject sits farther right.
 const WIDE_PANEL_SHIFT = 1.6
 
@@ -77,6 +79,21 @@ export const createTerminalScene: SceneFactory = ({isDark, aspect, reduceMotion 
   const packets = createPackets(ARCH, colors.grid, detail)
   scene.add(tileA, tileB, map.group, packets.mesh)
 
+  // A little cron job spinning beside the map: the clickable easter egg.
+  const cron = new THREE.Mesh(new THREE.TorusKnotGeometry(0.45, 0.13, 64, 8), new THREE.MeshBasicMaterial({color: colors.grid, wireframe: true}))
+  cron.position.copy(CRON.position)
+  cron.name = 'cron'
+  scene.add(cron)
+
+  // Clickable: a node goes to its stop, a pod picks its project (pods are
+  // children of the cluster node; the nearest tagged ancestor wins), the cron
+  // job sends a burst of requests through the whole map.
+  const pickables = [
+    ...map.anchors.map((o, i) => pickable(o, {type: 'stop', stop: i})),
+    ...map.pods.map((o, k) => pickable(o, {type: 'project', project: k})),
+    pickable(cron, {type: 'fun', id: 'burst'})
+  ]
+
   const eye = new THREE.Vector3()
   const look = new THREE.Vector3()
   let ready = false
@@ -100,6 +117,10 @@ export const createTerminalScene: SceneFactory = ({isDark, aspect, reduceMotion 
   return {
     scene,
     camera,
+    pickables,
+    play(id, elapsed) {
+      if (!reduceMotion && id === 'burst') packets.flood(elapsed)
+    },
     update(dt, elapsed, _progress, pointer, stop, focus) {
       const t = reduceMotion ? 0 : elapsed
       const offset = (t * FLOW_SPEED) % GRID_SIZE
@@ -115,6 +136,7 @@ export const createTerminalScene: SceneFactory = ({isDark, aspect, reduceMotion 
       }
       lastStop = stop
       packets.update(t)
+      cron.rotation.set(t * CRON.spin * 0.6, t * CRON.spin, 0)
       scene.updateMatrixWorld()
 
       const shot = stop === null ? overviewShot(pointer) : stopShot(stop, picked)

@@ -1,10 +1,12 @@
 import * as THREE from 'three'
 import {projectsStopIndex} from '~/data/journeyStations'
 import {PROFILE_CONTENT} from '~/data/profile'
+import {pickable} from '../picking'
 import {mulberry32} from '../random'
 import type {SceneFactory} from '../types'
 import {buildBodies} from './bodies'
 import {chaseShot, type Shot} from './chase'
+import {buildComet} from './comet'
 import {buildEarthSystem} from './earth'
 import {AMBIENT_DURATION, createStreaks, nextAmbientDelay, PICK_DURATION, type Vec3} from './streaks'
 
@@ -32,6 +34,7 @@ const PROJECTS_STOP = projectsStopIndex(PROFILE_CONTENT.en)
 // A pick sends a shooting star straight past the orbiter.
 const PASS = new THREE.Vector3(-2.4, 1.6, -1)
 const ORBITER_STANDOFF = 0.6
+const SHOWER = {count: 6, reach: 8}
 // Ambient shooting stars cross the view, in camera space.
 const AMBIENT_FROM = {x: [-18, 18], y: [6, 14], z: -45} as const
 const AMBIENT_TRAVEL = new THREE.Vector3(-16, -9, 0)
@@ -62,8 +65,25 @@ export const createGalaxyScene: SceneFactory = ({isDark, aspect, reduceMotion = 
   const bodies = buildBodies(colors, random)
   const earthSystem = buildEarthSystem(PROJECTS, colors.label, loadAssets && typeof window !== 'undefined')
   bodies.earth.add(earthSystem.group)
-  const streaks = createStreaks(colors.streak, colors.bg)
-  scene.add(bodies.group, starfield(colors.star, colors.starOpacity, random), streaks.group)
+  const streaks = createStreaks(colors.streak, colors.bg, 10)
+  const comet = buildComet(colors.streak)
+  scene.add(bodies.group, starfield(colors.star, colors.starOpacity, random), streaks.group, comet.group)
+
+  // Clickable: a body goes to its stop, an orbiter picks its project (orbiters
+  // are children of Earth; the nearest tagged ancestor wins), the comet bursts.
+  const pickables = [
+    ...bodies.anchors.map((o, i) => pickable(o, {type: 'stop', stop: i})),
+    ...earthSystem.orbiters.map((o, k) => pickable(o, {type: 'project', project: k})),
+    pickable(comet.group, {type: 'fun', id: 'comet'})
+  ]
+  const shower = (elapsed: number) => {
+    const from = comet.group.position
+    for (let k = 0; k < SHOWER.count; k++) {
+      const a = (k / SHOWER.count) * Math.PI * 2
+      const to = from.clone().add(new THREE.Vector3(Math.cos(a) * SHOWER.reach, Math.sin(a) * SHOWER.reach * 0.6, -SHOWER.reach * 0.5))
+      streaks.launch(from.toArray() as Vec3, to.toArray() as Vec3, elapsed + k * 0.05, AMBIENT_DURATION)
+    }
+  }
 
   const eye = new THREE.Vector3()
   const look = new THREE.Vector3()
@@ -113,6 +133,10 @@ export const createGalaxyScene: SceneFactory = ({isDark, aspect, reduceMotion = 
   return {
     scene,
     camera,
+    pickables,
+    play(id, elapsed) {
+      if (!reduceMotion && id === 'comet') shower(elapsed)
+    },
     update(dt, elapsed, _progress, pointer, stop, focus) {
       const picked = stop === PROJECTS_STOP ? focus : null
       const still = reduceMotion ? 0 : dt
@@ -144,6 +168,7 @@ export const createGalaxyScene: SceneFactory = ({isDark, aspect, reduceMotion = 
         ambient(elapsed)
         nextAmbient = elapsed + nextAmbientDelay(random)
       }
+      comet.update(reduceMotion ? 0 : elapsed)
       streaks.update(elapsed)
       ready = true
     }

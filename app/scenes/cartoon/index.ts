@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import {journeyStations} from '~/data/journeyStations'
 import {PROFILE_CONTENT} from '~/data/profile'
 import {panelAim} from '../framing'
+import {pickable} from '../picking'
 import type {SceneFactory} from '../types'
 import {buildClouds} from './clouds'
 import {createKit} from './kit'
@@ -55,6 +56,17 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
   const particles = buildParticles(kit, detail)
   scene.add(world.group, track.group, stations.group, train.group, clouds.mesh, particles.object)
 
+  // Clickable: a station (building or platform) goes to its stop, a yard
+  // billboard picks its project, the train whistles, the windmill spins.
+  // Billboards sit inside the yard station; the nearest tagged ancestor wins.
+  const byName = (name: string) => scene.getObjectByName(name)
+  const pickables = [
+    ...STATIONS.flatMap((_, i) => [byName(`station-${i}`), byName(`platform-${i}`)].map((o) => pickable(o!, {type: 'stop', stop: i}))),
+    ...PROFILE_CONTENT.en.projects.map((_, k) => pickable(byName(`billboard-${k}`)!, {type: 'project', project: k})),
+    pickable(train.group, {type: 'fun', id: 'whistle'}),
+    pickable(world.windmill, {type: 'fun', id: 'spin'})
+  ]
+
   const config = {length: track.length, ...DEFAULT_MOTION}
   let motion: TrainMotion = {u: 0, velocity: 0}
   let cameraReady = false
@@ -98,6 +110,12 @@ export const createCartoonScene: SceneFactory = ({isDark, aspect, reduceMotion =
   return {
     scene,
     camera,
+    pickables,
+    play(id) {
+      if (reduceMotion) return
+      if (id === 'whistle') train.toot()
+      if (id === 'spin') world.spin()
+    },
     update(dt, elapsed, _progress, pointer, stop, focus) {
       const target = stop === null ? null : anchorAt(stop).u
       // Built while a stop is centred (vibe or theme switch on /about): start

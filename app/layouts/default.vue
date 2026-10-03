@@ -21,6 +21,9 @@
 // Matched by route base name, not path: /en/about and /about are the same page.
 const SCENE_ROUTE_NAMES = new Set(['index', 'about'])
 
+// Clicks on 3D scene objects become navigation (see useSceneNavigation).
+useSceneNavigation()
+
 const route = useRoute()
 const getRouteBaseName = useRouteBaseName()
 const hasScene = computed(() => SCENE_ROUTE_NAMES.has(String(getRouteBaseName(route) ?? '')))
