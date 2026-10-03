@@ -1,5 +1,7 @@
 <template>
-  <header class="sm:px-4 py-4 lg:px-8 lg:py-6">
+  <!-- Pinned while scrolling. No backdrop-blur: a backdrop-filter would make the header the
+       containing block of the fixed mobile drawer below and clip it to the header box. -->
+  <header class="sticky top-0 z-20 bg-gray-50/90 dark:bg-gray-900/90 sm:px-4 py-4 lg:px-8 lg:py-6">
     <div class="hidden md:flex items-center justify-between max-w-(--breakpoint-lg) mx-auto">
       <div class="w-1/12 flex justify-start">
         <NuxtLinkLocale to="/" class="inline-block mb-1 hover:scale-125">

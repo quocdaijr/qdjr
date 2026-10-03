@@ -83,6 +83,12 @@
     }
   }
 
+  /* Anchor jumps land below the sticky header (≈100px tall on desktop).
+     :where() keeps specificity at zero, so a component's own margin wins. */
+  :where([id]) {
+    scroll-margin-top: 7rem;
+  }
+
   :focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: 2px;
