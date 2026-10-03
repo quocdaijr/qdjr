@@ -66,6 +66,7 @@ export function createStreaks(head: number, background: number, pool = 6): Strea
       // Reuse a free slot, or the oldest streak if every slot is busy.
       const slot = slots.find((s) => !s.streak) ?? slots.reduce((a, b) => ((a.streak?.start ?? 0) <= (b.streak?.start ?? 0) ? a : b))
       slot.streak = {from, to, start: now, duration}
+      slot.line.userData.from = from
       slot.line.userData.to = to
       slot.line.visible = true
       group.userData.launched += 1
