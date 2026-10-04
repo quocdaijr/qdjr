@@ -1,14 +1,18 @@
 import {isVibe, useThemeStore, VIBE_STORAGE_KEY} from '~/stores/theme'
 import {isNightInVietnam} from '~/utils/vnTime'
 
-// Theme bootstrap. The server renders the vibe from the cookie (it cannot see
-// localStorage) and dark mode from the Vietnam clock; the client hydrates with
-// the same values, then restores the saved vibe and keeps the clock ticking.
+// Theme bootstrap. A server render takes the vibe from the cookie (it cannot
+// see localStorage) and dark mode from the Vietnam clock; a prerendered page
+// (static hosting) is built once for everyone, so it keeps the defaults. The
+// client hydrates with whatever the server sent (Pinia's payload), then
+// restores the saved vibe and keeps the clock ticking.
 export default defineNuxtPlugin((nuxtApp) => {
   const themeStore = useThemeStore()
-  const cookie = useCookie(VIBE_STORAGE_KEY)
-  if (isVibe(cookie.value)) themeStore.vibe = cookie.value
-  themeStore.isDarkMode = isNightInVietnam(new Date())
+  if (import.meta.server && !import.meta.prerender) {
+    const cookie = useCookie(VIBE_STORAGE_KEY)
+    if (isVibe(cookie.value)) themeStore.vibe = cookie.value
+    themeStore.isDarkMode = isNightInVietnam(new Date())
+  }
   // nuxt.config ships data-vibe="cartoon"; this entry overrides it on the
   // server and keeps unhead from re-applying the default after a reload.
   useHead({htmlAttrs: {'data-vibe': () => themeStore.vibe, class: () => (themeStore.isDarkMode ? 'dark' : undefined)}})
