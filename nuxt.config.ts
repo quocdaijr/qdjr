@@ -169,22 +169,29 @@ export default defineNuxtConfig({
       lang: 'en'
     },
     workbox: {
-      navigateFallback: '/',
-      // Disable workbox precaching entirely — in SPA mode @vite-pwa/nuxt runs
-      // workbox globbing before Nitro copies client assets into
-      // `.output/public/`, so every glob pattern (defaults or custom) emits
-      // "doesn't match any files" warnings. Runtime navigateFallback still
-      // handles offline shell; no precache is fine for a low-traffic portfolio.
+      // Server-rendered pages: no app shell to fall back to, so no
+      // navigateFallback (serving '/' for every URL would hydrate the wrong page).
+      navigateFallback: null,
+      // No precache: a low-traffic portfolio, and the old SPA-mode glob warnings.
       globPatterns: []
     }
   },
 
-  // SSR configuration - disable for now due to directive SSR issues
-  ssr: false,
+  // Server-rendered on request (the trip planner needs the Nitro server anyway),
+  // so the first paint is real HTML instead of waiting for the app bundle.
+  ssr: true,
 
-  // SPA mode doesn't emit `_payload.json` or `_nuxt/builds/*.json`, so
-  // turning these off avoids two "workbox glob pattern doesn't match any files"
-  // build warnings from @vite-pwa/nuxt without affecting runtime behaviour.
+  hooks: {
+    // No <link rel="prefetch"> for lazy chunks in the server-rendered HTML: on
+    // a slow phone connection three.js and the scene (650 KB) fought the page's
+    // own CSS and fonts for bandwidth. They load when asked for (VibeScene
+    // mounts after load), and NuxtLink still prefetches pages on sight.
+    'build:manifest': (manifest) => {
+      for (const chunk of Object.values(manifest)) chunk.prefetch = false
+    }
+  },
+
+  // Pages render live, nothing is prerendered: no payload files or app manifest needed.
   experimental: {
     payloadExtraction: false,
     appManifest: false
@@ -197,8 +204,6 @@ export default defineNuxtConfig({
       trips: {driver: 'fs', base: './.data/trips'}
     },
     prerender: {
-      // Disable prerendering for now due to SSR directive issues
-      // This can be re-enabled after converting components to Composition API
       routes: []
     }
   },

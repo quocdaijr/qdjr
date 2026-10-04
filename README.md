@@ -16,10 +16,9 @@ and **@nuxt/content**.
 | Tailwind CSS | **4.x** | CSS-first config via `@tailwindcss/vite` |
 | @nuxt/content | 3.x | SQLite-backed, collections in `content.config.ts` |
 
-> **Rendering mode:** the app runs as an SPA (`ssr: false` in `nuxt.config.ts`).
-> That is a deliberate, long-standing setting, not an oversight — but it does
-> mean no server-rendered HTML, which matters for SEO and for anything that
-> assumes prerendering.
+> **Rendering mode:** server-rendered on request (`ssr: true`). The three.js
+> scene is client-only and mounts after the page has loaded; the vibe is
+> mirrored to a `vibe` cookie so the server renders the visitor's vibe.
 
 ## 📋 Requirements
 
@@ -94,8 +93,7 @@ npm run preview   # Nuxt's own preview server
 npm run generate  # static output -> .output/public/
 ```
 
-Note that `npm run generate` emits an SPA shell rather than prerendered HTML,
-because `ssr: false` is set. Nuxt prints a warning to that effect.
+`npm run generate` prerenders the pages it can crawl into static HTML.
 
 ## ✅ Quality gates
 
@@ -225,7 +223,7 @@ proxy. Planned trips are cached on disk in `.data/trips` (30 days); keep that
 directory across deploys.
 
 Static hosting is also possible via `npm run generate` (deploy `.output/public`),
-with the SPA-shell caveat noted above — but without a server there is no trip
+but without a server every visitor gets the default vibe on first paint, and there is no trip
 planner (`/trips/plan` needs `/api/trips/*`); the curated trips still work.
 
 ## 📚 Documentation

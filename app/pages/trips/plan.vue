@@ -79,7 +79,10 @@ async function load() {
 
 const setVehicle = (v: Vehicle) => router.replace({query: {...route.query, v}})
 
-watch(() => route.fullPath, load, {immediate: true})
+// In the browser only: a server render (or a crawler following a shared link)
+// must not spend a plan on the OSM services; it shows the waiting panel.
+onMounted(load)
+watch(() => route.fullPath, load)
 onBeforeUnmount(() => clearInterval(clock))
 
 useSeoMeta({title: () => `${title.value} | ${t('trips.planner.metaTitle')}`, robots: 'noindex'})

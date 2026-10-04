@@ -105,3 +105,10 @@ test('a link without stops says so', async ({page}) => {
   await page.goto('/trips/plan')
   await expect(page.getByText('Link này không có lịch trình nào.')).toBeVisible()
 })
+
+test('the server render of a shared plan link only shows the waiting panel; the browser asks for the road', async ({request}) => {
+  // A crawler following a shared link must not spend a plan on the OSM services.
+  const html = await (await request.get('/trips/plan?stop=10.77253,106.69804,A&stop=10.9289,108.1021,B&v=car')).text()
+  expect(html).toContain('plan-loading')
+  expect(html).not.toContain('trip-panel')
+})

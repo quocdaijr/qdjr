@@ -11,6 +11,14 @@ export const DEFAULT_VIBE: Vibe = 'cartoon'
 export const VIBE_STORAGE_KEY = 'vibe'
 
 const CLOCK_INTERVAL_MS = 60_000
+const COOKIE_MAX_AGE_S = 60 * 60 * 24 * 365
+
+// localStorage is the client's record; a cookie mirrors it so the server
+// renders the same vibe (plugins/theme.ts).
+function persistVibe(vibe: Vibe) {
+  localStorage.setItem(VIBE_STORAGE_KEY, vibe)
+  document.cookie = `${VIBE_STORAGE_KEY}=${vibe}; path=/; max-age=${COOKIE_MAX_AGE_S}; samesite=lax`
+}
 
 export function isVibe(value: unknown): value is Vibe {
   return typeof value === 'string' && (VIBES as readonly string[]).includes(value)
@@ -39,7 +47,8 @@ export const useThemeStore = defineStore('theme', {
     initializeTheme(now: Date = new Date()) {
       if (import.meta.client && !this.isInitialized) {
         const saved = localStorage.getItem(VIBE_STORAGE_KEY)
-        this.vibe = isVibe(saved) ? saved : DEFAULT_VIBE
+        this.vibe = isVibe(saved) ? saved : this.vibe
+        persistVibe(this.vibe)
         this.isDarkMode = isNightInVietnam(now)
         this.applyTheme()
         this.isInitialized = true
@@ -49,7 +58,7 @@ export const useThemeStore = defineStore('theme', {
     setVibe(vibe: Vibe) {
       if (!isVibe(vibe)) return
       this.vibe = vibe
-      if (import.meta.client) localStorage.setItem(VIBE_STORAGE_KEY, vibe)
+      if (import.meta.client) persistVibe(vibe)
       this.applyTheme()
     },
 

@@ -44,6 +44,16 @@ describe('theme store', () => {
     expect(store.vibe).toBe('galaxy')
     expect(html().dataset.vibe).toBe('galaxy')
     expect(store.isInitialized).toBe(true)
+    expect(document.cookie).toContain(`${VIBE_STORAGE_KEY}=galaxy`) // mirrored for the server render
+  })
+
+  test('without a saved vibe keeps the one it already has (from the cookie)', () => {
+    const store = useThemeStore()
+    store.vibe = 'terminal'
+    store.initializeTheme(VN_NOON)
+
+    expect(store.vibe).toBe('terminal')
+    expect(localStorage.getItem(VIBE_STORAGE_KEY)).toBe('terminal')
   })
 
   test('ignores an unknown saved vibe', () => {
@@ -91,6 +101,7 @@ describe('theme store', () => {
 
     expect(store.vibe).toBe('cartoon')
     expect(localStorage.getItem(VIBE_STORAGE_KEY)).toBe('cartoon')
+    expect(document.cookie).toContain(`${VIBE_STORAGE_KEY}=cartoon`)
     expect(html().dataset.vibe).toBe('cartoon')
   })
 
