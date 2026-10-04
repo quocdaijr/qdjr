@@ -79,3 +79,25 @@ export function createFrameWatch(): (dt: number) => boolean {
     return isSlow
   }
 }
+
+export type Downgrade = 'pixel-ratio' | 'detail' | 'still'
+
+/**
+ * The next step down when frames stay slow: a lower pixel ratio first, then
+ * the scene's low detail, last a still scene (no frame loop: one frame per
+ * change, like reduced motion) — where a device renders WebGL in software,
+ * every animated frame would otherwise block the page. Null: nothing left.
+ */
+export function nextDowngrade({pixelRatio, detail, animate}: {pixelRatio: number; detail: 'high' | 'low'; animate: boolean}): Downgrade | null {
+  if (pixelRatio > 1) return 'pixel-ratio'
+  if (detail === 'high') return 'detail'
+  return animate ? 'still' : null
+}
+
+const SOFTWARE_RENDERERS = /swiftshader|llvmpipe|softpipe|software|basic render driver|mesa offscreen/i
+
+/** A WebGL renderer name (WEBGL_debug_renderer_info) that means the GPU is emulated on the CPU. */
+export const isSoftwareRenderer = (name: string | null | undefined) => !!name && SOFTWARE_RENDERERS.test(name)
+
+/** How long after the load event the scene waits before it starts downloading: phones and slow devices give the page longer. */
+export const SCENE_SETTLE_MS: Record<DeviceTier, number> = {high: 1500, low: 4000, minimal: 4000}

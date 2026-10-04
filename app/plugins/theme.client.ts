@@ -4,4 +4,8 @@ export default defineNuxtPlugin(() => {
   const themeStore = useThemeStore()
   themeStore.initializeTheme()
   themeStore.startClock()
+  // nuxt.config ships data-vibe="cartoon" in the page shell; unhead re-applies
+  // it once mounted, so the live vibe must be a head entry too or a saved vibe
+  // is reset to cartoon after a reload.
+  useHead({htmlAttrs: {'data-vibe': () => themeStore.vibe}})
 })

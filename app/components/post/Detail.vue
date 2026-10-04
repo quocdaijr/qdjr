@@ -106,26 +106,26 @@ export default {
       this.content = this.post.content.replace(imgTagRegex, `<img $1 src="$2/i/720p/$6"$7/>`);
     }
   },
-  mounted() {
-    // Use the provided Prism plugin
-    if (this.$prism) {
-      this.$prism.highlightAll()
-    }
+  async mounted() {
+    // Prism and Video.js load only here, on demand: they used to be global
+    // plugins and weighed down every page's first load.
+    const {default: Prism} = await import('~/utils/legacy/prism')
+    Prism.highlightAll()
 
     const videoElements = document.querySelectorAll('.video-import')
-    if (videoElements && this.$videojs) {
-      videoElements.forEach(videoElement => {
-        videoElement.classList.add('video-js')
-        videoElement.classList.add('vjs-default-skin')
-        videoElement.classList.add('mx-auto')
-        videoElement.removeAttribute('width')
-        videoElement.removeAttribute('height')
-        this.$videojs(videoElement, {
-          preload: "auto",
-          playbackRates: [0.5, 1, 1.5, 2]
-        })
+    if (!videoElements.length) return
+    const {default: videojs} = await import('~/utils/legacy/videojs')
+    videoElements.forEach(videoElement => {
+      videoElement.classList.add('video-js')
+      videoElement.classList.add('vjs-default-skin')
+      videoElement.classList.add('mx-auto')
+      videoElement.removeAttribute('width')
+      videoElement.removeAttribute('height')
+      videojs(videoElement, {
+        preload: "auto",
+        playbackRates: [0.5, 1, 1.5, 2]
       })
-    }
+    })
   }
 }
 </script>

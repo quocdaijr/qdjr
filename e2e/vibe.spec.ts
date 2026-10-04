@@ -4,6 +4,8 @@ const HTML = 'html'
 const HAMBURGER = 'header button.w-10.h-10'
 // The radio itself is sr-only; users (and Playwright) click its visible label.
 const SEGMENTED_OPTION = (label: string) => `label.vibe-switch-option:has-text("${label}")`
+// The scene mounts once the page has settled after load (4 s on phones, whenIdle + SCENE_SETTLE_MS).
+const SCENE_WAIT = {timeout: 15_000}
 
 test.describe('vibe switcher', () => {
   test('defaults to cartoon and the header button cycles without console errors', async ({page}) => {
@@ -64,20 +66,20 @@ test.describe('vibe switcher', () => {
 
   test('scene canvas exists on every page, behind a veil where the page has no panels', async ({page}) => {
     await page.goto('/en')
-    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1, SCENE_WAIT)
 
     await page.getByRole('link', {name: 'About me →'}).click()
     await expect(page).toHaveURL(/\/about\/?$/)
-    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1, SCENE_WAIT)
 
     await expect(page.locator('.scene-veil')).toHaveCount(0)
 
     await page.goto('/en/blog')
-    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1, SCENE_WAIT)
     await expect(page.locator('.scene-veil')).toHaveCount(1)
 
     await page.goto('/en/trips')
-    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1, SCENE_WAIT)
   })
 
   test('rapid vibe switching with a live renderer, then leaving the page, logs no errors', async ({page}) => {
@@ -86,7 +88,7 @@ test.describe('vibe switcher', () => {
     page.on('pageerror', (err) => errors.push(err.message))
 
     await page.goto('/en')
-    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1, SCENE_WAIT)
 
     // Dispose-then-build runs synchronously on every click; no waits between.
     const hero = page.locator('.hero')
@@ -94,13 +96,13 @@ test.describe('vibe switcher', () => {
       await hero.locator(SEGMENTED_OPTION(label)).click()
     }
     await expect(page.locator(HTML)).toHaveAttribute('data-vibe', 'terminal')
-    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1, SCENE_WAIT)
 
     // Leave for a page with its own scene (a trip): the vibe scene is disposed and replaced without touching a disposed scene.
     await page.goto('/en/trips')
     await page.getByRole('link', {name: 'Ride along →'}).first().click()
     await expect(page.locator('.trip-panel')).toBeVisible()
-    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1)
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1, SCENE_WAIT)
 
     expect(errors).toEqual([])
   })

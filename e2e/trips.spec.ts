@@ -72,7 +72,7 @@ test("switching to the driver's seat keeps the scene and is a radio", async ({pa
   await page.getByRole('radio', {name: "Driver's seat"}).check()
   await expect(page.getByRole('radio', {name: "Driver's seat"})).toBeChecked()
   // In the driver's seat the vehicle model is hidden, so the hook no longer finds it on screen.
-  await expect.poll(() => page.evaluate(() => (window as unknown as {__qdjrScene: {cameraPosition(): number[] | null}}).__qdjrScene.cameraPosition()?.[1] ?? 99)).toBeLessThan(12)
+  await expect.poll(() => page.evaluate(() => (window as unknown as {__qdjrScene?: {cameraPosition(): number[] | null}}).__qdjrScene?.cameraPosition()?.[1] ?? 99)).toBeLessThan(12)
 })
 
 test('leaving a trip page for the home page brings back the vibe scene', async ({page}, testInfo) => {

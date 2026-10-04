@@ -10,14 +10,13 @@ export default defineNuxtPlugin(() => {
     return
   }
 
-  // Load Google Analytics script
-  useHead({
-    script: [
-      {
-        src: `https://www.googletagmanager.com/gtag/js?id=${gaId}`,
-        async: true
-      }
-    ]
+  // The gtag script (≈160 KB) loads once the page is up and idle, not with it:
+  // calls made before then queue in dataLayer and are sent when it arrives.
+  whenIdle(() => {
+    const script = document.createElement('script')
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`
+    script.async = true
+    document.head.appendChild(script)
   })
 
   // Initialize gtag. The `process.client` guard that used to wrap this block was

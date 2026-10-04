@@ -14,13 +14,11 @@
 import * as THREE from 'three'
 import {createCartoonScene} from '~/scenes/cartoon'
 import {createGalaxyScene} from '~/scenes/galaxy'
-import {createFrameWatch, readDeviceTier, TIER_SETTINGS, type DeviceTier} from '~/scenes/deviceTier'
+import {createFrameWatch, isSoftwareRenderer, nextDowngrade, readDeviceTier, TIER_SETTINGS, type DeviceTier} from '~/scenes/deviceTier'
 import {disposeScene} from '~/scenes/dispose'
 import {resolveAction, shouldHandleClick} from '~/scenes/picking'
 import {applyView} from '~/scenes/viewControl'
 import {createTerminalScene} from '~/scenes/terminal'
-import {createTripScene} from '~/scenes/trip'
-import {findTrip} from '~/data/trips'
 import {approach, type SceneAction, type SceneFactory, type ScenePointer, type VibeScene} from '~/scenes/types'
 import type {Vibe} from '~/stores/theme'
 
@@ -67,19 +65,27 @@ const pointer: ScenePointer = {x: 0, y: 0} // held still: no mouse-follow sway
 const PIXEL_RATIO_CAP: Record<DeviceTier, number> = {high: MAX_PIXEL_RATIO_FINE, low: MAX_PIXEL_RATIO_COARSE, minimal: 1}
 let watchFrames: ((dt: number) => boolean) | null = null
 
-/** The device can't hold 20 fps: drop the pixel ratio first, then the scene detail. */
+/** The device can't hold 20 fps: drop the pixel ratio, then the scene detail, last stop animating (deviceTier.ts). */
 function downgrade() {
   if (!renderer) return
-  if (renderer.getPixelRatio() > 1) {
-    renderer.setPixelRatio(1)
-    return
-  }
   // ponytail: one way down, never back up; add re-upgrading if slow spells turn out to be transient.
-  watchFrames = null
-  if (detail === 'high') {
+  const step = nextDowngrade({pixelRatio: renderer.getPixelRatio(), detail, animate: !reduceMotion})
+  if (step === 'pixel-ratio') renderer.setPixelRatio(1)
+  if (step === 'detail') {
     detail = 'low'
     buildScene()
   }
+  if (step === 'still') goStill()
+  if (step === 'still' || step === null) watchFrames = null
+}
+
+/** No more frame loop: the scene renders one frame per change, as under reduced motion. */
+function goStill() {
+  cancelAnimationFrame(rafId)
+  reduceMotion = true
+  window.removeEventListener('pointermove', onPointerMove)
+  window.addEventListener('pointermove', showHover, {passive: true})
+  buildScene()
 }
 
 function aspectOf(el: HTMLCanvasElement): number {
@@ -93,17 +99,32 @@ function renderFrame(dt: number) {
   renderer.render(active.scene, active.camera)
 }
 
+// The trip scene and the trips data load only on a trip page: the other pages never download them.
+type TripModules = [typeof import('~/scenes/trip'), typeof import('~/data/trips')]
+let tripModules: TripModules | null = null
+let builds = 0 // a slower trip-module load must not overwrite a newer build
+
 function buildScene() {
   if (!renderer || !canvas.value) return
+  const build = ++builds
+  const wanted = activeTrip.value
+  if (wanted && !tripModules) {
+    Promise.all([import('~/scenes/trip'), import('~/data/trips')])
+      .then((modules) => {
+        tripModules = modules
+        if (build === builds) buildScene()
+      })
+      .catch((error) => console.warn('[VibeScene] the trip scene failed to load.', error))
+    return
+  }
   if (active) {
     disposeScene(active.scene)
     renderer.renderLists.dispose()
   }
   // A trip page swaps the vibe scene for its road trip (always the cartoon board).
-  const wanted = activeTrip.value
-  const trip = wanted && findTrip(wanted.slug)
+  const trip = wanted && tripModules![1].findTrip(wanted.slug)
   const factory = trip
-    ? createTripScene({trip, vehicle: wanted.vehicle, locale: wanted.locale, control: () => tripControl.value, onProgress: (p) => (tripProgress.value = p)})
+    ? tripModules![0].createTripScene({trip, vehicle: wanted.vehicle, locale: wanted.locale, control: () => tripControl.value, onProgress: (p) => (tripProgress.value = p)})
     : FACTORIES[store.vibe]
   active = factory({isDark: store.isDarkMode, aspect: aspectOf(canvas.value), reduceMotion, detail, stopLabels: labels.value})
   elapsed = 0
@@ -122,6 +143,7 @@ function tick(now: number) {
     showHover(hoverQueued)
     hoverQueued = null
   }
+  if (reduceMotion) return // gone still mid-loop (downgrade): no next frame
   rafId = requestAnimationFrame(tick)
 }
 
@@ -175,6 +197,11 @@ function onPointerMove(event: PointerEvent) {
   hoverQueued = event // raycast at most once per frame, from the loop
 }
 
+function rendererName(gl: WebGLRenderingContext | WebGL2RenderingContext): string | null {
+  const info = gl.getExtension('WEBGL_debug_renderer_info')
+  return gl.getParameter(info ? info.UNMASKED_RENDERER_WEBGL : gl.RENDERER) as string | null
+}
+
 onMounted(() => {
   if (!canvas.value) return
   const tier = readDeviceTier()
@@ -196,7 +223,12 @@ onMounted(() => {
     console.warn('[VibeScene] WebGL unavailable; rendering without a scene.', error)
     return
   }
-  renderer.setPixelRatio(pixelRatio)
+  // CPU-emulated WebGL (no GPU, or a blocked one): start where the downgrade
+  // ladder would end up anyway, low detail at 1x; the frame watch goes still if even that is slow.
+  if (isSoftwareRenderer(rendererName(renderer.getContext()))) {
+    detail = 'low'
+    renderer.setPixelRatio(1)
+  } else renderer.setPixelRatio(pixelRatio)
   renderer.toneMapping = THREE.ACESFilmicToneMapping
   watchFrames = createFrameWatch()
 

@@ -64,6 +64,8 @@ for (const [vibe, names] of Object.entries(NAMES)) {
 test('clicking a panel never triggers the scene behind it', async ({page}, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'one run is enough')
   await page.goto('/about')
+  // The scene mounts after load; let it settle first so the page stops shifting under the click.
+  await expect(page.locator('canvas.vibe-scene')).toHaveCount(1, {timeout: 15_000})
   await page.locator('#stop-6').scrollIntoViewIfNeeded()
   await expect(page.locator('.journey')).toHaveAttribute('data-active-stop', '6')
   await page.locator('#stop-6 .stop-title').click()

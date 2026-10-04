@@ -1,5 +1,5 @@
 import {describe, expect, test} from 'vitest'
-import {createFrameWatch, deviceTier, TIER_SETTINGS} from '~/scenes/deviceTier'
+import {createFrameWatch, deviceTier, isSoftwareRenderer, nextDowngrade, TIER_SETTINGS} from '~/scenes/deviceTier'
 
 describe('deviceTier', () => {
   test('a desktop with plenty of cores and memory gets the full scene', () => {
@@ -47,5 +47,24 @@ describe('createFrameWatch', () => {
 
   test('says nothing before a full window has passed', () => {
     expect(run(1 / 10, 10)).not.toContain(true) // 1 s
+  })
+})
+
+describe('nextDowngrade', () => {
+  test('steps down pixel ratio, then detail, then stops animating, then has nothing left', () => {
+    expect(nextDowngrade({pixelRatio: 2, detail: 'high', animate: true})).toBe('pixel-ratio')
+    expect(nextDowngrade({pixelRatio: 1, detail: 'high', animate: true})).toBe('detail')
+    expect(nextDowngrade({pixelRatio: 1, detail: 'low', animate: true})).toBe('still')
+    expect(nextDowngrade({pixelRatio: 1, detail: 'low', animate: false})).toBeNull()
+  })
+})
+
+describe('isSoftwareRenderer', () => {
+  test('recognises CPU-emulated WebGL, not real GPUs', () => {
+    expect(isSoftwareRenderer('ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)')).toBe(true)
+    expect(isSoftwareRenderer('llvmpipe (LLVM 15.0.7, 256 bits)')).toBe(true)
+    expect(isSoftwareRenderer('ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)')).toBe(false)
+    expect(isSoftwareRenderer('Adreno (TM) 650')).toBe(false)
+    expect(isSoftwareRenderer(null)).toBe(false)
   })
 })
