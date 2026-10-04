@@ -1,138 +1,160 @@
-import {beforeEach, describe, expect, test, vi} from 'vitest'
-import {useThemeStore} from '~/stores/theme'
+import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
+import {DEFAULT_VIBE, VIBES, VIBE_STORAGE_KEY, isVibe, useThemeStore} from '~/stores/theme'
 
-/**
- * Install a matchMedia stub, since happy-dom does not implement it.
- * Returns a handle for firing a system theme change.
- */
-function stubMatchMedia(prefersDark: boolean) {
-  const listeners: Array<(e: {matches: boolean}) => void> = []
+// 12:00 and 22:00 Vietnam time, expressed in UTC (UTC+7).
+const VN_NOON = new Date(Date.UTC(2026, 9, 1, 5, 0))
+const VN_NIGHT = new Date(Date.UTC(2026, 9, 1, 15, 0))
 
-  window.matchMedia = vi.fn().mockReturnValue({
-    matches: prefersDark,
-    addEventListener: (_: string, cb: (e: {matches: boolean}) => void) => listeners.push(cb),
-    removeEventListener: () => {}
-  }) as unknown as typeof window.matchMedia
-
-  return {
-    emit(matches: boolean) {
-      listeners.forEach((cb) => cb({matches}))
-    }
-  }
-}
+const html = () => document.documentElement
 
 beforeEach(() => {
   localStorage.clear()
-  document.documentElement.classList.remove('dark')
-  stubMatchMedia(false)
+  html().classList.remove('dark')
+  delete html().dataset.vibe
+})
+
+afterEach(() => {
+  vi.useRealTimers()
+})
+
+describe('vibe helpers', () => {
+  test('isVibe accepts only the three vibes', () => {
+    VIBES.forEach((v) => expect(isVibe(v)).toBe(true))
+    expect(isVibe('neon')).toBe(false)
+    expect(isVibe(null)).toBe(false)
+    expect(isVibe(undefined)).toBe(false)
+  })
 })
 
 describe('theme store', () => {
-  test('starts light and uninitialised', () => {
+  test('starts on the default vibe, light, uninitialised', () => {
     const store = useThemeStore()
+    expect(store.vibe).toBe(DEFAULT_VIBE)
     expect(store.isDarkMode).toBe(false)
     expect(store.isInitialized).toBe(false)
     expect(store.currentTheme).toBe('light')
   })
 
-  test('restores a saved dark preference from localStorage', () => {
-    localStorage.setItem('isDarkMode', 'true')
+  test('initializeTheme restores a saved vibe and applies it to <html>', () => {
+    localStorage.setItem(VIBE_STORAGE_KEY, 'galaxy')
 
     const store = useThemeStore()
-    store.initializeTheme()
+    store.initializeTheme(VN_NOON)
 
-    expect(store.isDarkMode).toBe(true)
+    expect(store.vibe).toBe('galaxy')
+    expect(html().dataset.vibe).toBe('galaxy')
     expect(store.isInitialized).toBe(true)
-    // The Tailwind v4 `dark` variant keys off this class on <html>.
-    expect(document.documentElement.classList.contains('dark')).toBe(true)
+    expect(document.cookie).toContain(`${VIBE_STORAGE_KEY}=galaxy`) // mirrored for the server render
   })
 
-  test('restores a saved light preference even when the system prefers dark', () => {
-    stubMatchMedia(true)
-    localStorage.setItem('isDarkMode', 'false')
+  test('without a saved vibe keeps the one it already has (from the cookie)', () => {
+    const store = useThemeStore()
+    store.vibe = 'terminal'
+    store.initializeTheme(VN_NOON)
+
+    expect(store.vibe).toBe('terminal')
+    expect(localStorage.getItem(VIBE_STORAGE_KEY)).toBe('terminal')
+  })
+
+  test('ignores an unknown saved vibe', () => {
+    localStorage.setItem(VIBE_STORAGE_KEY, 'neon')
 
     const store = useThemeStore()
-    store.initializeTheme()
+    store.initializeTheme(VN_NOON)
+
+    expect(store.vibe).toBe(DEFAULT_VIBE)
+    expect(html().dataset.vibe).toBe(DEFAULT_VIBE)
+  })
+
+  test('derives light mode from the Vietnam clock at noon', () => {
+    const store = useThemeStore()
+    store.initializeTheme(VN_NOON)
 
     expect(store.isDarkMode).toBe(false)
-    expect(document.documentElement.classList.contains('dark')).toBe(false)
+    expect(html().classList.contains('dark')).toBe(false)
   })
 
-  test('falls back to the system preference when nothing is saved', () => {
-    stubMatchMedia(true)
-
+  test('derives dark mode from the Vietnam clock at night', () => {
     const store = useThemeStore()
-    store.initializeTheme()
+    store.initializeTheme(VN_NIGHT)
 
     expect(store.isDarkMode).toBe(true)
+    expect(html().classList.contains('dark')).toBe(true)
+    expect(store.currentTheme).toBe('dark')
+    expect(store.logoSrc).toBe('/logo-dark.svg')
   })
 
   test('does not re-initialise once initialised', () => {
     const store = useThemeStore()
+    store.initializeTheme(VN_NOON)
+
+    localStorage.setItem(VIBE_STORAGE_KEY, 'cartoon')
+    store.initializeTheme(VN_NOON)
+
+    expect(store.vibe).toBe(DEFAULT_VIBE)
+  })
+
+  test('setVibe persists and applies', () => {
+    const store = useThemeStore()
+
+    store.setVibe('cartoon')
+
+    expect(store.vibe).toBe('cartoon')
+    expect(localStorage.getItem(VIBE_STORAGE_KEY)).toBe('cartoon')
+    expect(document.cookie).toContain(`${VIBE_STORAGE_KEY}=cartoon`)
+    expect(html().dataset.vibe).toBe('cartoon')
+  })
+
+  test('setVibe ignores values that are not a vibe', () => {
+    const store = useThemeStore()
+
+    store.setVibe('neon' as never)
+
+    expect(store.vibe).toBe(DEFAULT_VIBE)
+    expect(localStorage.getItem(VIBE_STORAGE_KEY)).toBeNull()
+  })
+
+  test('cartoon is the default vibe and the coding (terminal) vibe comes last', () => {
+    expect(DEFAULT_VIBE).toBe('cartoon')
+    expect(VIBES).toEqual(['cartoon', 'galaxy', 'terminal'])
+  })
+
+  test('nextVibe cycles through all vibes and wraps', () => {
+    const store = useThemeStore()
+
+    store.nextVibe()
+    expect(store.vibe).toBe('galaxy')
+    store.nextVibe()
+    expect(store.vibe).toBe('terminal')
+    store.nextVibe()
+    expect(store.vibe).toBe('cartoon')
+  })
+
+  test('syncClock re-evaluates dark mode for a given instant', () => {
+    const store = useThemeStore()
+    store.initializeTheme(VN_NOON)
+
+    store.syncClock(VN_NIGHT)
+
+    expect(store.isDarkMode).toBe(true)
+    expect(html().classList.contains('dark')).toBe(true)
+  })
+
+  test('startClock ticks on the interval and the returned function stops it', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(VN_NOON)
+    const store = useThemeStore()
     store.initializeTheme()
-
-    // A later external write must not be picked up by a second call.
-    localStorage.setItem('isDarkMode', 'true')
-    store.initializeTheme()
-
     expect(store.isDarkMode).toBe(false)
-  })
 
-  test('toggleTheme flips, persists and applies', () => {
-    const store = useThemeStore()
-
-    store.toggleTheme()
+    const stop = store.startClock(60_000)
+    vi.setSystemTime(VN_NIGHT)
+    vi.advanceTimersByTime(60_000)
     expect(store.isDarkMode).toBe(true)
-    expect(localStorage.getItem('isDarkMode')).toBe('true')
-    expect(document.documentElement.classList.contains('dark')).toBe(true)
 
-    store.toggleTheme()
-    expect(store.isDarkMode).toBe(false)
-    expect(localStorage.getItem('isDarkMode')).toBe('false')
-    expect(document.documentElement.classList.contains('dark')).toBe(false)
-  })
-
-  test('setTheme sets an explicit value', () => {
-    const store = useThemeStore()
-
-    store.setTheme(true)
-    expect(store.isDarkMode).toBe(true)
-    expect(localStorage.getItem('isDarkMode')).toBe('true')
-
-    store.setTheme(false)
-    expect(store.isDarkMode).toBe(false)
-  })
-
-  test('exposes the matching logo for the current theme', () => {
-    const store = useThemeStore()
-    expect(store.logoSrc).toBe('/logo.svg')
-
-    store.setTheme(true)
-    expect(store.logoSrc).toBe('/logo-dark.svg')
-    expect(store.currentTheme).toBe('dark')
-  })
-
-  test('follows later system changes while no preference is saved', () => {
-    const media = stubMatchMedia(false)
-
-    const store = useThemeStore()
-    store.watchSystemTheme()
-
-    media.emit(true)
-
-    expect(store.isDarkMode).toBe(true)
-    expect(document.documentElement.classList.contains('dark')).toBe(true)
-  })
-
-  test('ignores system changes once the user has chosen', () => {
-    const media = stubMatchMedia(false)
-
-    const store = useThemeStore()
-    store.watchSystemTheme()
-    store.setTheme(false) // writes to localStorage
-
-    media.emit(true)
-
-    expect(store.isDarkMode).toBe(false)
+    stop()
+    vi.setSystemTime(VN_NOON)
+    vi.advanceTimersByTime(60_000)
+    expect(store.isDarkMode).toBe(true) // no longer ticking
   })
 })

@@ -1,0 +1,256 @@
+import * as THREE from 'three'
+import {faceted, type Kit} from './kit'
+import {buildFauna} from './fauna'
+import {buildLandscape} from './landscape'
+import {COTTAGES, HILLS, inLake, RIVER_HALF_WIDTH, riverDistance} from './layout'
+import type {StationAnchor} from './stations'
+import type {Track} from './track'
+import {buildVillage} from './village'
+import {buildWater} from './water'
+
+const ISLAND = {width: 40, depth: 32, radius: 7, thickness: 2.4}
+const EDGE_MARGIN = 1.2
+// Earth layers on the island's cut face, top to bottom (shares of the thickness).
+const STRATA = [{share: 0.22, color: 'ground'}, {share: 0.43, color: 'cliff'}, {share: 0.35, color: 'trunk'}] as const
+const WATER_CLEAR = 0.9 // props keep this far from the lake shore and the river bank
+const WINDMILL = {x: -6.5, z: -1.5}
+const BALLOON = {x: 13, y: 7, z: -8}
+const COUNTS = {high: {trees: 150, flowers: 160, rocks: 26, grass: 900, sheep: 5}, low: {trees: 60, flowers: 60, rocks: 12, grass: 350, sheep: 2}}
+const CLEAR = {track: 1.8, building: 2.6, platform: 1.6}
+const CROWN = {radius: 0.62, height: 1.4}
+const BLADE = {radius: 0.05, height: 0.45}
+const BLADE_SPEED = 0.9
+const SPIN_BOOST = 8
+const SPIN_DECAY = 4
+
+export interface World {
+  group: THREE.Group
+  /** Far peaks and birds: in the scene, but outside the island the cameras frame. */
+  sky: THREE.Group
+  /** The windmill, clickable for a spin. */
+  windmill: THREE.Group
+  /** Easter egg: the blades whirl, then ease back to their breeze. */
+  spin(): void
+  update(dt: number, elapsed: number): void
+}
+
+type IsFree = (x: number, z: number, margin: number) => boolean
+
+function roundedRect(w: number, h: number, r: number): THREE.Shape {
+  const s = new THREE.Shape()
+  const x = -w / 2
+  const y = -h / 2
+  s.moveTo(x + r, y)
+  s.lineTo(x + w - r, y)
+  s.quadraticCurveTo(x + w, y, x + w, y + r)
+  s.lineTo(x + w, y + h - r)
+  s.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+  s.lineTo(x + r, y + h)
+  s.quadraticCurveTo(x, y + h, x, y + h - r)
+  s.lineTo(x, y + r)
+  s.quadraticCurveTo(x, y, x + r, y)
+  return s
+}
+
+/** Grass top over layered earth sides (a diorama cut), floating on an inverted rock. */
+function island(kit: Kit): THREE.Group {
+  const g = new THREE.Group()
+  let y = 0
+  STRATA.forEach((layer, i) => {
+    const depth = ISLAND.thickness * layer.share
+    const geometry = new THREE.ExtrudeGeometry(roundedRect(ISLAND.width, ISLAND.depth, ISLAND.radius), {depth, bevelEnabled: false, curveSegments: 6})
+    geometry.rotateX(-Math.PI / 2) // extrusion now runs up +y; shape y maps to −z
+    const side = kit.material(kit.colors[layer.color])
+    const slab = new THREE.Mesh(geometry, [i === 0 ? kit.material(kit.colors.grass) : side, side])
+    y -= depth
+    slab.position.y = y
+    g.add(slab)
+  })
+  const under = kit.mesh(new THREE.CylinderGeometry(ISLAND.width * 0.42, 3, 9, 8), kit.material(kit.colors.ground))
+  under.scale.z = ISLAND.depth / ISLAND.width
+  under.position.y = -ISLAND.thickness - 4.5
+  g.add(under)
+  return g
+}
+
+function insideIsland(x: number, z: number, margin: number): boolean {
+  const r = ISLAND.radius
+  const cx = THREE.MathUtils.clamp(x, -ISLAND.width / 2 + r, ISLAND.width / 2 - r)
+  const cz = THREE.MathUtils.clamp(z, -ISLAND.depth / 2 + r, ISLAND.depth / 2 - r)
+  return (x - cx) ** 2 + (z - cz) ** 2 <= (r - margin) ** 2
+}
+
+function freeSpace(track: Track, anchors: StationAnchor[]): IsFree {
+  const blocked = [
+    ...anchors.flatMap((a) => [{p: a.building, r: CLEAR.building}, {p: a.platform, r: CLEAR.platform}]),
+    {p: new THREE.Vector3(WINDMILL.x, 0, WINDMILL.z), r: 1.8},
+    ...HILLS.map((h) => ({p: new THREE.Vector3(h.x, 0, h.z), r: h.r + 0.3})),
+    ...COTTAGES.map((c) => ({p: new THREE.Vector3(c.x, 0, c.z), r: 1.3}))
+  ]
+  return (x, z, margin) => {
+    if (!insideIsland(x, z, EDGE_MARGIN + margin)) return false
+    if (inLake(x, z, WATER_CLEAR + margin) || riverDistance(x, z) < RIVER_HALF_WIDTH + WATER_CLEAR + margin) return false
+    const near = (p: THREE.Vector3, r: number) => (p.x - x) ** 2 + (p.z - z) ** 2 < (r + margin) ** 2
+    return !track.samples.some((s) => near(s, CLEAR.track)) && !blocked.some((b) => near(b.p, b.r))
+  }
+}
+
+function scatter(kit: Kit, count: number, isFree: IsFree, margin: number, gap: number): THREE.Vector2[] {
+  const out: THREE.Vector2[] = []
+  for (let i = 0; i < count * 14 && out.length < count; i++) {
+    const x = (kit.random() - 0.5) * ISLAND.width
+    const z = (kit.random() - 0.5) * ISLAND.depth
+    if (isFree(x, z, margin) && out.every((o) => (o.x - x) ** 2 + (o.y - z) ** 2 > gap * gap)) out.push(new THREE.Vector2(x, z))
+  }
+  return out
+}
+
+function instanced(geometry: THREE.BufferGeometry, material: THREE.Material, count: number): THREE.InstancedMesh {
+  return new THREE.InstancedMesh(geometry, material, Math.max(1, count))
+}
+
+function forest(kit: Kit, spots: THREE.Vector2[]): THREE.Group {
+  const trunks = instanced(faceted(new THREE.CylinderGeometry(0.12, 0.16, 0.6, 5)), kit.material(kit.colors.trunk), spots.length)
+  // Crowns bend in the wind from their base; trunks stay put.
+  const crowns = [kit.colors.leaf, kit.colors.leafDark].map((c) =>
+    instanced(faceted(new THREE.ConeGeometry(CROWN.radius, CROWN.height, 6)), kit.swayMaterial(c, -CROWN.height / 2, CROWN.height), spots.length)
+  )
+  const m = new THREE.Matrix4()
+  const q = new THREE.Quaternion()
+  const s = new THREE.Vector3()
+  const hidden = new THREE.Matrix4().makeScale(0, 0, 0)
+  spots.forEach((spot, i) => {
+    const size = 0.75 + kit.random() * 0.6
+    q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), kit.random() * Math.PI)
+    s.setScalar(size)
+    trunks.setMatrixAt(i, m.compose(new THREE.Vector3(spot.x, 0.3 * size, spot.y), q, s))
+    const pick = i % 2
+    crowns[pick].setMatrixAt(i, m.compose(new THREE.Vector3(spot.x, 1.25 * size, spot.y), q, s))
+    crowns[1 - pick].setMatrixAt(i, hidden)
+  })
+  const g = new THREE.Group()
+  g.add(trunks, ...crowns)
+  return g
+}
+
+function scatterMesh(kit: Kit, geometry: THREE.BufferGeometry, color: number, spots: THREE.Vector2[], y: number, tint?: readonly number[]): THREE.InstancedMesh {
+  const mesh = instanced(faceted(geometry), kit.material(tint ? 0xffffff : color), spots.length)
+  const m = new THREE.Matrix4()
+  const c = new THREE.Color()
+  spots.forEach((spot, i) => {
+    const size = 0.7 + kit.random() * 0.6
+    mesh.setMatrixAt(i, m.makeScale(size, size, size).setPosition(spot.x, y * size, spot.y))
+    if (tint) mesh.setColorAt(i, c.setHex(tint[i % tint.length]))
+  })
+  return mesh
+}
+
+function windmill(kit: Kit): {group: THREE.Group; blades: THREE.Group} {
+  const {wall, roof, trunk} = kit.colors
+  const tower = kit.mesh(new THREE.ConeGeometry(0.65, 2.6, 6), kit.material(wall))
+  tower.position.y = 1.3
+  const cap = kit.mesh(new THREE.ConeGeometry(0.55, 0.6, 6), kit.material(roof))
+  cap.position.y = 2.85
+  const blades = new THREE.Group()
+  for (let k = 0; k < 4; k++) {
+    const blade = kit.mesh(new THREE.BoxGeometry(0.16, 1.4, 0.04), kit.material(trunk))
+    blade.position.y = 0.7
+    const arm = new THREE.Group()
+    arm.rotation.z = (k * Math.PI) / 2
+    arm.add(blade)
+    blades.add(arm)
+  }
+  blades.position.set(0, 2.4, 0.62)
+  const group = new THREE.Group()
+  group.add(tower, cap, blades)
+  group.position.set(WINDMILL.x, 0, WINDMILL.z)
+  group.rotation.y = 0.6
+  return {group, blades}
+}
+
+/** Grass blades over every free patch of the meadow, swaying in the wind. */
+function meadow(kit: Kit, isFree: IsFree, count: number): THREE.InstancedMesh {
+  const blade = new THREE.ConeGeometry(BLADE.radius, BLADE.height, 3).translate(0, BLADE.height / 2, 0)
+  const mesh = new THREE.InstancedMesh(blade, kit.swayMaterial(0xffffff, 0, BLADE.height), count)
+  mesh.name = 'grass'
+  const m = new THREE.Matrix4()
+  const q = new THREE.Quaternion()
+  const s = new THREE.Vector3()
+  const at = new THREE.Vector3()
+  const tint = new THREE.Color()
+  const shades = [kit.colors.grass, kit.colors.leaf, kit.colors.leafDark]
+  let placed = 0
+  for (let i = 0; i < count * 4 && placed < count; i++) {
+    const x = (kit.random() - 0.5) * ISLAND.width
+    const z = (kit.random() - 0.5) * ISLAND.depth
+    if (!isFree(x, z, 0)) continue
+    q.setFromAxisAngle(at.set(0, 1, 0), kit.random() * Math.PI)
+    s.setScalar(0.7 + kit.random() * 0.8)
+    mesh.setMatrixAt(placed, m.compose(at.set(x, 0, z), q, s))
+    mesh.setColorAt(placed, tint.setHex(shades[placed % shades.length]))
+    placed++
+  }
+  mesh.count = placed
+  return mesh
+}
+
+function balloon(kit: Kit): THREE.Group {
+  const envelope = kit.mesh(new THREE.SphereGeometry(0.9, 10, 8), kit.material(kit.colors.accent))
+  envelope.scale.y = 1.15
+  const band = kit.mesh(new THREE.CylinderGeometry(0.62, 0.62, 0.25, 10), kit.material(kit.colors.wall))
+  band.position.y = -0.45
+  const basket = kit.mesh(new THREE.BoxGeometry(0.4, 0.3, 0.4), kit.material(kit.colors.trunk))
+  basket.position.y = -1.35
+  const g = new THREE.Group()
+  g.add(envelope, band, basket)
+  g.position.set(BALLOON.x, BALLOON.y, BALLOON.z)
+  return g
+}
+
+export function buildWorld(kit: Kit, track: Track, anchors: StationAnchor[], detail: 'high' | 'low'): World {
+  const counts = COUNTS[detail]
+  const isFree = freeSpace(track, anchors)
+  const water = buildWater(kit, detail)
+  const village = buildVillage(kit)
+  const fauna = buildFauna(kit, scatter(kit, counts.sheep, isFree, 1, 3), detail)
+  const mill = windmill(kit)
+  const air = balloon(kit)
+  const landscape = buildLandscape(kit)
+  const sky = new THREE.Group()
+  sky.name = 'sky-life'
+  sky.add(landscape.peaks, fauna.air)
+
+  const group = new THREE.Group()
+  group.name = 'world'
+  group.add(
+    island(kit),
+    forest(kit, scatter(kit, counts.trees, isFree, 0.4, 1.1)),
+    scatterMesh(kit, new THREE.IcosahedronGeometry(0.09, 0), 0, scatter(kit, counts.flowers, isFree, 0, 0.35), 0.09, kit.colors.flowers),
+    scatterMesh(kit, new THREE.DodecahedronGeometry(0.28, 0), kit.colors.stone, scatter(kit, counts.rocks, isFree, 0.2, 1), 0.12),
+    meadow(kit, isFree, counts.grass),
+    water.group,
+    village.group,
+    landscape.hills,
+    fauna.group,
+    mill.group,
+    air
+  )
+
+  let boost = 0 // extra blade speed, decaying
+  return {
+    group,
+    sky,
+    windmill: mill.group,
+    spin() {
+      boost = BLADE_SPEED * SPIN_BOOST
+    },
+    update(dt, elapsed) {
+      boost = Math.max(0, boost - dt * BLADE_SPEED * SPIN_DECAY)
+      mill.blades.rotation.z += dt * (BLADE_SPEED + boost)
+      air.position.y = BALLOON.y + Math.sin(elapsed * 0.6) * 0.4
+      water.update(dt, elapsed)
+      village.update(dt)
+      fauna.update(dt, elapsed)
+    }
+  }
+}

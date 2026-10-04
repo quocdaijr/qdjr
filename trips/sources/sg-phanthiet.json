@@ -1,0 +1,40 @@
+{
+  "slug": "sg-phanthiet",
+  "title": {
+    "vi": "Sài Gòn → Phan Thiết",
+    "en": "Saigon → Phan Thiet"
+  },
+  "summary": {
+    "vi": "Một ngày chạy xe máy ra biển: qua Đồng Nai, mấy đồi thanh long Bình Thuận, tới tháp Chàm Pô Sah Inư.",
+    "en": "A day on a motorbike to the sea: through Dong Nai and the dragon-fruit hills of Binh Thuan to the Po Sah Inu Cham towers."
+  },
+  "vehicle": "motorbike",
+  "stops": [
+    {
+      "name": {
+        "vi": "Sài Gòn",
+        "en": "Saigon"
+      },
+      "lat": 10.7769,
+      "lng": 106.7009
+    },
+    {
+      "name": {
+        "vi": "Phan Thiết",
+        "en": "Phan Thiet"
+      },
+      "lat": 10.9289,
+      "lng": 108.1021
+    }
+  ],
+  "sights": [
+    {
+      "name": {
+        "vi": "Tháp Pô Sah Inư",
+        "en": "Po Sah Inu Towers"
+      },
+      "lat": 10.9337,
+      "lng": 108.1424
+    }
+  ]
+}

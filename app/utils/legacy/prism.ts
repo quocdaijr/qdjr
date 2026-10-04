@@ -1,11 +1,7 @@
-// Prism.js syntax highlighting plugin for Nuxt 3 with TypeScript
-// Client-side only plugin. Only legacy post pages rely on this — new blog
-// pages use Shiki via @nuxt/content.
-//
-// NOTE: CSS imports (prism-tomorrow.css, plugin CSS) were intentionally moved
-// out of this file to avoid polluting global styles and fighting with Shiki's
-// inline colors on new blog pages. Those imports now live in
-// components/post/Detail.vue (the only consumer).
+// Prism.js syntax highlighting for the legacy post pages (components/post/Detail.vue
+// is the only consumer; new blog pages use Shiki via @nuxt/content). Imported
+// dynamically from there, so Prism and its 25 languages stay out of every
+// other page's bundle.
 
 import Prism from 'prismjs'
 
@@ -44,12 +40,4 @@ import 'prismjs/components/prism-git'
 import 'prismjs/components/prism-regex'
 import 'prismjs/components/prism-bash'
 
-export default defineNuxtPlugin(() => {
-  // Make Prism available globally.
-  // No client guard needed — this file is already .client.ts.
-  return {
-    provide: {
-      prism: Prism
-    }
-  }
-})
+export default Prism

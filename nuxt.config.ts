@@ -41,6 +41,8 @@ export default defineNuxtConfig({
   // App config (replaces head configuration)
   app: {
     head: {
+      // The default vibe (stores/theme.ts) in the page shell, so its tokens apply before any script runs.
+      htmlAttrs: {'data-vibe': 'cartoon'},
       title: 'QDJr Blog',
       meta: [
         { charset: 'utf-8' },
@@ -81,7 +83,24 @@ export default defineNuxtConfig({
         { name: 'format-detection', content: 'telephone=no' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        // Vibe fonts. Three static stylesheets (one per vibe) rather than a
+        // runtime swap: browsers only download font binaries for text that is
+        // actually rendered, so the inactive vibes cost one small CSS fetch each.
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap'
+        },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,700,100,1&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600&display=swap'
+        },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=Geist:wght@400;600&family=Geist+Mono:wght@400&display=swap'
+        }
       ]
     }
   },
@@ -101,7 +120,8 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@pinia/nuxt',
     '@vite-pwa/nuxt',
-    '@nuxt/content'
+    '@nuxt/content',
+    '@nuxtjs/i18n'
     // Note: robots and sitemap will be added back in next phase with proper configuration
   ],
 
@@ -111,12 +131,32 @@ export default defineNuxtConfig({
       markdown: {
         highlight: {
           theme: {
-            default: 'github-light',
-            dark: 'github-dark'
+            default: 'github-light-high-contrast',
+            dark: 'github-dark-high-contrast'
           },
           langs: ['js', 'ts', 'vue', 'bash', 'json', 'yaml', 'md', 'html', 'css', 'php', 'python', 'go']
         }
       }
+    }
+  },
+
+  // Vietnamese at /, English under /en. Browsers whose preferred language is
+  // English are redirected once from / to /en; the cookie remembers a manual
+  // choice made with the header language switch.
+  i18n: {
+    strategy: 'prefix_except_default',
+    defaultLocale: 'vi',
+    baseUrl: process.env.APP_URL || 'https://qdjr.me',
+    locales: [
+      {code: 'vi', language: 'vi-VN', name: 'Tiếng Việt', file: 'vi.json'},
+      {code: 'en', language: 'en-US', name: 'English', file: 'en.json'}
+    ],
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_lang',
+      redirectOn: 'root',
+      alwaysRedirect: false,
+      fallbackLocale: 'vi'
     }
   },
 
@@ -129,22 +169,29 @@ export default defineNuxtConfig({
       lang: 'en'
     },
     workbox: {
-      navigateFallback: '/',
-      // Disable workbox precaching entirely — in SPA mode @vite-pwa/nuxt runs
-      // workbox globbing before Nitro copies client assets into
-      // `.output/public/`, so every glob pattern (defaults or custom) emits
-      // "doesn't match any files" warnings. Runtime navigateFallback still
-      // handles offline shell; no precache is fine for a low-traffic portfolio.
+      // Server-rendered pages: no app shell to fall back to, so no
+      // navigateFallback (serving '/' for every URL would hydrate the wrong page).
+      navigateFallback: null,
+      // No precache: a low-traffic portfolio, and the old SPA-mode glob warnings.
       globPatterns: []
     }
   },
 
-  // SSR configuration - disable for now due to directive SSR issues
-  ssr: false,
+  // Server-rendered on request (the trip planner needs the Nitro server anyway),
+  // so the first paint is real HTML instead of waiting for the app bundle.
+  ssr: true,
 
-  // SPA mode doesn't emit `_payload.json` or `_nuxt/builds/*.json`, so
-  // turning these off avoids two "workbox glob pattern doesn't match any files"
-  // build warnings from @vite-pwa/nuxt without affecting runtime behaviour.
+  hooks: {
+    // No <link rel="prefetch"> for lazy chunks in the server-rendered HTML: on
+    // a slow phone connection three.js and the scene (650 KB) fought the page's
+    // own CSS and fonts for bandwidth. They load when asked for (VibeScene
+    // mounts after load), and NuxtLink still prefetches pages on sight.
+    'build:manifest': (manifest) => {
+      for (const chunk of Object.values(manifest)) chunk.prefetch = false
+    }
+  },
+
+  // Pages render live, nothing is prerendered: no payload files or app manifest needed.
   experimental: {
     payloadExtraction: false,
     appManifest: false
@@ -152,9 +199,11 @@ export default defineNuxtConfig({
 
   // Nitro configuration
   nitro: {
+    // Planned trips (/api/trips/plan), kept 30 days on disk across restarts.
+    storage: {
+      trips: {driver: 'fs', base: './.data/trips'}
+    },
     prerender: {
-      // Disable prerendering for now due to SSR directive issues
-      // This can be re-enabled after converting components to Composition API
       routes: []
     }
   },
@@ -166,11 +215,12 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
     build: {
       // The main bundle is ~1MB because several legacy client plugins (prismjs
-      // with many languages, video.js, tsparticles, vue-spinner) are registered
-      // globally. They only run on /legacy-blogs/* but are bundled eagerly.
-      // The whole legacy surface is slated for removal — see
-      // ~/.claude/plans/in-my-project-currently-binary-sifakis.md follow-up #4 —
-      // so raising the warning threshold here is intentional until that happens.
+      // with many languages, video.js, vue-spinner) are registered globally.
+      // They only run on /legacy-blogs/* but are bundled eagerly. The whole
+      // legacy surface is slated for removal, so raising the warning threshold
+      // here is intentional until that happens. three.js is NOT part of this:
+      // it is reached only through dynamic imports in app/scenes/* and lands in
+      // its own async chunk.
       chunkSizeWarningLimit: 1200
     }
   },

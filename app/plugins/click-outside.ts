@@ -1,14 +1,11 @@
 // Click outside directive for Nuxt 3 with TypeScript
-// Client-side only plugin
+// Universal: the server needs the directive registered (getSSRProps) to render templates that use it
 
 interface ClickOutsideElement extends HTMLElement {
   __vueClickOutside__?: (e: Event) => void
 }
 
 export default defineNuxtPlugin((nuxtApp) => {
-  // No `import.meta.client` guard needed — this file is already .client.ts, so it
-  // never runs on the server. The former `else` branch registered a no-op
-  // server-side directive that could never be reached.
   nuxtApp.vueApp.directive('click-outside', {
     mounted(el: ClickOutsideElement, binding: any) {
       // Provided expression must evaluate to a function

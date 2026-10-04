@@ -1,17 +1,21 @@
 <template>
   <nav v-if="device === 'mobile'" class="divide-y divide-dotted">
-    <NuxtLink to="/blog"
+    <NuxtLinkLocale to="/blog"
               class="flex items-center px-5 py-3 font-semibold text-gray-600 dark:text-gray-300">
-      <span class="w-full" @click="methodToggleNav">Blog</span>
-    </NuxtLink>
-    <NuxtLink to="/about"
+      <span class="w-full" @click="methodToggleNav">{{ $t('nav.blog') }}</span>
+    </NuxtLinkLocale>
+    <NuxtLinkLocale to="/about"
               class="flex items-center px-5 py-3 font-semibold text-gray-600 dark:text-gray-300">
-      <span class="w-full" @click="methodToggleNav">About</span>
-    </NuxtLink>
+      <span class="w-full" @click="methodToggleNav">{{ $t('nav.about') }}</span>
+    </NuxtLinkLocale>
+    <div class="px-5 py-3 flex items-center gap-3">
+      <VibeSwitch variant="segmented"/>
+      <LangSwitch class="font-semibold text-gray-600 dark:text-gray-300" @click="methodToggleNav"/>
+    </div>
     <div v-if="categories" v-click-outside="closeCatMenu"
          class="relative flex items-center px-5 py-3 font-semibold text-gray-600 dark:text-gray-300 cursor-pointer">
       <div class="w-full flex justify-between items-center" @click="toggleCatMenu">
-        <span>Categories</span>
+        <span>{{ $t('nav.categories') }}</span>
         <svg ref="iconCloseCatMenu" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20"
              fill="currentColor">
           <path fill-rule="evenodd"
@@ -31,24 +35,25 @@
             class="p-1 mb-1 rounded-md hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:scale-105"
             @click="methodToggleNav"
         >
-          <NuxtLink class="block" :to="`/blog/category/${category.slug}`">
+          <NuxtLinkLocale class="block" :to="`/blog/category/${category.slug}`">
             <span>{{ category.name }}</span>
-          </NuxtLink>
+          </NuxtLinkLocale>
         </li>
       </ul>
     </div>
   </nav>
-  <nav v-else class="flex justify-end">
-    <NuxtLink to="/blog"
+  <nav v-else class="header-pills flex justify-end gap-1">
+    <NuxtLinkLocale to="/blog"
               class="flex items-center px-5 py-3 font-semibold text-gray-600 dark:text-gray-300
                hover:scale-125 hover:text-blue-600 dark:hover:text-blue-400">
-      <span>Blog</span>
-    </NuxtLink>
-    <NuxtLink to="/about"
+      <span>{{ $t('nav.blog') }}</span>
+    </NuxtLinkLocale>
+    <NuxtLinkLocale to="/about"
               class="flex items-center px-5 py-3 font-semibold text-gray-600 dark:text-gray-300
                hover:scale-125 hover:text-blue-600 dark:hover:text-blue-400">
-      <span>About</span>
-    </NuxtLink>
+      <span>{{ $t('nav.about') }}</span>
+    </NuxtLinkLocale>
+    <LangSwitch class="px-3 font-semibold text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"/>
     <div v-if="categories" v-click-outside="closeCatMenu"
          class="relative flex items-center py-3 font-semibold text-gray-600 dark:text-gray-300 cursor-pointer">
       <svg ref="iconCloseCatMenu" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hover:scale-125" viewBox="0 0 20 20"
@@ -72,9 +77,9 @@
             class="p-1 mb-1 rounded-md hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:scale-105"
             @click="closeCatMenu"
         >
-          <NuxtLink class="block" :to="`/blog/category/${category.slug}`">
+          <NuxtLinkLocale class="block" :to="`/blog/category/${category.slug}`">
             <span>{{ category.name }}</span>
-          </NuxtLink>
+          </NuxtLinkLocale>
         </li>
       </ul>
     </div>

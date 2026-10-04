@@ -2,20 +2,46 @@
    Content detection is automatic in v4; no `content` globs needed. */
 @import "tailwindcss";
 
+/* Vibe design tokens (three vibes × light/dark). Plain custom properties, so
+   it does not matter that they sit outside Tailwind's layers. */
+@import "./tokens.css";
+
 /* was: plugins: [typography] */
 @plugin "@tailwindcss/typography";
 
 /* was: darkMode: 'class'
-   The `dark` class is set on <html> by app/stores/theme.ts applyTheme(). */
+   The `dark` class is set on <html> by app/stores/theme.ts applyTheme().
+   Dark mode follows the Vietnam clock (see app/utils/vnTime.ts). */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* was: theme.extend.fontFamily.sans = ['Nunito', ...defaultTheme.fontFamily.sans]
-   NOTE: Nunito is never actually loaded anywhere in this app — no <link>, no
-   @font-face, no font module — so this is currently inert. Kept verbatim to
-   preserve existing behaviour. */
-@theme {
-  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+/* Whole-site retint with zero per-component edits: every existing gray-* and
+   blue-* utility is pointed at the active vibe's tinted ramp (tokens.css).
+   `inline` makes Tailwind emit `var(--vibe-gray-500)` into the utility itself
+   instead of snapshotting a value, so the swap happens at runtime when
+   html[data-vibe] changes. Only the shades the codebase uses are remapped
+   (rg "gray-|blue-" app). */
+@theme inline {
+  --font-sans: var(--vibe-font-body);
+  --font-display: var(--vibe-font-display);
+  --font-mono: var(--vibe-font-mono);
+  --color-gray-50: var(--vibe-gray-50);
+  --color-gray-100: var(--vibe-gray-100);
+  --color-gray-200: var(--vibe-gray-200);
+  --color-gray-300: var(--vibe-gray-300);
+  --color-gray-400: var(--vibe-gray-400);
+  --color-gray-500: var(--vibe-gray-500);
+  --color-gray-600: var(--vibe-gray-600);
+  --color-gray-700: var(--vibe-gray-700);
+  --color-gray-800: var(--vibe-gray-800);
+  --color-gray-900: var(--vibe-gray-900);
+  --color-blue-50: var(--vibe-blue-50);
+  --color-blue-100: var(--vibe-blue-100);
+  --color-blue-300: var(--vibe-blue-300);
+  --color-blue-400: var(--vibe-blue-400);
+  --color-blue-500: var(--vibe-blue-500);
+  --color-blue-600: var(--vibe-blue-600);
+  --color-blue-700: var(--vibe-blue-700);
+  --color-blue-900: var(--vibe-blue-900);
 }
 
 /* v3 compatibility: v4 changed the default border and divide colour from
@@ -28,7 +54,44 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+    border-color: var(--vibe-gray-200, currentcolor);
+  }
+
+  /* Hallmark mobile floor: never a horizontal scrollbar, never `hidden`
+     (hidden would break position: sticky descendants). */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  /* Every page paints the vibe paper, including error.vue, which renders
+     outside the layout and so never receives the layout's bodyAttrs. */
+  body {
+    background-color: var(--vibe-gray-50);
+  }
+
+  .dark body {
+    background-color: var(--vibe-gray-900);
+  }
+
+  /* In-page #stop-N links on /about only (vue-router's scrollTo honours this
+     property, so blog route changes must not inherit it); reduced-motion users
+     get instant jumps. */
+  @media (prefers-reduced-motion: no-preference) {
+    html:has(.journey) {
+      scroll-behavior: smooth;
+    }
+  }
+
+  /* Anchor jumps land below the sticky header (≈100px tall on desktop).
+     :where() keeps specificity at zero, so a component's own margin wins. */
+  :where([id]) {
+    scroll-margin-top: 7rem;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
   }
 }
 
@@ -38,7 +101,7 @@
    the vue-router names and scoped to <nav> so the header logo link and the tag
    pills (also NuxtLinks) are not restyled.
 
-   They also have to live here rather than in a component <style> block:
+   They also have to live here rather than in a component \3c style> block:
    Tailwind v4 treats each component stylesheet as a separate module, so @apply
    there needs an explicit @reference. */
 @layer components {
@@ -49,6 +112,199 @@
   nav a.router-link-exact-active {
     @apply text-blue-600 dark:text-blue-400;
   }
+
+  /* C3 typographic link: a word, an arrow, a 1 px underline. No box. */
+  .link {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    white-space: nowrap;
+    transition: text-decoration-color var(--dur-micro) var(--ease-out);
+  }
+
+  .link:hover {
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+  }
+
+  .link:active {
+    transform: translateY(1px);
+  }
+
+  /* One page-load reveal, staggered by DOM index via --i. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: reveal var(--dur-long) var(--ease-out) forwards;
+    animation-delay: calc(var(--i, 0) * 60ms);
+  }
+
+  @keyframes reveal {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      transform: none;
+      animation-duration: 150ms;
+      animation-delay: 0ms;
+    }
+  }
+}
+
+/* Per-vibe nav voice. The header markup is shared; only the dressing moves.
+   terminal → N8 terminal-command: links read as CLI flags.
+   cartoon  → rounded 2 px chips.
+   galaxy   → untouched (the canvas is the mood). */
+
+/* Nav labels never wrap (longer Vietnamese labels like "Giới thiệu"). */
+header nav a {
+  white-space: nowrap;
+}
+
+/* The pinned header has no band of its own; each control carries a frosted
+   pill so it stays readable over whatever scrolls beneath it. */
+.header-pills > a,
+.header-pill {
+  background: color-mix(in oklch, var(--color-paper) 85%, transparent);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-pill);
+}
+
+[data-vibe="terminal"] header nav a > span::before {
+  content: "--" / ""; /* decorative: keep it out of the accessible name */
+  color: var(--color-accent);
+}
+
+/* Pages not laid out over the scene (blog, trips, search, legacy) read
+   straight over it, as the home page does: a full-screen veil between the
+   canvas (z 0) and the content (z 10) blurs it and lays half the body ground
+   over it, so the scene stays visible and long text stays readable. */
+.scene-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: color-mix(in oklch, var(--reading-ground) 50%, transparent);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+
+:root {
+  --reading-ground: var(--vibe-gray-50);
+}
+
+.dark {
+  --reading-ground: var(--vibe-gray-900);
+}
+
+/* Without blur, or when less transparency is asked for, the veil thickens. */
+@supports not (backdrop-filter: blur(1px)) {
+  .scene-veil {
+    background: color-mix(in oklch, var(--reading-ground) 85%, transparent);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .scene-veil {
+    background: var(--reading-ground);
+  }
+}
+
+/* Segmented pickers on the trips pages (vehicle, view): real radios, so arrow
+   keys move between options. */
+.seg {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: var(--radius-pill);
+}
+
+.seg-legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.seg-option {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-sm);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+}
+
+.seg-input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.seg-option:hover {
+  background: var(--color-paper-2);
+}
+
+.seg-option:active {
+  transform: translateY(1px);
+}
+
+.seg-option:has(.seg-input:checked) {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-weight: 600;
+}
+
+.seg-option:has(.seg-input:focus-visible) {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .seg-option {
+    transition-duration: 0ms;
+  }
+}
+
+/* @tailwindcss/typography bakes slate values into --tw-prose-*; point the ones
+   that matter at the vibe so blog prose retints like everything else. This must
+   stay UNLAYERED: the plugin emits its .prose rule inside @layer utilities, and
+   an override placed in @layer base loses to it regardless of source order. */
+.prose {
+  --tw-prose-body: var(--vibe-gray-700);
+  --tw-prose-headings: var(--vibe-gray-900);
+  --tw-prose-links: var(--vibe-blue-600);
+  --tw-prose-invert-body: var(--vibe-gray-300);
+  --tw-prose-invert-headings: var(--vibe-gray-50);
+  --tw-prose-invert-links: var(--vibe-blue-400);
+}
+
+/* The unlayered .prose rule above outranks the plugin's layered
+   dark:prose-invert, so dark mode re-applies the invert swap here. */
+.dark .prose {
+  --tw-prose-body: var(--tw-prose-invert-body);
+  --tw-prose-headings: var(--tw-prose-invert-headings);
+  --tw-prose-links: var(--tw-prose-invert-links);
+}
+
+[data-vibe="cartoon"] header nav a {
+  border: 2px solid var(--color-rule);
+  border-radius: var(--radius-pill);
 }
 
 /* Used by tag/ListNewest.vue's horizontal strip but never actually defined
@@ -62,7 +318,7 @@
 }
 
 /* Global chrome, moved out of app/layouts/default.vue (and out of error.vue's
-   <style scoped>, where ::-webkit-scrollbar never applied anyway). */
+   \3c style scoped>, where ::-webkit-scrollbar never applied anyway). */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -74,10 +330,17 @@
 
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background: #6d6d6d;
+  background: var(--vibe-gray-500);
 }
 
 /* Disable the grey flash when tapping links and buttons on touch devices. */
 * {
   -webkit-tap-highlight-color: rgb(0 0 0 / 0%);
+}
+
+/* While the reader drags the 3D scene round (useSceneOrbit). */
+.scene-dragging,
+.scene-dragging * {
+  cursor: grabbing !important;
+  user-select: none;
 }

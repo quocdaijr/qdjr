@@ -8,8 +8,8 @@
            @error="handleImageError">
     </div>
     <div class="max-w-(--breakpoint-lg) mx-auto font-semibold text-center mt-4">
-      <h1 v-if="title" class="text-3xl font-bold text-gray-800 lg:text-5xl dark:text-gray-100">{{ title }}</h1>
-      <p v-if="description" class="mt-4 text-base text-gray-500 md:text-lg dark:text-gray-300">{{ description }}</p>
+      <h1 v-if="title" :lang="lang || undefined" class="text-3xl font-bold text-gray-800 lg:text-5xl dark:text-gray-100">{{ title }}</h1>
+      <p v-if="description" :lang="lang || undefined" class="mt-4 text-base text-gray-500 md:text-lg dark:text-gray-300">{{ description }}</p>
     </div>
   </header>
 </template>
@@ -27,6 +27,12 @@ export default {
       default: null
     },
     background: {
+      type: String,
+      default: null
+    },
+    // Language of the title/description when it differs from the page
+    // (an untranslated original shown on an English page).
+    lang: {
       type: String,
       default: null
     }

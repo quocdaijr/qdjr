@@ -16,10 +16,9 @@ and **@nuxt/content**.
 | Tailwind CSS | **4.x** | CSS-first config via `@tailwindcss/vite` |
 | @nuxt/content | 3.x | SQLite-backed, collections in `content.config.ts` |
 
-> **Rendering mode:** the app runs as an SPA (`ssr: false` in `nuxt.config.ts`).
-> That is a deliberate, long-standing setting, not an oversight — but it does
-> mean no server-rendered HTML, which matters for SEO and for anything that
-> assumes prerendering.
+> **Rendering mode:** server-rendered on request (`ssr: true`). The three.js
+> scene is client-only and mounts after the page has loaded; the vibe is
+> mirrored to a `vibe` cookie so the server renders the visitor's vibe.
 
 ## 📋 Requirements
 
@@ -45,6 +44,46 @@ Optional environment (`npm run copy:env` seeds `.env` from `.env.example`):
 | `API_URL` | Legacy blog backend — **unset by default**, see below |
 | `GOOGLE_ANALYTICS_ID` | GA measurement ID |
 
+## 🎨 Vibes
+
+The site has three switchable looks — **terminal**, **cartoon** and **galaxy** —
+picked from the header button or the control on the home page and remembered in
+`localStorage.vibe`. Each vibe sets its own fonts and OKLCH palette
+(`app/assets/css/tokens.css`) and renders a three.js scene behind `/` and `/about`
+(`app/scenes/*`, mounted lazily by `app/components/VibeScene.vue`).
+
+Light/dark is not a toggle: it follows the clock in **UTC+7** (dark from 18:00
+to 06:00 Vietnam time, `app/utils/vnTime.ts`). To preview the other mode locally,
+run `document.documentElement.classList.toggle('dark')` in the console.
+
+`/about` is a scroll journey: 17 full-height stops (one per project) drive the scene camera
+through `useJourney()`; the content lives in `app/data/profile.ts`. The locked
+design system is documented in [`design.md`](./design.md).
+
+
+## 🌐 Languages
+
+Vietnamese is the default (`/`, `/about`, `/blog`); English lives under `/en`.
+The header link switches language and keeps the current page. Browsers that
+prefer English are redirected from `/` to `/en` once; the choice is remembered
+in the `i18n_lang` cookie. UI strings are in `i18n/locales/{vi,en}.json`; the
+profile copy is in `app/data/profile.{vi,en}.ts`.
+
+### Translating posts
+
+Posts are written in Vietnamese in `content/blog/`. English versions are
+machine-translated with Google Cloud Translation and committed to
+`content/en/blog/`:
+
+    GOOGLE_TRANSLATE_API_KEY=… npm run translate:posts            # new or changed posts
+    GOOGLE_TRANSLATE_API_KEY=… npm run translate:posts -- --force # re-translate all
+    npm run translate:posts -- --dry-run                         # preview, no API call
+
+Each English post is labelled "Machine translated" and links to the original.
+A post without a translation appears on the English blog in Vietnamese with a
+"Vietnamese only" label. Edit a translation by hand if you like; it is
+regenerated only when its Vietnamese source changes (tracked by `sourceHash`).
+
 ## 🏗️ Build
 
 ```bash
@@ -54,8 +93,7 @@ npm run preview   # Nuxt's own preview server
 npm run generate  # static output -> .output/public/
 ```
 
-Note that `npm run generate` emits an SPA shell rather than prerendered HTML,
-because `ssr: false` is set. Nuxt prints a warning to that effect.
+`npm run generate` prerenders the pages it can crawl into static HTML.
 
 ## ✅ Quality gates
 
@@ -80,6 +118,13 @@ Two test layers, split by what each can actually verify:
 
 Playwright starts and stops its own dev server (see `webServer` in
 `playwright.config.ts`), so nothing stays listening on port 3000 after a run.
+
+
+> **Run `npm run typecheck` with the dev server stopped.** `nuxt typecheck`
+> regenerates `.nuxt/` in prepare mode, and `@nuxt/content` skips content
+> processing in that mode, so it writes an empty content dump into the same
+> `.nuxt/` that a running `nuxt dev` serves. The blog then shows "No posts"
+> until the dev server restarts. Production builds are not affected.
 
 ## 📁 Project structure
 
@@ -160,8 +205,26 @@ the same thing for a container host. The `bookworm` base is intentional:
 `better-sqlite3`, required by `@nuxt/content`, needs `python3`/`make`/`g++` when
 no prebuilt binary matches.
 
+Put nginx (or another reverse proxy) in front, and let it **overwrite** the
+forwarded address rather than append to it — the trip planner API
+(`/api/trips/*`) limits plans per visitor by that address, and a client could
+otherwise send its own:
+
+```nginx
+location / {
+  proxy_pass http://127.0.0.1:3000;
+  proxy_set_header Host $host;
+  proxy_set_header X-Forwarded-For $remote_addr;
+}
+```
+
+The PM2 example binds to `127.0.0.1`, so port 3000 is reachable only through the
+proxy. Planned trips are cached on disk in `.data/trips` (30 days); keep that
+directory across deploys.
+
 Static hosting is also possible via `npm run generate` (deploy `.output/public`),
-with the SPA-shell caveat noted above.
+but without a server every visitor gets the default vibe on first paint, and there is no trip
+planner (`/trips/plan` needs `/api/trips/*`); the curated trips still work.
 
 ## 📚 Documentation
 

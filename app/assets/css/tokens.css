@@ -1,0 +1,175 @@
+/* Hallmark · genre: atmospheric (terminal, galaxy) · playful (cartoon)
+ * macrostructure: Marquee Hero (/) · Narrative Workflow (/about)
+ * theme: custom ×3 — terminal (dark-band · mono · chromatic-green)
+ *                    cartoon  (light-band · soft-serif display · warm-terracotta)
+ *                    galaxy   (dark-band · geometric-sans display · warm-amber)
+ * nav: N1b shell, per-vibe voice (N8 flags on terminal) · footer: Ft2 inline single line
+ * enrichment: Tier-A three.js primitives · design-system: design.md · designed-as-app
+ * Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4
+ *
+ * Rules: OKLCH only in this file. Hue never changes between light and dark —
+ * only lightness and chroma move. Terminal's tokens live on :root / .dark as
+ * the fallback, always defined; the default vibe (cartoon) comes from the
+ * data-vibe attribute the page shell already carries (nuxt.config.ts).
+ */
+
+:root {
+  /* ---- shared scale ---- */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 7rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.25rem;
+  --text-lg: 1.5625rem;
+  --text-xl: 1.9531rem;
+  --text-2xl: 2.4414rem;
+  --text-display: clamp(2.75rem, 5vw + 1rem, 5.25rem);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+  --rule-hair: 1px;
+  --page-gutter: clamp(1rem, 4vw, 2rem);
+
+  /* ---- vibe: terminal · light (default vibe) ---- */
+  --color-paper: oklch(96% 0.012 150deg);
+  --color-paper-2: oklch(92% 0.015 150deg);
+  --color-rule: oklch(80% 0.02 150deg);
+  --color-muted: oklch(45% 0.03 150deg);
+  --color-ink: oklch(22% 0.03 150deg);
+  --color-accent: oklch(50% 0.17 150deg);
+  --color-focus: oklch(50% 0.17 150deg);
+  --radius-card: 0;
+  --radius-pill: 0;
+  --vibe-font-display: "JetBrains Mono", ui-monospace, sfmono-regular, menlo, monospace;
+  --vibe-font-body: "JetBrains Mono", ui-monospace, sfmono-regular, menlo, monospace;
+  --vibe-font-mono: "JetBrains Mono", ui-monospace, sfmono-regular, menlo, monospace;
+  --vibe-gray-50: oklch(97% 0.012 150deg);
+  --vibe-gray-100: oklch(93% 0.012 150deg);
+  --vibe-gray-200: oklch(87% 0.012 150deg);
+  --vibe-gray-300: oklch(78% 0.012 150deg);
+  --vibe-gray-400: oklch(62% 0.012 150deg);
+  --vibe-gray-500: oklch(50% 0.012 150deg);
+  --vibe-gray-600: oklch(40% 0.012 150deg);
+  --vibe-gray-700: oklch(30% 0.012 150deg);
+  --vibe-gray-800: oklch(20% 0.012 150deg);
+  --vibe-gray-900: oklch(14% 0.012 150deg);
+  --vibe-blue-50: oklch(95% 0.03 150deg);
+  --vibe-blue-100: oklch(90% 0.05 150deg);
+  --vibe-blue-300: oklch(78% 0.1 150deg);
+  --vibe-blue-400: oklch(80% 0.2 150deg);
+  --vibe-blue-500: oklch(62% 0.16 150deg);
+  --vibe-blue-600: oklch(50% 0.17 150deg);
+  --vibe-blue-700: oklch(42% 0.14 150deg);
+  --vibe-blue-900: oklch(28% 0.08 150deg);
+}
+
+/* terminal · dark */
+.dark {
+  --color-paper: oklch(13% 0.012 150deg);
+  --color-paper-2: oklch(17% 0.014 150deg);
+  --color-rule: oklch(30% 0.02 150deg);
+  --color-muted: oklch(68% 0.04 150deg);
+  --color-ink: oklch(90% 0.05 150deg);
+  --color-accent: oklch(80% 0.2 150deg);
+  --color-focus: oklch(80% 0.2 150deg);
+}
+
+/* ---- vibe: cartoon · light ---- */
+[data-vibe="cartoon"] {
+  --color-paper: oklch(96% 0.03 85deg);
+  --color-paper-2: oklch(92% 0.04 80deg);
+  --color-rule: oklch(80% 0.04 75deg);
+  --color-muted: oklch(48% 0.04 55deg);
+  --color-ink: oklch(28% 0.04 50deg);
+  --color-accent: oklch(52% 0.16 40deg);
+  --color-focus: oklch(55% 0.18 40deg);
+  --radius-card: 12px;
+  --radius-pill: 999px;
+  --vibe-font-display: "Fraunces", ui-serif, georgia, serif;
+  --vibe-font-body: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --vibe-font-mono: ui-monospace, sfmono-regular, menlo, monospace;
+  --vibe-gray-50: oklch(97% 0.03 70deg);
+  --vibe-gray-100: oklch(93% 0.03 70deg);
+  --vibe-gray-200: oklch(87% 0.03 70deg);
+  --vibe-gray-300: oklch(78% 0.03 70deg);
+  --vibe-gray-400: oklch(62% 0.03 70deg);
+  --vibe-gray-500: oklch(50% 0.03 70deg);
+  --vibe-gray-600: oklch(40% 0.03 70deg);
+  --vibe-gray-700: oklch(30% 0.03 70deg);
+  --vibe-gray-800: oklch(20% 0.03 70deg);
+  --vibe-gray-900: oklch(14% 0.03 70deg);
+  --vibe-blue-50: oklch(95% 0.03 40deg);
+  --vibe-blue-100: oklch(90% 0.05 40deg);
+  --vibe-blue-300: oklch(78% 0.1 40deg);
+  --vibe-blue-400: oklch(72% 0.14 45deg);
+  --vibe-blue-500: oklch(66% 0.15 42deg);
+  --vibe-blue-600: oklch(52% 0.16 40deg);
+  --vibe-blue-700: oklch(48% 0.14 40deg);
+  --vibe-blue-900: oklch(30% 0.08 40deg);
+}
+
+/* cartoon · dark */
+.dark[data-vibe="cartoon"] {
+  --color-paper: oklch(24% 0.03 50deg);
+  --color-paper-2: oklch(28% 0.035 50deg);
+  --color-rule: oklch(40% 0.03 50deg);
+  --color-muted: oklch(75% 0.03 70deg);
+  --color-ink: oklch(93% 0.025 85deg);
+  --color-accent: oklch(72% 0.14 45deg);
+  --color-focus: oklch(72% 0.14 45deg);
+}
+
+/* ---- vibe: galaxy · light ---- */
+[data-vibe="galaxy"] {
+  --color-paper: oklch(95% 0.015 260deg);
+  --color-paper-2: oklch(91% 0.02 260deg);
+  --color-rule: oklch(80% 0.02 260deg);
+  --color-muted: oklch(45% 0.03 270deg);
+  --color-ink: oklch(20% 0.04 280deg);
+  --color-accent: oklch(50% 0.15 65deg);
+  --color-focus: oklch(50% 0.15 65deg);
+  --radius-card: 8px;
+  --radius-pill: 999px;
+  --vibe-font-display: "Chakra Petch", ui-sans-serif, system-ui, sans-serif;
+  --vibe-font-body: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --vibe-font-mono: "Geist Mono", ui-monospace, sfmono-regular, menlo, monospace;
+  --vibe-gray-50: oklch(97% 0.025 280deg);
+  --vibe-gray-100: oklch(93% 0.025 280deg);
+  --vibe-gray-200: oklch(87% 0.025 280deg);
+  --vibe-gray-300: oklch(78% 0.025 280deg);
+  --vibe-gray-400: oklch(62% 0.025 280deg);
+  --vibe-gray-500: oklch(50% 0.025 280deg);
+  --vibe-gray-600: oklch(40% 0.025 280deg);
+  --vibe-gray-700: oklch(30% 0.025 280deg);
+  --vibe-gray-800: oklch(20% 0.025 280deg);
+  --vibe-gray-900: oklch(13% 0.03 280deg);
+  --vibe-blue-50: oklch(95% 0.03 75deg);
+  --vibe-blue-100: oklch(90% 0.05 75deg);
+  --vibe-blue-300: oklch(80% 0.1 75deg);
+  --vibe-blue-400: oklch(82% 0.14 80deg);
+  --vibe-blue-500: oklch(70% 0.15 72deg);
+  --vibe-blue-600: oklch(50% 0.15 65deg);
+  --vibe-blue-700: oklch(46% 0.13 65deg);
+  --vibe-blue-900: oklch(30% 0.07 65deg);
+}
+
+/* galaxy · dark */
+.dark[data-vibe="galaxy"] {
+  --color-paper: oklch(12% 0.03 280deg);
+  --color-paper-2: oklch(16% 0.035 280deg);
+  --color-rule: oklch(30% 0.03 280deg);
+  --color-muted: oklch(72% 0.02 280deg);
+  --color-ink: oklch(94% 0.012 280deg);
+  --color-accent: oklch(82% 0.14 80deg);
+  --color-focus: oklch(80% 0.16 80deg);
+}

@@ -1,0 +1,30 @@
+{
+  "slug": "sg-anluong",
+  "title": {
+    "vi": "Sài Gòn → An Lương, Bình Định",
+    "en": "Saigon → An Luong, Binh Dinh"
+  },
+  "summary": {
+    "vi": "Chuyến xe khách đường dài dọc miền Trung về thôn Trung Xuân, xã An Lương (Phù Mỹ, Bình Định cũ, giờ thuộc Gia Lai).",
+    "en": "The long coach ride up the central coast to Trung Xuan hamlet, An Luong commune (formerly Phu My, Binh Dinh, now Gia Lai)."
+  },
+  "vehicle": "coach",
+  "stops": [
+    {
+      "name": {
+        "vi": "Sài Gòn",
+        "en": "Saigon"
+      },
+      "lat": 10.7769,
+      "lng": 106.7009
+    },
+    {
+      "name": {
+        "vi": "Trung Xuân, An Lương",
+        "en": "Trung Xuan, An Luong"
+      },
+      "lat": 14.17315,
+      "lng": 109.1446
+    }
+  ]
+}

@@ -7,7 +7,7 @@ import {expect, test} from '@playwright/test'
 // process.env (undefined at runtime) rather than runtimeConfig.
 
 test('about page emits its title and meta', async ({page}) => {
-  await page.goto('/about')
+  await page.goto('/en/about')
 
   await expect(page).toHaveTitle(/Quoc Dai Nguyen/)
 
@@ -32,6 +32,12 @@ test('about page emits its title and meta', async ({page}) => {
     'content',
     /^https?:\/\/.+\/profile\.jpg$/
   )
+})
+
+test('Vietnamese about page has Vietnamese meta', async ({page}) => {
+  await page.goto('/about')
+  await expect(page).toHaveTitle(/Nguyễn Quốc Đại/)
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /Senior Backend Software Engineer, hơn 6 năm/)
 })
 
 test('blog post emits article meta', async ({page}) => {

@@ -1,0 +1,40 @@
+{
+  "slug": "sg-dalat",
+  "title": {
+    "vi": "Sài Gòn → Đà Lạt",
+    "en": "Saigon → Da Lat"
+  },
+  "summary": {
+    "vi": "Từ đồng bằng leo lên cao nguyên Lâm Viên: qua Bảo Lộc, vượt đèo Prenn, vào tới hồ Xuân Hương.",
+    "en": "From the delta up to the Lam Vien plateau: through Bao Loc, over the Prenn pass, into Xuan Huong Lake."
+  },
+  "vehicle": "coach",
+  "stops": [
+    {
+      "name": {
+        "vi": "Sài Gòn",
+        "en": "Saigon"
+      },
+      "lat": 10.7769,
+      "lng": 106.7009
+    },
+    {
+      "name": {
+        "vi": "Đà Lạt · hồ Xuân Hương",
+        "en": "Da Lat · Xuan Huong Lake"
+      },
+      "lat": 11.94508,
+      "lng": 108.44872
+    }
+  ],
+  "sights": [
+    {
+      "name": {
+        "vi": "Thác Prenn",
+        "en": "Prenn Waterfall"
+      },
+      "lat": 11.8786,
+      "lng": 108.4595
+    }
+  ]
+}

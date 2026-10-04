@@ -5,7 +5,9 @@ module.exports = {
     args: "start",
     env_production: {
       PORT: 3000,
-      HOST: "0.0.0.0",
+      // Only the reverse proxy (nginx) should reach the app: the trip planner's
+      // per-visitor limits read the address the proxy puts in X-Forwarded-For.
+      HOST: "127.0.0.1",
       NODE_ENV: "production"
     }
   }]
