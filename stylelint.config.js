@@ -41,6 +41,9 @@ module.exports = {
       }
     ],
 
+    // Tailwind's @apply takes utility class names, not a CSS prelude.
+    'at-rule-prelude-no-invalid': [true, {ignoreAtRules: ['apply']}],
+
     // `@import "tailwindcss"` is a bare string, not a url().
     'import-notation': null
   }
