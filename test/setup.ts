@@ -9,7 +9,7 @@ import {beforeEach, vi} from 'vitest'
 
 // The object returned by useNuxtApp(). Tests overwrite `$api` per case via
 // setMockApi() below.
-const nuxtApp: Record<string, unknown> = {$api: {enabled: false}}
+const nuxtApp: Record<string, unknown> = {$api: {}}
 
 export function setMockApi(api: unknown) {
   nuxtApp.$api = api
@@ -27,5 +27,5 @@ beforeEach(() => {
   // and leaking state between cases would mask exactly the stale-error bug the
   // store tests are here to pin.
   setActivePinia(createPinia())
-  setMockApi({enabled: false})
+  setMockApi({})
 })

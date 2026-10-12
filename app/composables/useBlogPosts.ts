@@ -1,22 +1,54 @@
-import type {BlogCollectionItem, BlogEnCollectionItem} from '@nuxt/content'
+import type {ApiPost} from '~/plugins/api'
+import {renderMarkdown} from '~/utils/markdown'
 
-export type BlogPost = (BlogCollectionItem | BlogEnCollectionItem) & {originalOnly?: boolean}
-
-/** All published posts for a language; English falls back to originals. */
-export async function fetchBlogPosts(locale: string): Promise<BlogPost[]> {
-  const originals = await queryCollection('blog').where('draft', '=', false).order('publishedAt', 'DESC').all()
-  if (locale !== 'en') return originals
-  const translations = await queryCollection('blog_en').where('draft', '=', false).all()
-  return mergeTranslations(originals, translations)
+/** What the blog pages render. Posts are written in Vietnamese; the English site shows them as-is and says so. */
+export interface BlogPost {
+  path: string
+  slug: string
+  title: string
+  description: string
+  publishedAt: string | null
+  updatedAt: string
+  thumbnail?: string
+  cover?: string
+  category?: string
+  tags: string[]
+  html?: string
+  originalOnly?: boolean
 }
 
-/** One post by content path (/blog/<slug>); English falls back to the original. */
-export async function fetchBlogPost(path: string, locale: string): Promise<BlogPost | null> {
-  if (locale === 'en') {
-    const translated = await queryCollection('blog_en').path(path).first()
-    if (translated) return translated
-    const original = await queryCollection('blog').path(path).first()
-    return original ? {...original, originalOnly: true} : null
+export function toBlogPost(post: ApiPost, locale: string, withBody = false): BlogPost {
+  return {
+    path: `/blog/${post.slug}`,
+    slug: post.slug,
+    title: post.title,
+    description: post.excerpt ?? '',
+    publishedAt: post.published_at,
+    updatedAt: post.updated_at,
+    thumbnail: post.thumbnail?.url,
+    cover: post.thumbnail?.url,
+    category: post.category?.slug,
+    tags: post.tags.map((tag) => tag.slug),
+    html: withBody ? renderMarkdown(post.content) : undefined,
+    originalOnly: locale !== 'vi' ? true : undefined
   }
-  return queryCollection('blog').path(path).first()
+}
+
+/** Published posts, newest first, optionally narrowed by category/tag slug. Empty when the API is unreachable. */
+export async function fetchBlogPosts(locale: string, filter: {category?: string; tag?: string} = {}): Promise<BlogPost[]> {
+  const {$api} = useNuxtApp()
+  try {
+    const {posts} = await $api.listPosts({...filter, perPage: 100})
+    return posts.map((post) => toBlogPost(post, locale))
+  } catch (error) {
+    console.error('[blog] list failed:', (error as Error).message)
+    return []
+  }
+}
+
+/** One post with its rendered body; null when it does not exist (404). Other failures propagate to the Nuxt error page. */
+export async function fetchBlogPost(slug: string, locale: string): Promise<BlogPost | null> {
+  const {$api} = useNuxtApp()
+  const post = await $api.getPost(slug)
+  return post ? toBlogPost(post, locale, true) : null
 }

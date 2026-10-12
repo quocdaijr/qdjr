@@ -32,6 +32,6 @@ const category = computed(() => String(route.params.category || ''))
 useHead(() => ({title: `${category.value} | ${t('blog.siteSuffix')}`}))
 
 const {data: posts} = await useAsyncData(`blog-cat-${locale.value}-${category.value}`, () =>
-  fetchBlogPosts(locale.value).then((list) => list.filter((p) => p.category === category.value))
+  fetchBlogPosts(locale.value, {category: category.value})
 )
 </script>

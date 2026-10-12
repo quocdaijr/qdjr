@@ -30,7 +30,7 @@
           </div>
 
           <article class="prose md:prose-lg max-w-none dark:prose-invert text-gray-700 dark:text-gray-200 pb-8" :lang="articleLang">
-            <ContentRenderer :value="post"/>
+            <div v-html="post.html"/>
           </article>
 
           <hr class="w-60 mx-auto text-gray-200 dark:text-gray-600">
@@ -47,16 +47,6 @@
             <span class="h-6 pl-1 pt-1 mb-1 text-sm">{{ tag }}</span>
           </NuxtLinkLocale>
         </div>
-
-        <div v-if="post.author" class="flex items-center gap-3 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200">
-          <div class="w-12 h-12 flex justify-center items-center uppercase rounded-full text-xl text-white bg-yellow-700 shrink-0">
-            <b>{{ post.author.charAt(0).toUpperCase() }}</b>
-          </div>
-          <div>
-            <p class="text-base font-semibold md:text-lg leading-tight">{{ post.author }}</p>
-            <p class="text-xs text-gray-600 dark:text-gray-400">{{ t('blog.author') }}</p>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -72,10 +62,9 @@ const route = useRoute()
 const {t, locale} = useI18n()
 const runtimeConfig = useRuntimeConfig()
 
-// /en/blog/x and /blog/x both resolve to the content path /blog/x.
-const contentPath = stripLocalePrefix(route.path.replace(/\/+$/, ''), locale.value)
+const slug = String(route.params.slug || '')
 
-const {data: post} = await useAsyncData(`blog-${locale.value}-${contentPath}`, () => fetchBlogPost(contentPath, locale.value))
+const {data: post} = await useAsyncData(`blog-${locale.value}-${slug}`, () => fetchBlogPost(slug, locale.value))
 
 if (!post.value) {
   throw createError({statusCode: 404, statusMessage: 'Page Not Found', fatal: true})
@@ -103,8 +92,7 @@ useSeoMeta({
   ogDescription: () => post.value?.description || '',
   ogImage: () => post.value?.cover || post.value?.thumbnail || '',
   articlePublishedTime: () => toIso(post.value?.publishedAt),
-  articleModifiedTime: () => toIso(post.value?.updatedAt || post.value?.publishedAt),
-  articleAuthor: () => (post.value?.author ? [post.value.author] : [])
+  articleModifiedTime: () => toIso(post.value?.updatedAt || post.value?.publishedAt)
 })
 
 function toIso(value: unknown): string {
@@ -113,47 +101,3 @@ function toIso(value: unknown): string {
   return Number.isNaN(d.getTime()) ? '' : d.toISOString()
 }
 </script>
-
-<style>
-/* Tailwind typography (`prose`) forces a dark-gray `pre` background that clashes
-   with Shiki's github-light theme (dark tokens on a light bg). Reset pre styling
-   and let Shiki's themed colors show through. */
-.prose pre.shiki,
-.prose :not(pre) > code {
-  background-color: #fff;
-  color: #24292e;
-}
-
-.prose :not(pre) > code {
-  padding: 0.15em 0.35em;
-  border-radius: 0.25rem;
-  border: 1px solid #e5e7eb;
-  font-size: 0.9em;
-}
-
-.prose :not(pre) > code::before,
-.prose :not(pre) > code::after {
-  content: '';
-}
-
-.prose pre.shiki {
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  overflow-x: auto;
-}
-
-.prose pre.shiki code {
-  background: transparent;
-  padding: 0;
-  color: inherit;
-  font-size: 0.9em;
-}
-
-html.dark .prose pre.shiki,
-html.dark .prose :not(pre) > code {
-  background-color: #0d1117;
-  color: #e1e4e8;
-  border-color: #30363d;
-}
-</style>

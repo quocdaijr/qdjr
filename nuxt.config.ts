@@ -28,12 +28,10 @@ export default defineNuxtConfig({
     // Private keys (only available on server-side)
     // Public keys (exposed to client-side)
     public: {
-      baseUrl: process.env.APP_URL || 'https://qdjr.me',
-      // Empty by default: api.qdjr.me no longer resolves (NXDOMAIN). An empty
-      // value makes every $api call short-circuit to an empty result with zero
-      // network traffic, instead of a multi-second DNS failure on each
-      // navigation. Set API_URL to re-enable the legacy blog surface.
-      apiUrl: process.env.API_URL || '',
+      baseUrl: process.env.APP_URL || 'https://qdjr.dev',
+      // qdjr-admin API (apps/api). Netlify sets API_URL; local dev uses the Go
+      // server on :8080.
+      apiUrl: process.env.API_URL || 'https://api.qdjr.dev',
       gaId: process.env.GOOGLE_ANALYTICS_ID || 'G-KBZQ6KNY8T'
     }
   },
@@ -57,7 +55,7 @@ export default defineNuxtConfig({
         },
         {
           property: 'og:url',
-          content: process.env.APP_URL || 'https://qdjr.me'
+          content: process.env.APP_URL || 'https://qdjr.dev'
         },
         {
           property: 'og:type',
@@ -77,7 +75,7 @@ export default defineNuxtConfig({
         },
         {
           property: 'og:image',
-          content: (process.env.APP_URL || 'https://qdjr.me') + '/profile.jpg'
+          content: (process.env.APP_URL || 'https://qdjr.dev') + '/profile.jpg'
         },
         { name: 'apple-mobile-web-app-title', content: 'QDJr Blog' },
         { name: 'format-detection', content: 'telephone=no' }
@@ -108,10 +106,6 @@ export default defineNuxtConfig({
   // Global CSS — Tailwind v4 entrypoint
   css: ['~/assets/css/main.css'],
 
-  // Plugins are auto-scanned from <srcDir>/plugins and deduped by resolved path,
-  // so listing them here was redundant. Dropping the array also removes eight
-  // hardcoded paths that would need maintaining.
-
   // Auto import components
   components: true,
 
@@ -120,25 +114,9 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@pinia/nuxt',
     '@vite-pwa/nuxt',
-    '@nuxt/content',
     '@nuxtjs/i18n'
     // Note: robots and sitemap will be added back in next phase with proper configuration
   ],
-
-  // @nuxt/content configuration
-  content: {
-    build: {
-      markdown: {
-        highlight: {
-          theme: {
-            default: 'github-light-high-contrast',
-            dark: 'github-dark-high-contrast'
-          },
-          langs: ['js', 'ts', 'vue', 'bash', 'json', 'yaml', 'md', 'html', 'css', 'php', 'python', 'go']
-        }
-      }
-    }
-  },
 
   // Vietnamese at /, English under /en. Browsers whose preferred language is
   // English are redirected once from / to /en; the cookie remembers a manual
@@ -146,7 +124,7 @@ export default defineNuxtConfig({
   i18n: {
     strategy: 'prefix_except_default',
     defaultLocale: 'vi',
-    baseUrl: process.env.APP_URL || 'https://qdjr.me',
+    baseUrl: process.env.APP_URL || 'https://qdjr.dev',
     locales: [
       {code: 'vi', language: 'vi-VN', name: 'Tiếng Việt', file: 'vi.json'},
       {code: 'en', language: 'en-US', name: 'English', file: 'en.json'}
@@ -159,9 +137,6 @@ export default defineNuxtConfig({
       fallbackLocale: 'vi'
     }
   },
-
-  // No pinia.storesDirs override needed: <srcDir>/stores (app/stores) is the
-  // default now that the sources live under app/.
 
   // PWA configuration (updated for @vite-pwa/nuxt)
   pwa: {
@@ -208,34 +183,9 @@ export default defineNuxtConfig({
     }
   },
 
-  // Build tuning
+  // Tailwind v4. Replaces @nuxtjs/tailwindcss, which is pinned to tailwindcss
+  // ~3.4 and has no v4 support.
   vite: {
-    // Tailwind v4. Replaces @nuxtjs/tailwindcss, which is pinned to
-    // tailwindcss ~3.4 and has no v4 support.
-    plugins: [tailwindcss()],
-    build: {
-      // The main bundle is ~1MB because several legacy client plugins (prismjs
-      // with many languages, video.js, vue-spinner) are registered globally.
-      // They only run on /legacy-blogs/* but are bundled eagerly. The whole
-      // legacy surface is slated for removal, so raising the warning threshold
-      // here is intentional until that happens. three.js is NOT part of this:
-      // it is reached only through dynamic imports in app/scenes/* and lands in
-      // its own async chunk.
-      chunkSizeWarningLimit: 1200
-    }
-  },
-
-  // PostCSS: rewrite the deprecated `color-adjust` shorthand to `print-color-adjust`
-  // before Vite's CSS processor warns on it. Needed because prismjs still ships the
-  // deprecated form in its plugin CSS (node_modules/prismjs/plugins/line-highlight/*.css)
-  // and we can't edit vendor files.
-  postcss: {
-    plugins: {
-      // Anchored with ~~ (rootDir) rather than a bare relative path so resolution
-      // stays unambiguous when srcDir moves to app/ and under Vite 8.
-      '~~/postcss-plugins/rewrite-color-adjust.cjs': {}
-    }
-  },
-
-  // Note: Robots and sitemap configuration will be added back in next phase
+    plugins: [tailwindcss()]
+  }
 })

@@ -22,7 +22,7 @@
 defineOptions({name: 'PostSearch'})
 
 // This form used to submit to /search — a route that has never existed, so the
-// header search box 404'd on every use. It now searches the @nuxt/content blog.
+// header search box 404'd on every use. It now searches the blog (posts from the qdjr-admin API).
 //
 // Keeping `action` and `name="q"` means it still works with JS disabled; the
 // @submit.prevent handler upgrades that to a client-side transition.

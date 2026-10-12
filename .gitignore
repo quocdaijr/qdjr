@@ -109,3 +109,6 @@ pm2.config.js
 # Playwright e2e output
 test-results
 playwright-report
+
+# Netlify build output
+.netlify

@@ -23,7 +23,6 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "translate:posts": "node scripts/translate-posts.mjs",
     "trips:build": "node scripts/build-trip.mjs"
   },
   "lint-staged": {
@@ -31,22 +30,18 @@
     "*.{css,vue}": "stylelint --fix"
   },
   "dependencies": {
-    "@nuxt/content": "^3.15.2",
     "@nuxtjs/i18n": "^10.6.0",
     "@nuxtjs/robots": "^5.2.10",
     "@nuxtjs/sitemap": "^7.3.0",
     "@pinia/nuxt": "^0.11.0",
     "@tailwindcss/vite": "^4.3.3",
     "@vite-pwa/nuxt": "^1.0.1",
-    "dayjs": "^1.11.13",
+    "markdown-it": "^14.3.2",
     "nuxt": "^4.5.2",
     "pinia": "^3.0.2",
-    "prismjs": "^1.25.0",
     "tailwindcss": "^4.3.3",
     "three": "^0.186.1",
-    "video.js": "^7.15.4",
-    "vue": "^3.5.40",
-    "vue-spinner": "^1.0.4"
+    "vue": "^3.5.40"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.3",
@@ -56,10 +51,10 @@
     "@nuxt/test-utils": "^3.23.0",
     "@playwright/test": "^1.62.1",
     "@tailwindcss/typography": "^0.5.19",
+    "@types/markdown-it": "^14.2.0",
     "@types/three": "^0.186.0",
     "@vitest/coverage-v8": "^3.2.7",
     "@vue/test-utils": "^2.4.11",
-    "better-sqlite3": "^12.9.0",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "happy-dom": "^20.11.2",
