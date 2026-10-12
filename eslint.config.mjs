@@ -52,5 +52,14 @@ export default withNuxt(
       ]
     }
   },
+  {
+    // Plain JS is parsed by espree, which has no type information, so the
+    // TypeScript rule reports every constant as "only used as a type".
+    files: ['**/*.{js,mjs,cjs}'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
+      'no-unused-vars': ['warn', {argsIgnorePattern: '^_', varsIgnorePattern: '^_'}]
+    }
+  },
   prettier
 )
