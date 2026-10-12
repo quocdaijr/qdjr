@@ -5,7 +5,7 @@ import {expect, test} from '@playwright/test'
 // which is what the browser paints). Text drawn straight over the three.js
 // canvas is measured against the page paper, an approximation the design
 // accepts (see design.md, Marquee Hero).
-const PAGES = ['/', '/about', '/blog', '/blog/hello-world', '/blog/search?q=zzzz', '/legacy-blogs', '/trang-khong-ton-tai']
+const PAGES = ['/', '/about', '/blog', '/blog/hello-world', '/blog/search?q=zzzz', '/trang-khong-ton-tai']
 const VIBES = ['terminal', 'cartoon', 'galaxy'] as const
 const VN_NOON = new Date('2026-10-01T05:00:00Z')
 const VN_NIGHT = new Date('2026-10-01T15:00:00Z')

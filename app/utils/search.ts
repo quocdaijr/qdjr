@@ -1,5 +1,5 @@
 /**
- * Search helpers for the @nuxt/content blog.
+ * Search helpers for the blog (posts come from the qdjr-admin API).
  *
  * Extracted from pages/blog/search.vue so the matching rules can be tested
  * directly rather than only through a browser.

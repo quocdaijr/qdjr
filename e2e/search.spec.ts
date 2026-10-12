@@ -1,7 +1,7 @@
 import {expect, test} from '@playwright/test'
 
 // The header search form used to submit to /search, a route that never existed,
-// so it 404'd on every use. It now searches the @nuxt/content blog.
+// so it 404'd on every use. It now searches the blog (posts from the qdjr-admin API).
 
 test('header search navigates to results', async ({page}, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'desktop header instance')

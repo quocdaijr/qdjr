@@ -32,6 +32,6 @@ const tag = computed(() => String(route.params.tag || ''))
 useHead(() => ({title: `#${tag.value} | ${t('blog.siteSuffix')}`}))
 
 const {data: posts} = await useAsyncData(`blog-tag-${locale.value}-${tag.value}`, () =>
-  fetchBlogPosts(locale.value).then((list) => list.filter((p) => Array.isArray(p.tags) && p.tags.includes(tag.value)))
+  fetchBlogPosts(locale.value, {tag: tag.value})
 )
 </script>
