@@ -33,4 +33,27 @@ test.describe('cv mode (phase 2: opt-in by cookie)', () => {
     await page.goto('/trips/sg-dalat')
     await expect(page.locator('canvas.vibe-scene')).toHaveCount(1, {timeout: 15_000})
   })
+
+  test('the header switch leaves cv mode without a reload and remembers it', async ({page}) => {
+    await page.goto('/blog')
+    await page.waitForLoadState('networkidle') // hydrated: the click must reach Vue
+    const button = page.locator('header .mode-switch-icon').filter({visible: true}).first()
+    await expect(page.locator('header .vibe-switch-icon')).toHaveCount(0)
+    await button.click()
+    await expect(page.locator('html')).toHaveAttribute('data-mode', 'vibes')
+    await expect(page.locator('html')).toHaveAttribute('data-vibe', 'cartoon')
+    await expect(page.locator('link[href*="fonts.googleapis.com/css2"]')).toHaveCount(3)
+    await expect(page.locator('canvas.vibe-scene')).toHaveCount(1, {timeout: 15_000})
+    await page.reload()
+    await expect(page.locator('html')).toHaveAttribute('data-mode', 'vibes')
+  })
+
+  test('the mobile drawer offers the segmented mode control', async ({page}, testInfo) => {
+    test.skip(testInfo.project.name !== 'mobile', 'drawer exists only below md')
+    await page.goto('/blog')
+    await page.waitForLoadState('networkidle')
+    await page.click('header button.w-10.h-10')
+    await page.locator('#mobile-nav .mode-switch').locator('label.seg-option:has-text("Vibes")').click()
+    await expect(page.locator('html')).toHaveAttribute('data-mode', 'vibes')
+  })
 })

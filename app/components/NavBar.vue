@@ -8,8 +8,9 @@
               class="flex items-center px-5 py-3 font-semibold text-gray-600 dark:text-gray-300">
       <span class="w-full" @click="methodToggleNav">{{ $t('nav.about') }}</span>
     </NuxtLinkLocale>
-    <div class="px-5 py-3 flex items-center gap-3">
-      <VibeSwitch variant="segmented"/>
+    <div class="px-5 py-3 flex flex-col items-start gap-3">
+      <ModeSwitch variant="segmented"/>
+      <VibeSwitch v-if="store.isVibes" variant="segmented"/>
       <LangSwitch class="font-semibold text-gray-600 dark:text-gray-300" @click="methodToggleNav"/>
     </div>
     <div v-if="categories" v-click-outside="closeCatMenu"
@@ -102,6 +103,11 @@ export default {
     categories: {
       type: Array,
       default: null
+    }
+  },
+  computed: {
+    store() {
+      return useThemeStore()
     }
   },
   methods: {

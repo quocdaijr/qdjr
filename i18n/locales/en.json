@@ -3,6 +3,7 @@
   "lang": {"switchTo": "Switch to {language}"},
   "search": {"label": "Search posts", "placeholder": "Search post ...", "submit": "Search"},
   "vibe": {"legend": "Vibe", "current": "Vibe: {current}. Switch to {next}", "title": "Switch vibe (now: {current})", "pick": "Pick a vibe"},
+  "mode": {"legend": "Look", "cv": "CV", "vibes": "Vibes", "current": "Look: {current}. Switch to {next}", "title": "Switch look (now: {current})", "pick": "Pick a look"},
   "home": {"primary": "Primary", "about": "About me →", "blog": "Read the blog →"},
   "about": {
     "stops": "Journey stops", "hello": "Hello", "whatIDo": "What I do", "sayHello": "Say hello",

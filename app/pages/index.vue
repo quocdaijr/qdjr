@@ -10,7 +10,7 @@
       <NuxtLinkLocale to="/about" class="link">{{ t('home.about') }}</NuxtLinkLocale>
       <NuxtLinkLocale to="/blog" class="link">{{ t('home.blog') }}</NuxtLinkLocale>
     </nav>
-    <div class="hero-vibes reveal" :style="{'--i': 4}">
+    <div v-if="store.isVibes" class="hero-vibes reveal" :style="{'--i': 4}">
       <p class="hero-vibes-label">{{ t('vibe.pick') }}</p>
       <VibeSwitch variant="segmented"/>
     </div>
@@ -20,6 +20,7 @@
 <script setup lang="ts">
 const {t} = useI18n()
 const content = useProfile()
+const store = useThemeStore()
 </script>
 
 <style scoped>
