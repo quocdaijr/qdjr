@@ -39,8 +39,11 @@ export default defineNuxtConfig({
   // App config (replaces head configuration)
   app: {
     head: {
-      // The default vibe (stores/theme.ts) in the page shell, so its tokens apply before any script runs.
-      htmlAttrs: {'data-vibe': 'cartoon'},
+      // The default mode (stores/theme.ts) in the page shell, so its tokens apply
+      // before any script runs. data-vibe is set by plugins/theme.ts on every
+      // (server-rendered) request, in vibes mode only: a config default here
+      // would survive the plugin's `undefined` and leak into cv mode.
+      htmlAttrs: {'data-mode': 'vibes'},
       title: 'QDJr Blog',
       meta: [
         { charset: 'utf-8' },
@@ -82,23 +85,9 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        // Vibe fonts. Three static stylesheets (one per vibe) rather than a
-        // runtime swap: browsers only download font binaries for text that is
-        // actually rendered, so the inactive vibes cost one small CSS fetch each.
+        // Vibe font stylesheets are injected by plugins/theme.ts in vibes mode only.
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap'
-        },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,700,100,1&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600&display=swap'
-        },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=Geist:wght@400;600&family=Geist+Mono:wght@400&display=swap'
-        }
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }
       ]
     }
   },
