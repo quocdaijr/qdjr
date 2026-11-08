@@ -12,7 +12,24 @@
 /* was: darkMode: 'class'
    The `dark` class is set on <html> by app/stores/theme.ts applyTheme().
    Dark mode follows the Vietnam clock (see app/utils/vnTime.ts). */
-@custom-variant dark (&:where(.dark, .dark *));
+
+/* dark: the .dark class (vibes: the Vietnam clock; cv: the store mirrors the
+   OS scheme) — and, in cv mode, the OS media query itself so the server render
+   is already dark before hydration. (Tailwind's @custom-variant nests `&`
+   without a CSS scoping root; stylelint cannot know that.) */
+/* stylelint-disable nesting-selector-no-missing-scoping-root */
+@custom-variant dark {
+  &:where(.dark, .dark *) {
+    @slot;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:where([data-mode="cv"], [data-mode="cv"] *) {
+      @slot;
+    }
+  }
+}
+/* stylelint-enable nesting-selector-no-missing-scoping-root */
 
 /* Whole-site retint with zero per-component edits: every existing gray-* and
    blue-* utility is pointed at the active vibe's tinted ramp (tokens.css).
@@ -72,6 +89,12 @@
 
   .dark body {
     background-color: var(--vibe-gray-900);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    [data-mode="cv"] body {
+      background-color: var(--vibe-gray-900);
+    }
   }
 
   /* In-page #stop-N links on /about only (vue-router's scrollTo honours this
@@ -154,6 +177,13 @@
       animation-delay: 0ms;
     }
   }
+
+  /* CV mode: no page-load choreography. */
+  [data-mode="cv"] .reveal {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
 }
 
 /* Per-vibe nav voice. The header markup is shared; only the dressing moves.
@@ -199,6 +229,12 @@ header nav a {
 
 .dark {
   --reading-ground: var(--vibe-gray-900);
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-mode="cv"] {
+    --reading-ground: var(--vibe-gray-900);
+  }
 }
 
 /* Without blur, or when less transparency is asked for, the veil thickens. */
@@ -302,9 +338,24 @@ header nav a {
   --tw-prose-links: var(--tw-prose-invert-links);
 }
 
+@media (prefers-color-scheme: dark) {
+  [data-mode="cv"] .prose {
+    --tw-prose-body: var(--tw-prose-invert-body);
+    --tw-prose-headings: var(--tw-prose-invert-headings);
+    --tw-prose-links: var(--tw-prose-invert-links);
+  }
+}
+
 [data-vibe="cartoon"] header nav a {
   border: 2px solid var(--color-rule);
   border-radius: var(--radius-pill);
+}
+
+/* CV mode: the header sits on plain paper; no glass, no blur. */
+[data-mode="cv"] .header-pills > a,
+[data-mode="cv"] .header-pill {
+  background: var(--color-paper);
+  backdrop-filter: none;
 }
 
 /* Used by tag/ListNewest.vue's horizontal strip but never actually defined
