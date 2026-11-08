@@ -18,6 +18,7 @@ export const DEFAULT_MODE: Mode = 'cv' // the plain CV by default; the vibes are
 export const MODE_STORAGE_KEY = 'mode'
 
 const CLOCK_INTERVAL_MS = 60_000
+export const SCHEME_QUERY = '(prefers-color-scheme: dark)'
 const COOKIE_MAX_AGE_S = 60 * 60 * 24 * 365
 
 // localStorage is the client's record; a cookie mirrors it so the server
@@ -74,10 +75,16 @@ export const useThemeStore = defineStore('theme', {
       }
     },
 
+    // Switching also re-derives dark mode under the new rule (OS scheme for
+    // cv, the clock for vibes) so a night-time visitor leaving the vibes does
+    // not keep a dark CV on a light OS until the next reload.
     setMode(mode: Mode) {
       if (!isMode(mode)) return
       this.mode = mode
-      if (import.meta.client) persist(MODE_STORAGE_KEY, mode)
+      if (import.meta.client) {
+        persist(MODE_STORAGE_KEY, mode)
+        this.isDarkMode = mode === 'cv' ? window.matchMedia(SCHEME_QUERY).matches : isNightInVietnam(new Date())
+      }
       this.applyTheme()
     },
 

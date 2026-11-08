@@ -16,6 +16,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.useRealTimers()
+  vi.unstubAllGlobals()
 })
 
 describe('vibe helpers', () => {
@@ -238,6 +239,29 @@ describe('mode', () => {
     store.initializeTheme(VN_NOON, true)
     expect(store.isDarkMode).toBe(false)
     store.syncScheme(true)
+    expect(store.isDarkMode).toBe(false)
+  })
+
+  test('switching vibes → cv at night on a light OS turns dark off', () => {
+    vi.stubGlobal('matchMedia', () => ({matches: false}))
+    localStorage.setItem(MODE_STORAGE_KEY, 'vibes')
+    const store = useThemeStore()
+    store.initializeTheme(VN_NIGHT)
+    expect(store.isDarkMode).toBe(true)
+    store.setMode('cv')
+    expect(store.isDarkMode).toBe(false)
+    expect(html().classList.contains('dark')).toBe(false)
+  })
+
+  test('switching cv → vibes at noon on a dark OS turns dark off', () => {
+    vi.stubGlobal('matchMedia', () => ({matches: true}))
+    vi.useFakeTimers()
+    vi.setSystemTime(VN_NOON)
+    localStorage.setItem(MODE_STORAGE_KEY, 'cv')
+    const store = useThemeStore()
+    store.initializeTheme(VN_NOON, true)
+    expect(store.isDarkMode).toBe(true)
+    store.setMode('vibes')
     expect(store.isDarkMode).toBe(false)
   })
 

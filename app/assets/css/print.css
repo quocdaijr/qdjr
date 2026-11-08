@@ -14,6 +14,20 @@
     color: #000;
   }
 
+  /* Ink on paper whatever the OS scheme: the sheet colours itself from the
+     tokens, so the dark cv tokens (.dark[data-mode] and the media block in
+     tokens.css) are overridden here by the stronger html-qualified selectors. */
+  html[data-mode="cv"],
+  html.dark[data-mode="cv"] {
+    --color-paper: #fff;
+    --color-paper-2: #fff;
+    --color-rule: #ccc;
+    --color-muted: #444;
+    --color-ink: #000;
+    --color-accent: #000;
+    --color-focus: #000;
+  }
+
   .cv {
     max-width: none;
     font-size: 11pt;

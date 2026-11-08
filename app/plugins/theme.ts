@@ -1,4 +1,4 @@
-import {isMode, isVibe, MODE_STORAGE_KEY, useThemeStore, VIBE_STORAGE_KEY} from '~/stores/theme'
+import {isMode, isVibe, MODE_STORAGE_KEY, SCHEME_QUERY, useThemeStore, VIBE_STORAGE_KEY} from '~/stores/theme'
 import {isNightInVietnam} from '~/utils/vnTime'
 
 // Vibe fonts, vibes mode only. Three static stylesheets (one per vibe): the
@@ -12,7 +12,6 @@ const VIBE_FONT_LINKS: Array<{rel: 'stylesheet'; href: string}> = [
   },
   {rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=Geist:wght@400;600&family=Geist+Mono:wght@400&display=swap'}
 ]
-const SCHEME_QUERY = '(prefers-color-scheme: dark)'
 
 // Theme bootstrap. A server render takes mode and vibe from their cookies (it
 // cannot see localStorage); dark mode comes from the Vietnam clock in vibes

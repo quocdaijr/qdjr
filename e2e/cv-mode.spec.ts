@@ -100,4 +100,14 @@ test.describe('cv mode (the default)', () => {
     await expect(page.locator('.cv')).toBeVisible()
     await expect(page.locator('.cv-head h1')).toBeVisible()
   })
+
+  test('printing from a dark OS is still black ink on white paper', async ({page}, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'one project is enough')
+    await page.goto('/en/about')
+    await page.emulateMedia({colorScheme: 'dark', media: 'print'})
+    const colour = (selector: string) => page.locator(selector).first().evaluate((el) => getComputedStyle(el).color)
+    expect(await colour('.cv')).toBe('rgb(0, 0, 0)')
+    expect(await colour('.cv-period')).toBe('rgb(68, 68, 68)')
+    expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(255, 255, 255)')
+  })
 })
