@@ -1,9 +1,21 @@
 import {expect, test} from '@playwright/test'
 
 
-test.describe('cv mode (phase 2: opt-in by cookie)', () => {
-  test.beforeEach(async ({context, baseURL}) => {
-    await context.addCookies([{name: 'mode', value: 'cv', url: baseURL!}])
+test.describe('cv mode (the default)', () => {
+  test('a saved vibe alone does not re-enable the vibes', async ({page}) => {
+    await page.addInitScript(() => localStorage.setItem('vibe', 'galaxy'))
+    await page.goto('/blog')
+    await expect(page.locator('html')).toHaveAttribute('data-mode', 'cv')
+    await expect(page.locator('html')).not.toHaveAttribute('data-vibe', /./)
+  })
+
+  test('no three.js chunk is requested in cv mode', async ({page}) => {
+    const scripts: string[] = []
+    page.on('request', (r) => r.resourceType() === 'script' && scripts.push(r.url()))
+    await page.goto('/en/about')
+    await page.waitForTimeout(5000)
+    const sizes = await Promise.all(scripts.map(async (u) => (await (await page.request.get(u)).body()).length))
+    expect(Math.max(...sizes)).toBeLessThan(400_000) // three + scenes is ~667 KB
   })
 
   test('renders no scene, no veil and no vibe fonts', async ({page}) => {

@@ -14,7 +14,7 @@ export const VIBE_STORAGE_KEY = 'vibe'
 // Presentation mode: the plain CV (fast, no scene) or the three.js vibes.
 export type Mode = 'cv' | 'vibes'
 export const MODES: readonly Mode[] = ['cv', 'vibes'] as const
-export const DEFAULT_MODE: Mode = 'vibes' // flipped to 'cv' in the cv-pages PR
+export const DEFAULT_MODE: Mode = 'cv' // the plain CV by default; the vibes are one switch away
 export const MODE_STORAGE_KEY = 'mode'
 
 const CLOCK_INTERVAL_MS = 60_000

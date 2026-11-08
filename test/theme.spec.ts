@@ -37,6 +37,7 @@ describe('theme store', () => {
   })
 
   test('initializeTheme restores a saved vibe and applies it to <html>', () => {
+    localStorage.setItem(MODE_STORAGE_KEY, 'vibes') // vibes-mode behaviour: data-vibe and the clock
     localStorage.setItem(VIBE_STORAGE_KEY, 'galaxy')
 
     const store = useThemeStore()
@@ -58,6 +59,7 @@ describe('theme store', () => {
   })
 
   test('ignores an unknown saved vibe', () => {
+    localStorage.setItem(MODE_STORAGE_KEY, 'vibes') // vibes-mode behaviour: data-vibe and the clock
     localStorage.setItem(VIBE_STORAGE_KEY, 'neon')
 
     const store = useThemeStore()
@@ -76,6 +78,7 @@ describe('theme store', () => {
   })
 
   test('derives dark mode from the Vietnam clock at night', () => {
+    localStorage.setItem(MODE_STORAGE_KEY, 'vibes') // vibes-mode behaviour: data-vibe and the clock
     const store = useThemeStore()
     store.initializeTheme(VN_NIGHT)
 
@@ -97,6 +100,7 @@ describe('theme store', () => {
 
   test('setVibe persists and applies', () => {
     const store = useThemeStore()
+    store.setMode('vibes') // data-vibe is only written in vibes mode
 
     store.setVibe('cartoon')
 
@@ -132,6 +136,7 @@ describe('theme store', () => {
   })
 
   test('syncClock re-evaluates dark mode for a given instant', () => {
+    localStorage.setItem(MODE_STORAGE_KEY, 'vibes') // vibes-mode behaviour: data-vibe and the clock
     const store = useThemeStore()
     store.initializeTheme(VN_NOON)
 
@@ -142,6 +147,7 @@ describe('theme store', () => {
   })
 
   test('startClock ticks on the interval and the returned function stops it', () => {
+    localStorage.setItem(MODE_STORAGE_KEY, 'vibes') // vibes-mode behaviour: data-vibe and the clock
     vi.useFakeTimers()
     vi.setSystemTime(VN_NOON)
     const store = useThemeStore()
@@ -171,6 +177,10 @@ describe('mode helpers', () => {
 describe('mode', () => {
   test('starts on the default mode', () => {
     expect(useThemeStore().mode).toBe(DEFAULT_MODE)
+  })
+
+  test('cv is the default mode', () => {
+    expect(DEFAULT_MODE).toBe('cv')
   })
 
   test('initializeTheme restores a saved mode, mirrors it to the cookie and applies data-mode', () => {

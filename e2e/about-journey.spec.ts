@@ -1,4 +1,7 @@
 import {expect, test} from '@playwright/test'
+import {useVibes} from './helpers/mode'
+
+useVibes(test)
 
 // Hello · What I do · 4 career stages · Projects (one stop, with a picker) · Say hello
 const STOP_COUNT = 8

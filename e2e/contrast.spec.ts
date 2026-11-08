@@ -1,4 +1,7 @@
 import {expect, test} from '@playwright/test'
+import {useVibes} from './helpers/mode'
+
+useVibes(test)
 
 // WCAG 2.1 AA text contrast across every vibe × mode. For each visible text
 // node the background is the nearest opaque ancestor (falling back to white,
@@ -81,6 +84,26 @@ const collectFailures = () => {
     }
   }
   return failures
+}
+
+for (const scheme of ['light', 'dark'] as const) {
+  test(`text contrast meets WCAG AA — cv · ${scheme}`, async ({page, context}, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'one viewport is enough for colour')
+    test.setTimeout(120_000)
+    await context.clearCookies() // cv mode is the default; the file-level useVibes opt-in is undone here
+    await page.emulateMedia({colorScheme: scheme})
+
+    const failures: Failure[] = []
+    for (const path of PAGES) {
+      await page.goto(path)
+      await page.locator('main, svg.emoji-error').first().waitFor()
+      await page.waitForTimeout(600)
+      const found = await page.evaluate(collectFailures)
+      failures.push(...found.map((f) => ({page: path, ...f})))
+    }
+
+    expect(failures, JSON.stringify(failures, null, 1)).toEqual([])
+  })
 }
 
 for (const vibe of VIBES) {
