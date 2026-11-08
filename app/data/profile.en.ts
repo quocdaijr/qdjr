@@ -8,11 +8,11 @@ export const PROFILE_EN: ProfileContent = {
     photo: '/profile.jpg',
     photoAlt: 'Quoc Dai Nguyen - Senior Backend Software Engineer Profile Photo',
     summary:
-      'Backend Software Engineer with 6+ years of experience building and operating high-performance backend systems for media and e-commerce platforms. Strong background in system design, performance optimization, background processing, and third-party integrations. Experienced in owning and operating production systems at scale.'
+      'Senior Backend Software Engineer with 6+ years of experience designing and operating high-performance backend systems for media and e-commerce platforms. Strong background in backend architecture, system design, performance optimization, background processing, and third-party integrations. Experienced in owning and operating production systems at scale.'
   },
   quote: {text: 'First, solve the problem. Then, write the code', author: 'John Johnson'},
   skills: [
-    {group: 'Programming Languages', expert: 'PHP (Yii2, Laravel)', proficient: 'Node.js (NestJS, AdonisJS), Python, JavaScript'},
+    {group: 'Programming Languages', expert: 'PHP (Yii2, Laravel)', proficient: 'Node.js (NestJS, AdonisJS), Python (FastAPI, Flask), JavaScript'},
     {group: 'Database & Storage', expert: 'MySQL, Redis, Elasticsearch', proficient: 'MongoDB, Database optimization, Query performance tuning'},
     {group: 'Messaging & Streaming', expert: 'RabbitMQ', proficient: 'Kafka'},
     {group: 'DevOps & Infrastructure', expert: 'Linux, Docker, Nginx, Git, Supervisor', proficient: 'Kubernetes, CI/CD Pipelines, AWS'},
@@ -76,15 +76,18 @@ export const PROFILE_EN: ProfileContent = {
       kind: 'work',
       position: 'Senior Backend Software Engineer',
       technologies:
-        'PHP, Python, Node.js, Laravel Framework, NestJS, MySQL, Redis, RabbitMQ, Kafka, GitLab, Linux, Docker, Kubernetes, Supervisor, Sentry, Rancher',
+        'PHP, Python, Node.js, Laravel Framework, NestJS, LangGraph, MySQL, Redis, RabbitMQ, Kafka, GitLab, Linux, Docker, Kubernetes, Supervisor, Sentry, Rancher',
       thirdParties: 'Shopify, Jira, Segment, CustomerIO, Crisp Chat',
       achievements: [
         'Designed and developed backend services and background processing systems for Shopify-based applications, with a focus on performance and reliability',
-        'Architected database schemas and core backend components, contributing to technical planning and implementation decisions across backend systems',
+        'Architected database schemas and core backend components, collaborating with PMs on technical planning and solution design',
         'Owned and maintained Shopify application backends, ensuring system stability, scalability, and continuous service delivery',
+        'Refactored backend components and resolved performance bottlenecks across application and database layers',
         'Integrated third-party platforms and internal services to extend product capabilities and streamline business workflows',
         'Collaborated with DevOps teams to configure Kubernetes deployments and integrate monitoring and observability for backend services',
-        'Utilized AI-assisted development tools to support code generation, debugging, and daily development productivity'
+        'Researched AI Agent workflows using LangGraph for future product development',
+        'Utilized AI-assisted development tools to improve code quality, debugging efficiency, and daily development productivity',
+        'Supported junior engineers through code reviews and technical guidance on backend architecture and best practices'
       ]
     }
   ],

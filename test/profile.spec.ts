@@ -65,4 +65,15 @@ describe('profile content', () => {
     const plain = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').replace('Đ', 'D').replace('đ', 'd')
     expect(vi.timeline.map((e) => plain(e.short))).toEqual(en.timeline.map((e) => e.short))
   })
+
+  test('the CV merge (2026-11) is present in both languages', () => {
+    for (const content of [vi, en]) {
+      const firegroup = content.timeline.find((e) => e.short === 'FireGroup')!
+      expect(firegroup.achievements).toHaveLength(9)
+      expect(firegroup.technologies).toContain('LangGraph')
+      expect(content.skills[0].proficient).toContain('Python (FastAPI, Flask)')
+      expect(content.profile.summary.startsWith('Senior Backend Software Engineer')).toBe(true)
+    }
+    expect(en.timeline[3].achievements).toContain('Researched AI Agent workflows using LangGraph for future product development')
+  })
 })

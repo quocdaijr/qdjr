@@ -13,7 +13,7 @@ export const PROFILE_VI: ProfileContent = {
     photo: '/profile.jpg',
     photoAlt: 'Nguyễn Quốc Đại - Senior Backend Software Engineer',
     summary:
-      'Backend Software Engineer với hơn 6 năm build và vận hành hệ thống backend high-performance cho các nền tảng báo chí và e-commerce. Mạnh về system design, tối ưu performance, background job và tích hợp third-party. Đã trực tiếp lo và vận hành nhiều hệ thống production quy mô lớn.'
+      'Senior Backend Software Engineer với hơn 6 năm thiết kế và vận hành hệ thống backend high-performance cho các nền tảng báo chí và e-commerce. Mạnh về backend architecture, system design, tối ưu performance, background job và tích hợp third-party. Đã trực tiếp lo và vận hành nhiều hệ thống production quy mô lớn.'
   },
   quote: {text: 'Giải quyết vấn đề trước, rồi mới viết code', author: 'John Johnson'},
   // Skill groups and stacks are technical terms: identical to English.
@@ -72,15 +72,18 @@ export const PROFILE_VI: ProfileContent = {
       kind: 'work',
       position: 'Senior Backend Software Engineer',
       technologies:
-        'PHP, Python, Node.js, Laravel Framework, NestJS, MySQL, Redis, RabbitMQ, Kafka, GitLab, Linux, Docker, Kubernetes, Supervisor, Sentry, Rancher',
+        'PHP, Python, Node.js, Laravel Framework, NestJS, LangGraph, MySQL, Redis, RabbitMQ, Kafka, GitLab, Linux, Docker, Kubernetes, Supervisor, Sentry, Rancher',
       thirdParties: 'Shopify, Jira, Segment, CustomerIO, Crisp Chat',
       achievements: [
         'Thiết kế và phát triển backend service, hệ thống background job cho các Shopify app, tập trung vào performance và độ ổn định',
-        'Thiết kế database schema và các thành phần backend core, tham gia planning và ra quyết định kỹ thuật',
+        'Thiết kế database schema và các thành phần backend core, phối hợp với PM trong technical planning và solution design',
         'Phụ trách backend các Shopify app, đảm bảo hệ thống ổn định, dễ scale và chạy liên tục',
+        'Refactor các thành phần backend và xử lý các điểm nghẽn performance ở cả tầng application lẫn database',
         'Tích hợp third-party và service nội bộ để mở rộng tính năng sản phẩm, tối ưu quy trình vận hành',
         'Phối hợp với team DevOps setup deploy trên Kubernetes, tích hợp monitoring và observability cho các backend service',
-        'Dùng AI tool cho việc code, debug và tăng năng suất hằng ngày'
+        'Nghiên cứu AI Agent workflow với LangGraph cho định hướng sản phẩm sắp tới',
+        'Dùng AI tool để nâng chất lượng code, debug nhanh hơn và tăng năng suất hằng ngày',
+        'Hỗ trợ các bạn junior qua code review và định hướng kỹ thuật về backend architecture, best practice'
       ]
     }
   ],
