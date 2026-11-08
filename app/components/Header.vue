@@ -2,7 +2,7 @@
   <!-- Pinned while scrolling, with no band of its own: each control carries a frosted pill
        (main.css .header-pill). No backdrop-filter on the header itself: it would make the
        header the containing block of the fixed mobile drawer and clip it to the header box. -->
-  <header class="sticky top-0 z-20 sm:px-4 py-4 lg:px-8 lg:py-6">
+  <header class="site-header sticky top-0 z-20 sm:px-4 py-4 lg:px-8 lg:py-6">
     <div class="hidden md:flex items-center justify-between max-w-(--breakpoint-lg) mx-auto">
       <div class="w-1/12 flex justify-start">
         <NuxtLinkLocale to="/" class="inline-block mb-1 hover:scale-125">

@@ -4,7 +4,9 @@ A locked design system for this app. Every page redesign reads this file before
 emitting code. Extend or amend this file when the system needs to grow.
 
 ## Genre
-Three named variants selected at runtime by `html[data-vibe]` (store: `app/stores/theme.ts`), in this order — **cartoon is the default** (the page shell carries `data-vibe="cartoon"`), the coding vibe last:
+Two **modes** selected at runtime by `html[data-mode]` (store: `app/stores/theme.ts`, mirrored to a `mode` cookie):
+- `cv` — **the default** (the page shell carries `data-mode="cv"`): the plain CV. Neutral paper, the system font stack, 6 px radii, no scene, no motion, no glass; light/dark follows the OS `prefers-color-scheme`. `<html>` carries no `data-vibe`, so nothing below applies.
+- `vibes` — the three named variants below, selected by `html[data-vibe]`, in this order — **cartoon is the default vibe**, the coding vibe last:
 - `cartoon` — playful (vintage diorama register)
 - `galaxy` — atmospheric
 - `terminal` — atmospheric / terminal cluster (the coding vibe)
@@ -72,11 +74,11 @@ Scene objects are clickable shortcuts (pointer only; the rail and the project pi
 Typographic links only (`.link`: word + arrow + 1 px underline, thickens on hover). No filled buttons on the profile pages.
 
 ## Per-page allowances
-- Every page renders the vibe scene behind it (Tier A, primitives only, no GLTF/textures/Lottie); `/trips/[slug]` renders its trip instead (`app/layouts/default.vue`).
+- In vibes mode every page renders the vibe scene behind it (Tier A, primitives only, no GLTF/textures/Lottie); `/trips/[slug]` and `/trips/plan` render their trip instead, in both modes (`app/layouts/default.vue`, `app/utils/sceneMode.ts`). In cv mode no other page has a scene: `/` is the intro (`app/components/cv/Intro.vue`), `/about` the one-page sheet (`app/components/cv/Sheet.vue`) with a print stylesheet (`app/assets/css/print.css`).
 - Trip pages credit Valhalla for roads and times and "© OpenStreetMap contributors" (ODbL); map data never comes from Google (its terms forbid drawing it on a non-Google map).
 
 ## What pages MUST share
-Header shell, Ft2 footer, the tokens, the fonts of the active vibe, the `.link` voice, the rail of section names on `/about` (no stage numbers).
+Header shell with the mode switch, Ft2 footer, the tokens, the fonts of the active mode/vibe, the `.link` voice, the rail of section names on `/about` in vibes mode (no stage numbers).
 
 ## What pages MAY differ on
 Macrostructure within the family above; the scene's camera path per vibe.

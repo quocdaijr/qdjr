@@ -1,4 +1,5 @@
 import {expect, test} from '@playwright/test'
+import {enableVibes} from './helpers/mode'
 
 // Guards the Tailwind v4 utility renames that are structural rather than
 // cosmetic. `max-w-screen-lg` and `flex-grow` were removed in v4; if their
@@ -45,6 +46,7 @@ const VN_NIGHT = new Date('2026-10-01T15:00:00Z') // 22:00 in Vietnam
 const VN_NOON = new Date('2026-10-01T05:00:00Z') // 12:00 in Vietnam
 
 test('dark mode applies at night in Vietnam', async ({page}, testInfo) => {
+  await enableVibes(page)
   test.skip(testInfo.project.name !== 'desktop', 'runs once, on desktop')
 
   await page.clock.install({time: VN_NIGHT})
@@ -58,6 +60,7 @@ test('dark mode applies at night in Vietnam', async ({page}, testInfo) => {
 })
 
 test('light mode applies at noon in Vietnam', async ({page}, testInfo) => {
+  await enableVibes(page)
   test.skip(testInfo.project.name !== 'desktop', 'runs once, on desktop')
 
   await page.clock.install({time: VN_NOON})
@@ -67,6 +70,7 @@ test('light mode applies at noon in Vietnam', async ({page}, testInfo) => {
 })
 
 test('blog prose follows the vibe tokens', async ({page}, testInfo) => {
+  await enableVibes(page)
   test.skip(testInfo.project.name !== 'desktop', 'runs once, on desktop')
 
   await page.goto('/blog/hello-world')

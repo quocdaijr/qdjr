@@ -44,21 +44,32 @@ Optional environment (`npm run copy:env` seeds `.env` from `.env.example`):
 | `API_URL` | Legacy blog backend — **unset by default**, see below |
 | `GOOGLE_ANALYTICS_ID` | GA measurement ID |
 
-## 🎨 Vibes
+## 🎨 Looks: CV and vibes
 
-The site has three switchable looks — **terminal**, **cartoon** and **galaxy** —
-picked from the header button or the control on the home page and remembered in
-`localStorage.vibe`. Each vibe sets its own fonts and OKLCH palette
-(`app/assets/css/tokens.css`) and renders a three.js scene behind `/` and `/about`
-(`app/scenes/*`, mounted lazily by `app/components/VibeScene.vue`).
+The site has two **modes**, switched from the header button (or the mobile
+drawer) and remembered in `localStorage.mode` + a `mode` cookie so the server
+renders the right one (`app/stores/theme.ts`, `app/plugins/theme.ts`):
 
-Light/dark is not a toggle: it follows the clock in **UTC+7** (dark from 18:00
-to 06:00 Vietnam time, `app/utils/vnTime.ts`). To preview the other mode locally,
-run `document.documentElement.classList.toggle('dark')` in the console.
+- **CV** (the default): a plain, fast, professional look. System fonts, neutral
+  paper, no three.js, no animations, no Google Fonts requests. `/` is a short
+  intro and `/about` is a one-page CV (`app/components/cv/*`); `Ctrl+P` on
+  `/about` prints it as a clean sheet (`app/assets/css/print.css`). Light/dark
+  follows the OS `prefers-color-scheme`.
+- **Vibes**: three switchable looks — **cartoon**, **galaxy** and **terminal** —
+  picked from the vibe button (header, drawer or the control on the home page)
+  and remembered in `localStorage.vibe` + a `vibe` cookie. Each vibe sets its own
+  fonts and OKLCH palette (`app/assets/css/tokens.css`) and renders a three.js
+  scene behind every page (`app/scenes/*`, mounted lazily by
+  `app/components/VibeScene.vue`). Light/dark is not a toggle: it follows the
+  clock in **UTC+7** (dark from 18:00 to 06:00 Vietnam time,
+  `app/utils/vnTime.ts`). To preview the other mode locally, run
+  `document.documentElement.classList.toggle('dark')` in the console.
+  `/about` is a scroll journey of full-height stops that drive the scene camera
+  through `useJourney()` (`app/components/journey/AboutJourney.vue`).
 
-`/about` is a scroll journey: 17 full-height stops (one per project) drive the scene camera
-through `useJourney()`; the content lives in `app/data/profile.ts`. The locked
-design system is documented in [`design.md`](./design.md).
+Trip pages draw their road in both modes: the scene is the page's content. The
+profile content lives in `app/data/profile.ts`; the locked design system is
+documented in [`design.md`](./design.md).
 
 
 ## 🌐 Languages

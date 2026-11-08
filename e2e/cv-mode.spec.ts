@@ -1,9 +1,21 @@
 import {expect, test} from '@playwright/test'
 
 
-test.describe('cv mode (phase 2: opt-in by cookie)', () => {
-  test.beforeEach(async ({context, baseURL}) => {
-    await context.addCookies([{name: 'mode', value: 'cv', url: baseURL!}])
+test.describe('cv mode (the default)', () => {
+  test('a saved vibe alone does not re-enable the vibes', async ({page}) => {
+    await page.addInitScript(() => localStorage.setItem('vibe', 'galaxy'))
+    await page.goto('/blog')
+    await expect(page.locator('html')).toHaveAttribute('data-mode', 'cv')
+    await expect(page.locator('html')).not.toHaveAttribute('data-vibe', /./)
+  })
+
+  test('no three.js chunk is requested in cv mode', async ({page}) => {
+    const scripts: string[] = []
+    page.on('request', (r) => r.resourceType() === 'script' && scripts.push(r.url()))
+    await page.goto('/en/about')
+    await page.waitForTimeout(5000)
+    const sizes = await Promise.all(scripts.map(async (u) => (await (await page.request.get(u)).body()).length))
+    expect(Math.max(...sizes)).toBeLessThan(400_000) // three + scenes is ~667 KB
   })
 
   test('renders no scene, no veil and no vibe fonts', async ({page}) => {
@@ -55,5 +67,47 @@ test.describe('cv mode (phase 2: opt-in by cookie)', () => {
     await page.click('header button.w-10.h-10')
     await page.locator('#mobile-nav .mode-switch').locator('label.seg-option:has-text("Vibes")').click()
     await expect(page.locator('html')).toHaveAttribute('data-mode', 'vibes')
+  })
+
+  test('/about is a one-page cv with every section, newest job first', async ({page}) => {
+    await page.goto('/en/about')
+    await expect(page.locator('[data-stop]')).toHaveCount(0)
+    await expect(page.getByRole('heading', {level: 1, name: 'Quoc Dai Nguyen'})).toBeVisible()
+    await expect(page.locator('.cv h2')).toHaveText(['Summary', 'Experience', 'Projects', 'Skills', 'Education', 'More'])
+    const jobs = page.locator('.cv-job h3')
+    await expect(jobs.first()).toContainText('FireGroup Technology')
+    await expect(jobs).toHaveCount(3)
+    // Bullets come from the admin API (9 once profile:sync has run; the bundled fallback has 9 too).
+    expect(await page.locator('.cv-job').first().locator('li').count()).toBeGreaterThanOrEqual(6)
+    await expect(page.getByRole('button', {name: 'Print / Save as PDF'})).toBeVisible()
+    await expect(page.locator('.cv')).toContainText('quocdaijr@gmail.com')
+  })
+
+  test('/ is a short intro that points at the cv', async ({page}) => {
+    await page.goto('/en')
+    await expect(page.getByRole('heading', {level: 1, name: 'Nguyen Quoc Dai'})).toBeVisible()
+    await expect(page.locator('.vibe-switch')).toHaveCount(0)
+    await page.getByRole('link', {name: 'View my CV →'}).click()
+    await expect(page).toHaveURL(/\/en\/about\/?$/)
+  })
+
+  test('print hides the chrome and keeps the sheet', async ({page}, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'one project is enough')
+    await page.goto('/en/about')
+    await page.emulateMedia({media: 'print'})
+    await expect(page.locator('.site-header')).toBeHidden()
+    await expect(page.locator('.site-footer')).toBeHidden()
+    await expect(page.locator('.cv')).toBeVisible()
+    await expect(page.locator('.cv-head h1')).toBeVisible()
+  })
+
+  test('printing from a dark OS is still black ink on white paper', async ({page}, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'one project is enough')
+    await page.goto('/en/about')
+    await page.emulateMedia({colorScheme: 'dark', media: 'print'})
+    const colour = (selector: string) => page.locator(selector).first().evaluate((el) => getComputedStyle(el).color)
+    expect(await colour('.cv')).toBe('rgb(0, 0, 0)')
+    expect(await colour('.cv-period')).toBe('rgb(68, 68, 68)')
+    expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(255, 255, 255)')
   })
 })

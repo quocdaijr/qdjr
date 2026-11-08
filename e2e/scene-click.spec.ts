@@ -1,4 +1,7 @@
 import {expect, test, type Page} from '@playwright/test'
+import {useVibes} from './helpers/mode'
+
+useVibes(test)
 
 // Clicking 3D scene objects (desktop, every vibe). Object positions come from
 // the dev-only window.__qdjrScene hook; a candidate is used only if it is on

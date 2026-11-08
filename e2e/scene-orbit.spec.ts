@@ -1,4 +1,7 @@
 import {expect, test, type Page} from '@playwright/test'
+import {useVibes} from './helpers/mode'
+
+useVibes(test)
 
 // Drag to look around and zoom, on top of the scene's own camera.
 const camera = (page: Page) =>

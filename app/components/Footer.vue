@@ -1,6 +1,6 @@
 <template>
   <!-- footer -->
-  <footer>
+  <footer class="site-footer">
     <div class="flex flex-col justify-center items-center mt-16 text-sm text-gray-600 dark:text-gray-300">
       <SocialLinks size="sm" class="mb-3"/>
       <Clock />

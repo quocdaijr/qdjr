@@ -1,4 +1,5 @@
 import {expect, test} from '@playwright/test'
+import {enableVibes} from './helpers/mode'
 
 // The top menu stays pinned to the viewport while the page scrolls.
 test.describe('sticky header', () => {
@@ -16,10 +17,13 @@ test.describe('sticky header', () => {
     })
   }
 
-  for (const vibe of ['terminal', 'cartoon', 'galaxy']) {
-    test(`the pinned header has no background band; its controls carry their own (${vibe})`, async ({page}, testInfo) => {
+  for (const look of ['cv', 'terminal', 'cartoon', 'galaxy']) {
+    test(`the pinned header has no background band; its controls carry their own (${look})`, async ({page}, testInfo) => {
       test.skip(testInfo.project.name !== 'desktop', 'desktop nav')
-      await page.addInitScript((v) => localStorage.setItem('vibe', v), vibe)
+      if (look !== 'cv') {
+        await enableVibes(page)
+        await page.addInitScript((v) => localStorage.setItem('vibe', v), look)
+      }
       await page.goto('/about')
       const bg = (selector: string) => page.locator(selector).filter({visible: true}).first().evaluate((el) => getComputedStyle(el).backgroundColor)
       expect(await bg('body header')).toBe('rgba(0, 0, 0, 0)')

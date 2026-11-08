@@ -1,4 +1,5 @@
 import {expect, test} from '@playwright/test'
+import {enableVibes} from './helpers/mode'
 
 // The /trips showcase: a list of trips, and a trip page whose itinerary
 // follows the vehicle the scene drives on its own.
@@ -76,6 +77,7 @@ test("switching to the driver's seat keeps the scene and is a radio", async ({pa
 })
 
 test('leaving a trip page for the home page brings back the vibe scene', async ({page}, testInfo) => {
+  await enableVibes(page)
   test.skip(testInfo.project.name !== 'desktop', 'scene hook checks on one project are enough')
   await page.goto('/trips/sg-dalat')
   await expect.poll(() => hasVehicle(page, 'coach')).toBe(true)

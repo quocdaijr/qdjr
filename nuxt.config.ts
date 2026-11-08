@@ -43,7 +43,7 @@ export default defineNuxtConfig({
       // before any script runs. data-vibe is set by plugins/theme.ts on every
       // (server-rendered) request, in vibes mode only: a config default here
       // would survive the plugin's `undefined` and leak into cv mode.
-      htmlAttrs: {'data-mode': 'vibes'},
+      htmlAttrs: {'data-mode': 'cv'},
       title: 'QDJr Blog',
       meta: [
         { charset: 'utf-8' },
@@ -93,7 +93,7 @@ export default defineNuxtConfig({
   },
 
   // Global CSS — Tailwind v4 entrypoint
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/print.css'],
 
   // Auto import components
   components: true,

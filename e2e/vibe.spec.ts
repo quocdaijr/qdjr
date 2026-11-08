@@ -1,4 +1,7 @@
 import {expect, test} from '@playwright/test'
+import {useVibes} from './helpers/mode'
+
+useVibes(test)
 
 const HTML = 'html'
 const HAMBURGER = 'header button.w-10.h-10'
@@ -8,7 +11,7 @@ const SEGMENTED_OPTION = (label: string) => `label.vibe-switch-option:has-text("
 const SCENE_WAIT = {timeout: 15_000}
 
 test.describe('vibe switcher', () => {
-  test('defaults to cartoon and the header button cycles without console errors', async ({page}) => {
+  test('in vibes mode the default vibe is cartoon and the header button cycles without console errors', async ({page}) => {
     const errors: string[] = []
     page.on('console', (msg) => msg.type() === 'error' && errors.push(msg.text()))
     page.on('pageerror', (err) => errors.push(err.message))
@@ -40,8 +43,15 @@ test.describe('vibe switcher', () => {
   })
 
   test('the page shell already carries the cartoon vibe before any script runs', async ({request}) => {
-    const html = await (await request.get('/')).text()
+    const html = await (await request.get('/', {headers: {cookie: 'mode=vibes'}})).text()
+    expect(html).toMatch(/<html[^>]*data-mode="vibes"/)
     expect(html).toMatch(/<html[^>]*data-vibe="cartoon"/)
+  })
+
+  test('without the cookie the page shell is the cv, with no vibe at all', async ({request}) => {
+    const html = await (await request.get('/')).text()
+    expect(html).toMatch(/<html[^>]*data-mode="cv"/)
+    expect(html).not.toContain('data-vibe=')
   })
 
   test('the mobile drawer exposes the segmented control', async ({page}, testInfo) => {

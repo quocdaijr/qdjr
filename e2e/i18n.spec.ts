@@ -1,4 +1,5 @@
 import {expect, test} from '@playwright/test'
+import {enableVibes} from './helpers/mode'
 
 test.describe('languages', () => {
   test('Vietnamese is the default and English lives under /en', async ({page}) => {
@@ -29,6 +30,7 @@ test.describe('languages', () => {
   })
 
   test('nav labels stay on one line and clear of the search box at every desktop width', async ({page}, testInfo) => {
+    await enableVibes(page)
     test.skip(testInfo.project.name !== 'desktop', 'desktop nav')
     await page.addInitScript(() => localStorage.setItem('vibe', 'cartoon')) // bordered pills: the widest nav
     for (const width of [768, 900, 1024, 1280]) {
@@ -78,6 +80,7 @@ test.describe('languages', () => {
   })
 
   test('the journey rail is labelled in the page language', async ({page}, testInfo) => {
+    await enableVibes(page)
     test.skip(testInfo.project.name !== 'desktop', 'rail is hidden below 60rem')
     await page.goto('/about')
     await expect(page.locator('nav.rail')).toHaveAttribute('aria-label', 'Các chặng')
@@ -88,6 +91,7 @@ test.describe('languages', () => {
   })
 
   test('profile content is translated, not just the chrome', async ({page}) => {
+    await enableVibes(page)
     await page.goto('/about')
     await page.locator('#stop-5').waitFor()
     // Job titles stay in English; the surrounding copy is Vietnamese.
