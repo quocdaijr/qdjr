@@ -13,8 +13,9 @@
       <!-- The nav keeps its natural width (labels differ per language); search takes the rest. -->
       <PostSearch class="flex-1 min-w-0 mx-4"/>
       <NavBar class="shrink-0" device="pc" :categories="categories"/>
-      <div class="w-1/12 flex justify-end">
-        <VibeSwitch variant="icon"/>
+      <div class="shrink-0 flex justify-end gap-2">
+        <VibeSwitch v-if="themeStore.isVibes" variant="icon"/>
+        <ModeSwitch variant="icon"/>
       </div>
     </div>
     <div class="md:hidden flex items-center max-w-(--breakpoint-lg) mx-auto">
@@ -48,8 +49,9 @@
         </div>
       </div>
       <PostSearch class="w-6/12 h-10"/>
-      <div class="w-2/12 flex justify-end">
-        <VibeSwitch variant="icon"/>
+      <div class="shrink-0 flex justify-end gap-1">
+        <VibeSwitch v-if="themeStore.isVibes" variant="icon"/>
+        <ModeSwitch variant="icon"/>
       </div>
       <div class="w-2/12 flex justify-end">
         <NuxtLinkLocale to="/" class="inline-block hover:scale-125">

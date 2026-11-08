@@ -173,3 +173,64 @@
   --color-accent: oklch(82% 0.14 80deg);
   --color-focus: oklch(80% 0.16 80deg);
 }
+
+/* ---- mode: cv · light ----
+   The plain CV: neutral paper, system fonts, square-ish corners, no scene.
+   <html> carries data-mode="cv" and no data-vibe, so none of the vibe blocks
+   above apply; these override the :root (terminal) fallback by source order. */
+[data-mode="cv"] {
+  --color-paper: oklch(99% 0.003 250deg);
+  --color-paper-2: oklch(96% 0.004 250deg);
+  --color-rule: oklch(86% 0.006 250deg);
+  --color-muted: oklch(46% 0.015 250deg);
+  --color-ink: oklch(20% 0.02 250deg);
+  --color-accent: oklch(48% 0.14 250deg);
+  --color-focus: oklch(48% 0.14 250deg);
+  --radius-card: 6px;
+  --radius-pill: 6px;
+  --vibe-font-display: ui-sans-serif, system-ui, -apple-system, "Segoe UI", roboto, sans-serif;
+  --vibe-font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", roboto, sans-serif;
+  --vibe-font-mono: ui-monospace, sfmono-regular, menlo, consolas, monospace;
+  --vibe-gray-50: oklch(99% 0.003 250deg);
+  --vibe-gray-100: oklch(96% 0.004 250deg);
+  --vibe-gray-200: oklch(90% 0.006 250deg);
+  --vibe-gray-300: oklch(80% 0.008 250deg);
+  --vibe-gray-400: oklch(64% 0.012 250deg);
+  --vibe-gray-500: oklch(52% 0.015 250deg);
+  --vibe-gray-600: oklch(42% 0.018 250deg);
+  --vibe-gray-700: oklch(32% 0.02 250deg);
+  --vibe-gray-800: oklch(22% 0.02 250deg);
+  --vibe-gray-900: oklch(15% 0.02 250deg);
+  --vibe-blue-50: oklch(96% 0.02 250deg);
+  --vibe-blue-100: oklch(92% 0.04 250deg);
+  --vibe-blue-300: oklch(78% 0.09 250deg);
+  --vibe-blue-400: oklch(72% 0.12 250deg);
+  --vibe-blue-500: oklch(58% 0.14 250deg);
+  --vibe-blue-600: oklch(48% 0.14 250deg);
+  --vibe-blue-700: oklch(42% 0.12 250deg);
+  --vibe-blue-900: oklch(28% 0.07 250deg);
+}
+
+/* cv · dark: the OS scheme, before any script (media query) and after
+   hydration (the .dark class the store applies from matchMedia). */
+.dark[data-mode="cv"] {
+  --color-paper: oklch(16% 0.015 250deg);
+  --color-paper-2: oklch(20% 0.018 250deg);
+  --color-rule: oklch(32% 0.02 250deg);
+  --color-muted: oklch(70% 0.02 250deg);
+  --color-ink: oklch(93% 0.01 250deg);
+  --color-accent: oklch(76% 0.12 250deg);
+  --color-focus: oklch(76% 0.12 250deg);
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-mode="cv"] {
+    --color-paper: oklch(16% 0.015 250deg);
+    --color-paper-2: oklch(20% 0.018 250deg);
+    --color-rule: oklch(32% 0.02 250deg);
+    --color-muted: oklch(70% 0.02 250deg);
+    --color-ink: oklch(93% 0.01 250deg);
+    --color-accent: oklch(76% 0.12 250deg);
+    --color-focus: oklch(76% 0.12 250deg);
+  }
+}
