@@ -93,7 +93,7 @@ export default defineNuxtConfig({
   },
 
   // Global CSS — Tailwind v4 entrypoint
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/print.css'],
 
   // Auto import components
   components: true,

@@ -1,5 +1,6 @@
 <template>
-  <section class="hero">
+  <CvIntro v-if="store.isCv"/>
+  <section v-else class="hero">
     <h1 class="hero-display font-display reveal" :style="{'--i': 0}">{{ content.profile.name }}</h1>
     <p class="hero-role reveal" :style="{'--i': 1}">{{ content.profile.role }}</p>
     <blockquote class="hero-quote reveal" :style="{'--i': 2}">

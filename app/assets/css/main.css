@@ -358,6 +358,93 @@ header nav a {
   backdrop-filter: none;
 }
 
+/* Shared by the journey (/about stops) and the CV sheet.
+   F3 tabular spec sheet: label | value rows. The hairline runs unbroken under
+   both columns (no column gap; the value column pads itself), and label and
+   value share the same top padding so their first lines align. */
+.spec {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0 0 var(--space-md);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
+.spec dt {
+  padding-top: var(--space-xs);
+  font-weight: 700;
+}
+
+.spec dd {
+  margin: 0;
+  padding: var(--space-3xs) 0 var(--space-xs);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+}
+
+.spec p {
+  margin: 0 0 var(--space-3xs);
+}
+
+.spec p:last-child {
+  margin-bottom: 0;
+}
+
+/* "Expert  PHP (Yii2, Laravel)": wrapped values indent past the level label. */
+.spec-line {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--space-2xs);
+}
+
+/* Ink text (accent text this small cannot hold AA on the glass panel); the
+   accent survives as a dot before the level. */
+.spec-level {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2xs);
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.spec-level::before {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  content: "";
+  transform: translateY(-2px);
+}
+
+@media (width >= 40rem) {
+  .spec {
+    grid-template-columns: 13rem minmax(0, 1fr);
+  }
+
+  .spec dt {
+    padding: var(--space-xs) var(--space-md) var(--space-xs) 0;
+    border-bottom: var(--rule-hair) solid var(--color-rule);
+  }
+
+  .spec dd {
+    padding-top: var(--space-xs);
+  }
+}
+
+.plain {
+  margin: 0;
+  padding-inline-start: var(--space-md);
+  list-style: disc;
+}
+
+.plain li::marker {
+  color: var(--color-muted);
+}
+
+.plain li + li {
+  margin-top: var(--space-2xs);
+}
+
 /* Used by tag/ListNewest.vue's horizontal strip but never actually defined
    anywhere, so the scrollbar has always shown. */
 @utility hide-scroll-bar {

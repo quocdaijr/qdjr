@@ -1,11 +1,13 @@
 <template>
-  <JourneyAboutJourney/>
+  <CvSheet v-if="store.isCv"/>
+  <JourneyAboutJourney v-else/>
 </template>
 
 <script setup lang="ts">
 defineOptions({name: 'AboutPage'})
 
 const {t} = useI18n()
+const store = useThemeStore()
 const localePath = useLocalePath()
 const config = useRuntimeConfig()
 

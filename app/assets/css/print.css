@@ -1,0 +1,35 @@
+/* Ctrl+P on /about in cv mode: a clean single-column sheet. */
+@media print {
+  .site-header,
+  .site-footer,
+  .no-print,
+  .scene-veil,
+  canvas.vibe-scene {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000;
+  }
+
+  .cv {
+    max-width: none;
+    font-size: 11pt;
+  }
+
+  .cv a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .cv-job,
+  .cv section {
+    break-inside: avoid;
+  }
+
+  @page {
+    margin: 14mm;
+  }
+}
