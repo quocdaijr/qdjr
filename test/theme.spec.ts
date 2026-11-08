@@ -1,5 +1,5 @@
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
-import {DEFAULT_VIBE, VIBES, VIBE_STORAGE_KEY, isVibe, useThemeStore} from '~/stores/theme'
+import {DEFAULT_MODE, DEFAULT_VIBE, MODES, MODE_STORAGE_KEY, VIBES, VIBE_STORAGE_KEY, isMode, isVibe, useThemeStore} from '~/stores/theme'
 
 // 12:00 and 22:00 Vietnam time, expressed in UTC (UTC+7).
 const VN_NOON = new Date(Date.UTC(2026, 9, 1, 5, 0))
@@ -11,6 +11,7 @@ beforeEach(() => {
   localStorage.clear()
   html().classList.remove('dark')
   delete html().dataset.vibe
+  delete html().dataset.mode
 })
 
 afterEach(() => {
@@ -156,5 +157,93 @@ describe('theme store', () => {
     vi.setSystemTime(VN_NOON)
     vi.advanceTimersByTime(60_000)
     expect(store.isDarkMode).toBe(true) // no longer ticking
+  })
+})
+
+describe('mode helpers', () => {
+  test('isMode accepts only cv and vibes', () => {
+    MODES.forEach((m) => expect(isMode(m)).toBe(true))
+    expect(isMode('pro')).toBe(false)
+    expect(isMode(undefined)).toBe(false)
+  })
+})
+
+describe('mode', () => {
+  test('starts on the default mode', () => {
+    expect(useThemeStore().mode).toBe(DEFAULT_MODE)
+  })
+
+  test('initializeTheme restores a saved mode, mirrors it to the cookie and applies data-mode', () => {
+    localStorage.setItem(MODE_STORAGE_KEY, 'cv')
+    const store = useThemeStore()
+    store.initializeTheme(VN_NOON)
+    expect(store.mode).toBe('cv')
+    expect(html().dataset.mode).toBe('cv')
+    expect(document.cookie).toContain(`${MODE_STORAGE_KEY}=cv`)
+  })
+
+  test('a saved vibe alone does not change the mode', () => {
+    localStorage.setItem(VIBE_STORAGE_KEY, 'galaxy')
+    const store = useThemeStore()
+    store.initializeTheme(VN_NOON)
+    expect(store.mode).toBe(DEFAULT_MODE)
+    expect(store.vibe).toBe('galaxy')
+  })
+
+  test('cv mode drops data-vibe from <html> and vibes mode puts it back', () => {
+    const store = useThemeStore()
+    store.setMode('cv')
+    expect(html().dataset.mode).toBe('cv')
+    expect(html().dataset.vibe).toBeUndefined()
+    store.setMode('vibes')
+    expect(html().dataset.mode).toBe('vibes')
+    expect(html().dataset.vibe).toBe(store.vibe)
+  })
+
+  test('toggleMode flips between the two modes and persists', () => {
+    const store = useThemeStore()
+    store.setMode('cv')
+    store.toggleMode()
+    expect(store.mode).toBe('vibes')
+    expect(localStorage.getItem(MODE_STORAGE_KEY)).toBe('vibes')
+    store.toggleMode()
+    expect(store.mode).toBe('cv')
+  })
+
+  test('in cv mode dark follows the OS scheme, not the clock', () => {
+    localStorage.setItem(MODE_STORAGE_KEY, 'cv')
+    const store = useThemeStore()
+    store.initializeTheme(VN_NIGHT, false)
+    expect(store.isDarkMode).toBe(false)
+    store.syncClock(VN_NIGHT)
+    expect(store.isDarkMode).toBe(false)
+    store.syncScheme(true)
+    expect(store.isDarkMode).toBe(true)
+    expect(html().classList.contains('dark')).toBe(true)
+  })
+
+  test('in vibes mode syncScheme is ignored and the clock rules', () => {
+    localStorage.setItem(MODE_STORAGE_KEY, 'vibes')
+    const store = useThemeStore()
+    store.initializeTheme(VN_NOON, true)
+    expect(store.isDarkMode).toBe(false)
+    store.syncScheme(true)
+    expect(store.isDarkMode).toBe(false)
+  })
+
+  test('isCv and isVibes mirror the mode', () => {
+    const store = useThemeStore()
+    store.setMode('cv')
+    expect(store.isCv).toBe(true)
+    expect(store.isVibes).toBe(false)
+    store.setMode('vibes')
+    expect(store.isCv).toBe(false)
+    expect(store.isVibes).toBe(true)
+  })
+
+  test('setMode ignores values that are not a mode', () => {
+    const store = useThemeStore()
+    store.setMode('pro' as never)
+    expect(store.mode).toBe(DEFAULT_MODE)
   })
 })
