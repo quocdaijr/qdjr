@@ -4,7 +4,7 @@ import {isNightInVietnam} from '~/utils/vnTime'
 // Vibe fonts, vibes mode only. Three static stylesheets (one per vibe): the
 // browser downloads binaries only for text it renders, so the inactive vibes
 // cost one small CSS fetch each. CV mode uses the system stack and loads none.
-const VIBE_FONT_LINKS = [
+const VIBE_FONT_LINKS: Array<{rel: 'stylesheet'; href: string}> = [
   {rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap'},
   {
     rel: 'stylesheet',

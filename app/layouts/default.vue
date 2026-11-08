@@ -1,11 +1,12 @@
 <template>
   <div class="w-full">
     <!-- The three.js canvas is fixed at z-0, above the opaque body background
-         and below the content column (z-10). Every page carries the vibe scene
-         (a trip page its own road). One instance in the layout keeps the
-         WebGL context alive across pages. It mounts — and its three.js chunk
-         downloads — only once the page has loaded and gone idle, so the text
-         paints and answers input first. -->
+         and below the content column (z-10). In vibes mode every page carries
+         the vibe scene (a trip page its own road); in cv mode only a trip page
+         draws its road (utils/sceneMode.ts). One instance in the layout keeps
+         the WebGL context alive across pages. It mounts — and its three.js
+         chunk downloads — only once the page has loaded and gone idle, so the
+         text paints and answers input first. -->
     <LazyVibeScene v-if="hasScene && sceneReady"/>
     <!-- Pages without panels of their own read straight over the scene, as on /: a full-screen veil softens and blurs it behind the text. -->
     <div v-if="readOverScene" class="scene-veil" aria-hidden="true"></div>
@@ -23,23 +24,23 @@
 
 <script setup>
 import {readDeviceTier, SCENE_SETTLE_MS} from '~/scenes/deviceTier'
-
-// Matched by route base name, not path: /en/about and /about are the same page.
-// Pages laid out over the scene on purpose (their own panels); every other page reads over a veiled scene.
-const SCENE_PAGE_NAMES = new Set(['index', 'about', 'trips-slug', 'trips-plan'])
+import {useThemeStore} from '~/stores/theme'
+import {hasSceneFor, readsOverSceneFor} from '~/utils/sceneMode'
 
 // Clicks on 3D scene objects become navigation (see useSceneNavigation).
 useSceneNavigation()
 
+const store = useThemeStore()
 const route = useRoute()
 const getRouteBaseName = useRouteBaseName()
 const routeName = computed(() => String(getRouteBaseName(route) ?? ''))
-const hasScene = true // every page, see design.md § Per-page allowances
+// Vibes mode: every page (design.md § Per-page allowances); cv mode: trip pages only.
+const hasScene = computed(() => hasSceneFor(store.mode, routeName.value))
 const sceneReady = ref(false)
 let cancelScene = () => {}
 onMounted(() => (cancelScene = whenIdle(() => (sceneReady.value = true), {settle: SCENE_SETTLE_MS[readDeviceTier()]})))
 onBeforeUnmount(() => cancelScene())
-const readOverScene = computed(() => !SCENE_PAGE_NAMES.has(routeName.value))
+const readOverScene = computed(() => readsOverSceneFor(store.mode, routeName.value))
 
 // Set body attributes for theme styling
 useHead({
