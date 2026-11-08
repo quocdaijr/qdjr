@@ -1,5 +1,6 @@
 <template>
   <section class="cv-intro">
+    <img :src="content.profile.photo" :alt="content.profile.photoAlt" width="112" height="112" class="cv-photo">
     <h1 class="cv-intro-name font-display">{{ content.profile.name }}</h1>
     <p class="cv-intro-role">{{ content.profile.role }}</p>
     <p class="cv-intro-summary">{{ content.profile.summary }}</p>
@@ -34,6 +35,13 @@ const contactLinks = computed(() => content.value.contact.filter((row) => row.hr
   max-width: 64ch;
   padding: var(--space-xl) var(--space-sm);
   color: var(--color-ink);
+}
+
+.cv-photo {
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .cv-intro-name {

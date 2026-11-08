@@ -9,13 +9,15 @@ test.describe('cv mode (the default)', () => {
     await expect(page.locator('html')).not.toHaveAttribute('data-vibe', /./)
   })
 
-  test('no three.js chunk is requested in cv mode', async ({page}) => {
+  test('no three.js module is requested in cv mode', async ({page}) => {
+    // The dev server serves unbundled modules (Vue's runtime alone is 800 KB),
+    // so sizes prove nothing; the module path does.
     const scripts: string[] = []
     page.on('request', (r) => r.resourceType() === 'script' && scripts.push(r.url()))
     await page.goto('/en/about')
     await page.waitForTimeout(5000)
-    const sizes = await Promise.all(scripts.map(async (u) => (await (await page.request.get(u)).body()).length))
-    expect(Math.max(...sizes)).toBeLessThan(400_000) // three + scenes is ~667 KB
+    // The layout still imports scenes/deviceTier (a few lines); three and the scene component must not load.
+    expect(scripts.filter((u) => /\/three[/.]|VibeScene|\/scenes\/(cartoon|galaxy|terminal|trip)\//.test(u))).toEqual([])
   })
 
   test('renders no scene, no veil and no vibe fonts', async ({page}) => {
@@ -81,11 +83,14 @@ test.describe('cv mode (the default)', () => {
     expect(await page.locator('.cv-job').first().locator('li').count()).toBeGreaterThanOrEqual(6)
     await expect(page.getByRole('button', {name: 'Print / Save as PDF'})).toBeVisible()
     await expect(page.locator('.cv')).toContainText('quocdaijr@gmail.com')
+    await expect(page.locator('.cv img.cv-photo')).toHaveAttribute('src', '/profile.jpg')
+    await expect(page.locator('.cv img.cv-photo')).toHaveAttribute('alt', /Quoc Dai Nguyen/)
   })
 
   test('/ is a short intro that points at the cv', async ({page}) => {
     await page.goto('/en')
     await expect(page.getByRole('heading', {level: 1, name: 'Nguyen Quoc Dai'})).toBeVisible()
+    await expect(page.locator('.cv-intro img.cv-photo')).toHaveAttribute('src', '/profile.jpg')
     await expect(page.locator('.vibe-switch')).toHaveCount(0)
     await page.getByRole('link', {name: 'View my CV →'}).click()
     await expect(page).toHaveURL(/\/en\/about\/?$/)
@@ -99,6 +104,7 @@ test.describe('cv mode (the default)', () => {
     await expect(page.locator('.site-footer')).toBeHidden()
     await expect(page.locator('.cv')).toBeVisible()
     await expect(page.locator('.cv-head h1')).toBeVisible()
+    await expect(page.locator('.cv img.cv-photo')).toBeVisible()
   })
 
   test('printing from a dark OS is still black ink on white paper', async ({page}, testInfo) => {
