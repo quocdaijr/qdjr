@@ -13,6 +13,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
+    "profile:sync": "jiti scripts/sync-profile-content.ts",
     "test:e2e": "playwright test",
     "lint:js": "eslint .",
     "lint:style": "stylelint \"**/*.{vue,css}\" --ignore-path .gitignore",

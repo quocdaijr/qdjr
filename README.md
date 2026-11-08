@@ -69,6 +69,15 @@ prefer English are redirected from `/` to `/en` once; the choice is remembered
 in the `i18n_lang` cookie. UI strings are in `i18n/locales/{vi,en}.json`; the
 profile copy is in `app/data/profile.{vi,en}.ts`.
 
+### Profile content
+
+`app/data/profile.{vi,en}.ts` is the source of truth for the profile copy on `/` and
+`/about`. The live site reads the same copy from the admin API (`/v1/profile`) and falls
+back to the bundled files when the API is down. After editing the TS files and running
+the tests, push them to the API:
+
+    ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run profile:sync
+
 ### Translating posts
 
 Posts are written in Vietnamese in `content/blog/`. English versions are
