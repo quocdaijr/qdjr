@@ -1,7 +1,8 @@
 <template>
   <article class="cv">
     <header class="cv-head">
-      <div>
+      <img :src="content.profile.photo" :alt="content.profile.photoAlt" width="96" height="96" class="cv-photo">
+      <div class="cv-head-text">
         <h1 class="cv-name font-display">{{ content.profile.displayName }}</h1>
         <p class="cv-role">{{ content.profile.role }}</p>
       </div>
@@ -116,9 +117,20 @@ const contactRows = computed(() => {
 .cv-head {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-sm);
+  align-items: center;
+  gap: var(--space-sm) var(--space-md);
+}
+
+.cv-head-text {
+  flex: 1 1 16rem;
+}
+
+.cv-photo {
+  flex: 0 0 auto;
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .cv-name {
