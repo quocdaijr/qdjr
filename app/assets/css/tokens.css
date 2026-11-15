@@ -234,3 +234,64 @@
     --color-focus: oklch(76% 0.12 250deg);
   }
 }
+
+/* ---- mode: classic ----
+   The pre-three.js v3.0.0 look: Tailwind's stock gray and blue ramps (values
+   from tailwindcss/theme.css), system fonts, no scene. Dark follows the OS
+   scheme exactly as in cv mode. */
+[data-mode="classic"] {
+  --vibe-gray-50: oklch(98.5% 0.002 247.839deg);
+  --vibe-gray-100: oklch(96.7% 0.003 264.542deg);
+  --vibe-gray-200: oklch(92.8% 0.006 264.531deg);
+  --vibe-gray-300: oklch(87.2% 0.01 258.338deg);
+  --vibe-gray-400: oklch(70.7% 0.022 261.325deg);
+  --vibe-gray-500: oklch(55.1% 0.027 264.364deg);
+  --vibe-gray-600: oklch(44.6% 0.03 256.802deg);
+  --vibe-gray-700: oklch(37.3% 0.034 259.733deg);
+  --vibe-gray-800: oklch(27.8% 0.033 256.848deg);
+  --vibe-gray-900: oklch(21% 0.034 264.665deg);
+  --vibe-blue-50: oklch(97% 0.014 254.604deg);
+  --vibe-blue-100: oklch(93.2% 0.032 255.585deg);
+  --vibe-blue-300: oklch(80.9% 0.105 251.813deg);
+  --vibe-blue-400: oklch(70.7% 0.165 254.624deg);
+  --vibe-blue-500: oklch(62.3% 0.214 259.815deg);
+  --vibe-blue-600: oklch(54.6% 0.245 262.881deg);
+  --vibe-blue-700: oklch(48.8% 0.243 264.376deg);
+  --vibe-blue-900: oklch(37.9% 0.146 265.522deg);
+  --vibe-font-display: ui-sans-serif, system-ui, sans-serif;
+  --vibe-font-body: ui-sans-serif, system-ui, sans-serif;
+  --vibe-font-mono: ui-monospace, sfmono-regular, menlo, consolas, monospace;
+  --radius-card: 0.25rem;
+  --radius-pill: 0.25rem;
+  --color-paper: var(--vibe-gray-50);
+  --color-paper-2: var(--vibe-gray-100);
+  --color-rule: var(--vibe-gray-200);
+  --color-muted: var(--vibe-gray-500);
+  --color-ink: var(--vibe-gray-700);
+  --color-accent: var(--vibe-blue-600);
+  --color-focus: var(--vibe-blue-600);
+}
+
+/* classic · dark: the OS scheme, before any script (media query) and after
+   hydration (the .dark class). */
+.dark[data-mode="classic"] {
+  --color-paper: var(--vibe-gray-900);
+  --color-paper-2: var(--vibe-gray-800);
+  --color-rule: var(--vibe-gray-600);
+  --color-muted: var(--vibe-gray-300);
+  --color-ink: var(--vibe-gray-100);
+  --color-accent: var(--vibe-blue-400);
+  --color-focus: var(--vibe-blue-400);
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-mode="classic"] {
+    --color-paper: var(--vibe-gray-900);
+    --color-paper-2: var(--vibe-gray-800);
+    --color-rule: var(--vibe-gray-600);
+    --color-muted: var(--vibe-gray-300);
+    --color-ink: var(--vibe-gray-100);
+    --color-accent: var(--vibe-blue-400);
+    --color-focus: var(--vibe-blue-400);
+  }
+}

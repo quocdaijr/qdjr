@@ -14,7 +14,7 @@
    Dark mode follows the Vietnam clock (see app/utils/vnTime.ts). */
 
 /* dark: the .dark class (vibes: the Vietnam clock; cv: the store mirrors the
-   OS scheme) — and, in cv mode, the OS media query itself so the server render
+   OS scheme) — and, in classic and cv mode, the OS media query itself so the server render
    is already dark before hydration. (Tailwind's @custom-variant nests `&`
    without a CSS scoping root; stylelint cannot know that.) */
 /* stylelint-disable nesting-selector-no-missing-scoping-root */
@@ -24,7 +24,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    &:where([data-mode="cv"], [data-mode="cv"] *) {
+    &:where([data-mode="cv"], [data-mode="cv"] *, [data-mode="classic"], [data-mode="classic"] *) {
       @slot;
     }
   }
@@ -92,7 +92,8 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    [data-mode="cv"] body {
+    [data-mode="cv"] body,
+    [data-mode="classic"] body {
       background-color: var(--vibe-gray-900);
     }
   }
@@ -232,7 +233,8 @@ header nav a {
 }
 
 @media (prefers-color-scheme: dark) {
-  [data-mode="cv"] {
+  [data-mode="cv"],
+  [data-mode="classic"] {
     --reading-ground: var(--vibe-gray-900);
   }
 }
@@ -339,7 +341,8 @@ header nav a {
 }
 
 @media (prefers-color-scheme: dark) {
-  [data-mode="cv"] .prose {
+  [data-mode="cv"] .prose,
+  [data-mode="classic"] .prose {
     --tw-prose-body: var(--tw-prose-invert-body);
     --tw-prose-headings: var(--tw-prose-invert-headings);
     --tw-prose-links: var(--tw-prose-invert-links);
@@ -355,6 +358,18 @@ header nav a {
 [data-mode="cv"] .header-pills > a,
 [data-mode="cv"] .header-pill {
   background: var(--color-paper);
+  backdrop-filter: none;
+}
+
+/* Classic mode: the v3.0.0 header, which scrolled away with the page and had
+   no fill behind its controls. */
+[data-mode="classic"] .site-header {
+  position: static;
+}
+
+[data-mode="classic"] .header-pills > a,
+[data-mode="classic"] .header-pill {
+  background: none;
   backdrop-filter: none;
 }
 

@@ -3,8 +3,8 @@
   "lang": {"switchTo": "Switch to {language}"},
   "search": {"label": "Search posts", "placeholder": "Search post ...", "submit": "Search"},
   "vibe": {"legend": "Vibe", "current": "Vibe: {current}. Switch to {next}", "title": "Switch vibe (now: {current})", "pick": "Pick a vibe"},
-  "mode": {"legend": "Look", "cv": "CV", "vibes": "Vibes", "current": "Look: {current}. Switch to {next}", "title": "Switch look (now: {current})", "pick": "Pick a look"},
-  "home": {"primary": "Primary", "about": "About me →", "cv": "View my CV →", "blog": "Read the blog →"},
+  "mode": {"classic": "Classic", "legend": "Look", "cv": "CV", "vibes": "Vibes", "current": "Look: {current}. Switch to {next}", "title": "Switch look (now: {current})", "pick": "Pick a look"},
+  "home": {"hi": "Hi, I'm {name} 👋", "moreInfo": "More info", "goToBlog": "Go to my blog", "primary": "Primary", "about": "About me →", "cv": "View my CV →", "blog": "Read the blog →"},
   "cv": {"summary": "Summary", "experience": "Experience", "projects": "Projects", "skills": "Skills", "education": "Education", "more": "More", "contact": "Contact", "print": "Print / Save as PDF"},
   "about": {
     "stops": "Journey stops", "hello": "Hello", "whatIDo": "What I do", "sayHello": "Say hello",
