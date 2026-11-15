@@ -4,8 +4,9 @@ A locked design system for this app. Every page redesign reads this file before
 emitting code. Extend or amend this file when the system needs to grow.
 
 ## Genre
-Two **modes** selected at runtime by `html[data-mode]` (store: `app/stores/theme.ts`, mirrored to a `mode` cookie):
-- `cv` — **the default** (the page shell carries `data-mode="cv"`): the plain CV. Neutral paper, the system font stack, 6 px radii, no scene, no motion, no glass; light/dark follows the OS `prefers-color-scheme`. `<html>` carries no `data-vibe`, so nothing below applies.
+Three **modes** selected at runtime by `html[data-mode]` (store: `app/stores/theme.ts`, mirrored to a `mode` cookie):
+- `classic` — **the default** (the page shell carries `data-mode="classic"`): the pre-three.js v3.0.0 look. Tailwind's stock gray and blue ramps (`tokens.css`, `[data-mode="classic"]`), the system font stack, 4 px radii, an unpinned header with no pill fill, no scene, no motion; light/dark follows the OS `prefers-color-scheme`. `/` is `components/classic/Home.vue`, `/about` is `components/classic/About.vue`; every other page is the shared markup under the classic tokens. It predates this design system and is kept as it was: the rules below do not restyle it.
+- `cv` — the plain CV. Neutral paper, the system font stack, 6 px radii, no scene, no motion, no glass; light/dark follows the OS `prefers-color-scheme`. `<html>` carries no `data-vibe`, so nothing below applies.
 - `vibes` — the three named variants below, selected by `html[data-vibe]`, in this order — **cartoon is the default vibe**, the coding vibe last:
 - `cartoon` — playful (vintage diorama register)
 - `galaxy` — atmospheric

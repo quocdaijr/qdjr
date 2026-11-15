@@ -12,6 +12,7 @@ test('an English browser is redirected from / to /en and the choice is remembere
   await expect(page).toHaveURL(/\/en\/?$/)
   expect((await context.cookies()).find((c) => c.name === 'i18n_lang')?.value).toBe('en')
 
+  await page.waitForLoadState('networkidle') // hydrated: the switch sets the cookie in script
   await page.locator('header nav .lang-switch').filter({visible: true}).first().click()
   await expect(page).toHaveURL(/localhost:\d+\/?$/)
   await expect.poll(async () => (await context.cookies()).find((c) => c.name === 'i18n_lang')?.value).toBe('vi')

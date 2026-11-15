@@ -1,7 +1,10 @@
 import {expect, test} from '@playwright/test'
+import {useMode} from './helpers/mode'
+
+useMode(test, 'cv')
 
 
-test.describe('cv mode (the default)', () => {
+test.describe('cv mode', () => {
   test('a saved vibe alone does not re-enable the vibes', async ({page}) => {
     await page.addInitScript(() => localStorage.setItem('vibe', 'galaxy'))
     await page.goto('/blog')

@@ -3,6 +3,7 @@ import {enableVibes} from './helpers/mode'
 
 test.describe('languages', () => {
   test('Vietnamese is the default and English lives under /en', async ({page}) => {
+    await enableVibes(page) // the hero links below are the vibes home page
     await page.goto('/')
     await expect(page.locator('html')).toHaveAttribute('lang', 'vi-VN')
     await expect(page.getByRole('link', {name: 'Về mình →'})).toBeVisible()

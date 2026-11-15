@@ -41,7 +41,7 @@
               <span class="text-blue-600 dark:text-blue-400 font-medium">{{ t('about.expert') }}:</span> {{ skill.expert }}
             </p>
             <p v-if="skill.proficient">
-              <span class="text-green-600 dark:text-green-400 font-medium">{{ t('about.proficient') }}:</span> {{ skill.proficient }}
+              <span class="text-green-800 dark:text-green-400 font-medium">{{ t('about.proficient') }}:</span> {{ skill.proficient }}
             </p>
             <p v-if="skill.note">{{ skill.note }}</p>
           </li>
@@ -99,7 +99,7 @@
               </div>
               <p class="text-gray-700 dark:text-gray-300">{{ project.description }}</p>
               <p>
-                <span class="font-medium text-green-600 dark:text-green-400">{{ t('about.position') }}:</span> {{ project.role }}
+                <span class="font-medium text-green-800 dark:text-green-400">{{ t('about.position') }}:</span> {{ project.role }}
               </p>
             </div>
           </li>
