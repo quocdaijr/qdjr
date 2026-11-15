@@ -3,7 +3,7 @@ test.describe('classic mode (the v3.0.0 look, the default)', () => {
   test('the server renders the classic shell and the old home page', async ({request}) => {
     const html = await (await request.get('/en')).text()
     expect(html).toMatch(/<html[^>]*data-mode="classic"/)
-    expect(html).not.toContain('data-vibe=')
+    expect(html).not.toMatch(/<html[^>]*data-vibe=/) // inlined CSS mentions data-vibe in a production build
     expect(html).toContain('Hi, I&#39;m Nguyen Quoc Dai')
   })
 

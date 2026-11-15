@@ -51,7 +51,7 @@ test.describe('vibe switcher', () => {
   test('without the cookie the page shell is the classic look, with no vibe at all', async ({request}) => {
     const html = await (await request.get('/')).text()
     expect(html).toMatch(/<html[^>]*data-mode="classic"/)
-    expect(html).not.toContain('data-vibe=')
+    expect(html).not.toMatch(/<html[^>]*data-vibe=/) // inlined CSS mentions data-vibe in a production build
   })
 
   test('the mobile drawer exposes the segmented control', async ({page}, testInfo) => {
