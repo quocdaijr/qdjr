@@ -10,7 +10,7 @@ test('header search navigates to results', async ({page}, testInfo) => {
   await page.locator('#site-search').first().fill('hello')
   await page.locator('#site-search').first().press('Enter')
 
-  await expect(page).toHaveURL(/\/blog\/search\?q=hello/)
+  await expect(page).toHaveURL(/\/blog\/search\/?\?q=hello/)
   await expect(page.locator('main')).toContainText('Hello, World')
 })
 
