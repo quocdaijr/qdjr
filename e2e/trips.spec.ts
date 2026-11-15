@@ -11,7 +11,7 @@ test('lists every trip and opens one', async ({page}) => {
   await expect(page.getByRole('heading', {level: 1, name: 'Hành trình'})).toBeVisible()
   await expect(page.locator('.trip-row')).toHaveCount(3)
   await page.getByRole('link', {name: 'Đi thử →'}).first().click()
-  await expect(page).toHaveURL(/\/trips\/sg-dalat$/)
+  await expect(page).toHaveURL(/\/trips\/sg-dalat\/?$/)
   await expect(page.getByRole('heading', {level: 1, name: 'Sài Gòn → Đà Lạt'})).toBeVisible()
 })
 
@@ -50,7 +50,7 @@ test('switching language on a trip page keeps the trip scene', async ({page}, te
   await page.goto('/trips/sg-dalat')
   await expect.poll(() => hasVehicle(page, 'coach')).toBe(true)
   await page.locator('header').getByRole('link', {name: /English|EN/}).first().click()
-  await expect(page).toHaveURL(/\/en\/trips\/sg-dalat$/)
+  await expect(page).toHaveURL(/\/en\/trips\/sg-dalat\/?$/)
   await expect(page.locator('.it-stop').first()).toHaveText('Saigon')
   await expect.poll(() => hasVehicle(page, 'coach')).toBe(true)
 })
