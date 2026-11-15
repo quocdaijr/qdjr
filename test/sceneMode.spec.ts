@@ -12,6 +12,11 @@ describe('scene by mode', () => {
     expect(hasSceneFor('cv', 'trips-plan')).toBe(true)
   })
 
+  test('classic mode draws only a trip too', () => {
+    expect(hasSceneFor('classic', 'index')).toBe(false)
+    expect(hasSceneFor('classic', 'trips-slug')).toBe(true)
+  })
+
   test('the veil exists only where there is a scene and no panels', () => {
     expect(readsOverSceneFor('vibes', 'blog')).toBe(true)
     expect(readsOverSceneFor('vibes', 'about')).toBe(false)

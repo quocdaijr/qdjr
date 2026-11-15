@@ -211,14 +211,36 @@ describe('mode', () => {
     expect(html().dataset.vibe).toBe(store.vibe)
   })
 
-  test('toggleMode flips between the two modes and persists', () => {
+  test('toggleMode cycles classic → cv → vibes and persists', () => {
     const store = useThemeStore()
     store.setMode('cv')
     store.toggleMode()
     expect(store.mode).toBe('vibes')
     expect(localStorage.getItem(MODE_STORAGE_KEY)).toBe('vibes')
     store.toggleMode()
+    expect(store.mode).toBe('classic')
+    store.toggleMode()
     expect(store.mode).toBe('cv')
+  })
+
+  test('classic follows the OS scheme, not the clock', () => {
+    localStorage.setItem(MODE_STORAGE_KEY, 'classic')
+    const store = useThemeStore()
+    store.initializeTheme(VN_NIGHT, false)
+    expect(store.isDarkMode).toBe(false)
+    store.syncClock(VN_NIGHT)
+    expect(store.isDarkMode).toBe(false)
+    store.syncScheme(true)
+    expect(store.isDarkMode).toBe(true)
+    expect(html().dataset.mode).toBe('classic')
+    expect(html().dataset.vibe).toBeUndefined()
+  })
+
+  test('isClassic mirrors the mode', () => {
+    const store = useThemeStore()
+    store.setMode('classic')
+    expect(store.isClassic).toBe(true)
+    expect(store.isCv).toBe(false)
   })
 
   test('in cv mode dark follows the OS scheme, not the clock', () => {

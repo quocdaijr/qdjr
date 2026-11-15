@@ -1,5 +1,6 @@
 <template>
-  <CvIntro v-if="store.isCv"/>
+  <ClassicHome v-if="store.isClassic"/>
+  <CvIntro v-else-if="store.isCv"/>
   <section v-else class="hero">
     <h1 class="hero-display font-display reveal" :style="{'--i': 0}">{{ content.profile.name }}</h1>
     <p class="hero-role reveal" :style="{'--i': 1}">{{ content.profile.role }}</p>

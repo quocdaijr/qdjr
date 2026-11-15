@@ -22,8 +22,11 @@
     :title="t('mode.title', {current: LABEL[store.mode]})"
     @click="store.toggleMode()"
   >
-    <!-- cv mode: a document; vibes mode: a sparkle. -->
-    <svg v-if="store.mode === 'cv'" viewBox="0 0 24 24" aria-hidden="true">
+    <!-- classic mode: a page with a header bar; cv mode: a document; vibes mode: a sparkle. -->
+    <svg v-if="store.mode === 'classic'" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 5h16v14H4z M4 9h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <svg v-else-if="store.mode === 'cv'" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M7 3h7l5 5v13H7z M14 3v5h5 M10 12h6 M10 16h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     <svg v-else viewBox="0 0 24 24" aria-hidden="true">
@@ -39,8 +42,8 @@ withDefaults(defineProps<{variant?: 'segmented' | 'icon'}>(), {variant: 'icon'})
 
 const store = useThemeStore()
 const {t} = useI18n()
-const LABEL = computed<Record<Mode, string>>(() => ({cv: t('mode.cv'), vibes: t('mode.vibes')}))
-const next = computed<Mode>(() => (store.mode === 'cv' ? 'vibes' : 'cv'))
+const LABEL = computed<Record<Mode, string>>(() => ({classic: t('mode.classic'), cv: t('mode.cv'), vibes: t('mode.vibes')}))
+const next = computed<Mode>(() => MODES[(MODES.indexOf(store.mode) + 1) % MODES.length])
 </script>
 
 <style scoped>

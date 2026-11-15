@@ -1,6 +1,6 @@
-// Theme = mode (cv | vibes, persisted) + vibe (user choice, persisted) + dark
-// mode (never persisted, no manual toggle: the Vietnam clock in vibes mode,
-// the OS colour scheme in cv mode).
+// Theme = mode (classic | cv | vibes, persisted) + vibe (user choice, persisted)
+// + dark mode (never persisted, no manual toggle: the Vietnam clock in vibes
+// mode, the OS colour scheme in classic and cv mode).
 import {defineStore} from 'pinia'
 import {isNightInVietnam} from '~/utils/vnTime'
 
@@ -11,9 +11,10 @@ export const VIBES: readonly Vibe[] = ['cartoon', 'galaxy', 'terminal'] as const
 export const DEFAULT_VIBE: Vibe = 'cartoon'
 export const VIBE_STORAGE_KEY = 'vibe'
 
-// Presentation mode: the plain CV (fast, no scene) or the three.js vibes.
-export type Mode = 'cv' | 'vibes'
-export const MODES: readonly Mode[] = ['cv', 'vibes'] as const
+// Presentation mode: the classic (pre-three.js v3.0.0) look, the plain CV
+// (both fast, no scene) or the three.js vibes.
+export type Mode = 'classic' | 'cv' | 'vibes'
+export const MODES: readonly Mode[] = ['classic', 'cv', 'vibes'] as const
 export const DEFAULT_MODE: Mode = 'cv' // the plain CV by default; the vibes are one switch away
 export const MODE_STORAGE_KEY = 'mode'
 
@@ -52,6 +53,7 @@ export const useThemeStore = defineStore('theme', {
   }),
 
   getters: {
+    isClassic: (state): boolean => state.mode === 'classic',
     isCv: (state): boolean => state.mode === 'cv',
     isVibes: (state): boolean => state.mode === 'vibes',
     currentTheme: (state): 'dark' | 'light' => (state.isDarkMode ? 'dark' : 'light'),
@@ -60,7 +62,7 @@ export const useThemeStore = defineStore('theme', {
 
   actions: {
     // Restore the saved mode and vibe (if valid) and evaluate dark mode once:
-    // the clock in vibes mode, the OS scheme (prefersDark) in cv mode.
+    // the clock in vibes mode, the OS scheme (prefersDark) otherwise.
     initializeTheme(now: Date = new Date(), prefersDark = false) {
       if (import.meta.client && !this.isInitialized) {
         const savedMode = localStorage.getItem(MODE_STORAGE_KEY)
@@ -69,27 +71,27 @@ export const useThemeStore = defineStore('theme', {
         const saved = localStorage.getItem(VIBE_STORAGE_KEY)
         this.vibe = isVibe(saved) ? saved : this.vibe
         persist(VIBE_STORAGE_KEY, this.vibe)
-        this.isDarkMode = this.mode === 'cv' ? prefersDark : isNightInVietnam(now)
+        this.isDarkMode = this.mode === 'vibes' ? isNightInVietnam(now) : prefersDark
         this.applyTheme()
         this.isInitialized = true
       }
     },
 
-    // Switching also re-derives dark mode under the new rule (OS scheme for
-    // cv, the clock for vibes) so a night-time visitor leaving the vibes does
+    // Switching also re-derives dark mode under the new rule (the clock for
+    // vibes, the OS scheme otherwise) so a night-time visitor leaving the vibes does
     // not keep a dark CV on a light OS until the next reload.
     setMode(mode: Mode) {
       if (!isMode(mode)) return
       this.mode = mode
       if (import.meta.client) {
         persist(MODE_STORAGE_KEY, mode)
-        this.isDarkMode = mode === 'cv' ? window.matchMedia(SCHEME_QUERY).matches : isNightInVietnam(new Date())
+        this.isDarkMode = mode === 'vibes' ? isNightInVietnam(new Date()) : window.matchMedia(SCHEME_QUERY).matches
       }
       this.applyTheme()
     },
 
     toggleMode() {
-      this.setMode(this.mode === 'cv' ? 'vibes' : 'cv')
+      this.setMode(MODES[(MODES.indexOf(this.mode) + 1) % MODES.length])
     },
 
     setVibe(vibe: Vibe) {
@@ -105,7 +107,7 @@ export const useThemeStore = defineStore('theme', {
     },
 
     // Vibes mode: dark follows the Vietnam clock (called once a minute by
-    // startClock()). CV mode: the OS scheme (syncScheme).
+    // startClock()). Classic and CV mode: the OS scheme (syncScheme).
     syncClock(now: Date = new Date()) {
       if (this.mode !== 'vibes') return
       this.isDarkMode = isNightInVietnam(now)
@@ -113,7 +115,7 @@ export const useThemeStore = defineStore('theme', {
     },
 
     syncScheme(prefersDark: boolean) {
-      if (this.mode !== 'cv') return
+      if (this.mode === 'vibes') return
       this.isDarkMode = prefersDark
       this.applyTheme()
     },
