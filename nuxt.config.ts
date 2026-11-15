@@ -42,8 +42,8 @@ export default defineNuxtConfig({
       // The default mode (stores/theme.ts) in the page shell, so its tokens apply
       // before any script runs. data-vibe is set by plugins/theme.ts on every
       // (server-rendered) request, in vibes mode only: a config default here
-      // would survive the plugin's `undefined` and leak into cv mode.
-      htmlAttrs: {'data-mode': 'cv'},
+      // would survive the plugin's `undefined` and leak into the other modes.
+      htmlAttrs: {'data-mode': 'classic'},
       title: 'QDJr Blog',
       meta: [
         { charset: 'utf-8' },

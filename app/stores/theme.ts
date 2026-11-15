@@ -15,7 +15,7 @@ export const VIBE_STORAGE_KEY = 'vibe'
 // (both fast, no scene) or the three.js vibes.
 export type Mode = 'classic' | 'cv' | 'vibes'
 export const MODES: readonly Mode[] = ['classic', 'cv', 'vibes'] as const
-export const DEFAULT_MODE: Mode = 'cv' // the plain CV by default; the vibes are one switch away
+export const DEFAULT_MODE: Mode = 'classic' // the v3.0.0 look by default; cv and vibes are one switch away
 export const MODE_STORAGE_KEY = 'mode'
 
 const CLOCK_INTERVAL_MS = 60_000

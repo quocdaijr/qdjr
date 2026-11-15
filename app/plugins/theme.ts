@@ -15,7 +15,7 @@ const VIBE_FONT_LINKS: Array<{rel: 'stylesheet'; href: string}> = [
 
 // Theme bootstrap. A server render takes mode and vibe from their cookies (it
 // cannot see localStorage); dark mode comes from the Vietnam clock in vibes
-// mode and is left light in cv mode (tokens.css paints dark from the OS media
+// mode and is left light in classic and cv mode (tokens.css paints dark from the OS media
 // query before any script runs). A prerendered page (static hosting) is built
 // once for everyone, so it keeps the defaults. The client hydrates from Pinia's
 // payload, restores the saved choices and keeps the clock / scheme in sync.

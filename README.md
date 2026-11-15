@@ -44,13 +44,17 @@ Optional environment (`npm run copy:env` seeds `.env` from `.env.example`):
 | `API_URL` | Legacy blog backend — **unset by default**, see below |
 | `GOOGLE_ANALYTICS_ID` | GA measurement ID |
 
-## 🎨 Looks: CV and vibes
+## 🎨 Looks: classic, CV and vibes
 
-The site has two **modes**, switched from the header button (or the mobile
+The site has three **modes**, cycled from the header button (or the mobile
 drawer) and remembered in `localStorage.mode` + a `mode` cookie so the server
 renders the right one (`app/stores/theme.ts`, `app/plugins/theme.ts`):
 
-- **CV** (the default): a plain, fast, professional look. System fonts, neutral
+- **Classic** (the default): the pre-three.js v3.0.0 look. Tailwind's stock gray
+  and blue, system fonts, no three.js, no Google Fonts requests. `/` is the
+  greeting page and `/about` the card layout (`app/components/classic/*`), both
+  fed by the live profile. Light/dark follows the OS colour scheme.
+- **CV**: a plain, fast, professional look. System fonts, neutral
   paper, no three.js, no animations, no Google Fonts requests. `/` is a short
   intro and `/about` is a one-page CV (`app/components/cv/*`); `Ctrl+P` on
   `/about` prints it as a clean sheet (`app/assets/css/print.css`). Light/dark

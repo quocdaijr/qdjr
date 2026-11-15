@@ -180,8 +180,8 @@ describe('mode', () => {
     expect(useThemeStore().mode).toBe(DEFAULT_MODE)
   })
 
-  test('cv is the default mode', () => {
-    expect(DEFAULT_MODE).toBe('cv')
+  test('classic is the default mode', () => {
+    expect(DEFAULT_MODE).toBe('classic')
   })
 
   test('initializeTheme restores a saved mode, mirrors it to the cookie and applies data-mode', () => {

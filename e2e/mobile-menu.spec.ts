@@ -20,6 +20,7 @@ const drawerX = async (page: Page) => (await page.locator(DRAWER).boundingBox())
 test.describe('mobile nav drawer', () => {
   test.beforeEach(async ({page}) => {
     await page.goto('/')
+    await page.waitForLoadState('networkidle') // hydrated: the click must reach Vue
     await expect(page.locator(HAMBURGER)).toBeVisible()
   })
 

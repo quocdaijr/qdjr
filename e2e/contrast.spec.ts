@@ -1,5 +1,5 @@
 import {expect, test} from '@playwright/test'
-import {useVibes} from './helpers/mode'
+import {modeCookie, useVibes} from './helpers/mode'
 
 useVibes(test)
 
@@ -86,11 +86,12 @@ const collectFailures = () => {
   return failures
 }
 
-for (const scheme of ['light', 'dark'] as const) {
-  test(`text contrast meets WCAG AA — cv · ${scheme}`, async ({page, context}, testInfo) => {
+for (const look of ['classic', 'cv']) for (const scheme of ['light', 'dark'] as const) {
+  test(`text contrast meets WCAG AA — ${look} · ${scheme}`, async ({page, context}, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'one viewport is enough for colour')
     test.setTimeout(120_000)
-    await context.clearCookies() // cv mode is the default; the file-level useVibes opt-in is undone here
+    await context.clearCookies() // undo the file-level useVibes opt-in
+    await context.addCookies([modeCookie(look)])
     await page.emulateMedia({colorScheme: scheme})
 
     const failures: Failure[] = []

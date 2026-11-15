@@ -1,6 +1,6 @@
 import type {Page, TestType} from '@playwright/test'
 
-// CV mode is the default; a test about the three.js vibes opts in with the
+// The classic look is the default; a test about another mode opts in with the
 // same cookie the switch sets, so the server already renders vibes mode.
 export const modeCookie = (value: string) => ({name: 'mode', value, domain: 'localhost', path: '/'})
 export const VIBES_COOKIE = modeCookie('vibes')

@@ -48,9 +48,9 @@ test.describe('vibe switcher', () => {
     expect(html).toMatch(/<html[^>]*data-vibe="cartoon"/)
   })
 
-  test('without the cookie the page shell is the cv, with no vibe at all', async ({request}) => {
+  test('without the cookie the page shell is the classic look, with no vibe at all', async ({request}) => {
     const html = await (await request.get('/')).text()
-    expect(html).toMatch(/<html[^>]*data-mode="cv"/)
+    expect(html).toMatch(/<html[^>]*data-mode="classic"/)
     expect(html).not.toContain('data-vibe=')
   })
 
