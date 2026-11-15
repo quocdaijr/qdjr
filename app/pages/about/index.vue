@@ -1,5 +1,6 @@
 <template>
-  <CvSheet v-if="!store.isVibes"/>
+  <ClassicAbout v-if="store.isClassic"/>
+  <CvSheet v-else-if="store.isCv"/>
   <JourneyAboutJourney v-else/>
 </template>
 

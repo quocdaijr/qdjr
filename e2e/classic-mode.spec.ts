@@ -55,4 +55,25 @@ test.describe('classic mode (the v3.0.0 look)', () => {
     await page.reload()
     await expect(page.locator('html')).toHaveAttribute('data-mode', 'vibes')
   })
+
+  test('/about is the v3.0.0 layout fed by the live profile, in both languages', async ({page}) => {
+    await page.goto('/en/about')
+    const about = page.locator('.classic-about')
+    await expect(page.locator('[data-stop], .cv')).toHaveCount(0)
+    await expect(about.getByRole('heading', {level: 1, name: 'Quoc Dai Nguyen'})).toBeVisible()
+    await expect(about.locator('h2')).toHaveText(['Contact', 'Skills', 'More', 'Education & Experience', 'Projects'])
+    await expect(about.locator('.classic-timeline > li:not([aria-hidden])')).toHaveCount(4)
+    expect(await about.locator('.classic-projects > li').count()).toBeGreaterThanOrEqual(6)
+    await expect(about).toContainText('quocdaijr@gmail.com')
+    const english = await about.locator('.classic-summary').innerText()
+
+    await page.goto('/about')
+    await expect(about.locator('h2').first()).toHaveText('Liên hệ')
+    expect(await about.locator('.classic-summary').innerText()).not.toBe(english)
+  })
+
+  test('/about never scrolls sideways', async ({page}) => {
+    await page.goto('/en/about')
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  })
 })
